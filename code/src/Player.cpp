@@ -111,6 +111,13 @@ bool Player::Update(float dt)
 	pbody->body->SetLinearVelocity(velocity);
 
 	b2Transform pbodyPos = pbody->body->GetTransform();
+	if (isJumping) {
+		if ((int)position.getY() > METERS_TO_PIXELS(pbodyPos.p.y) - texH / 2) {
+			state = Player_State::JUMP;
+		}
+		else state = Player_State::FALL;
+	}
+
 	position.setX(METERS_TO_PIXELS(pbodyPos.p.x) - texH / 2);
 	position.setY(METERS_TO_PIXELS(pbodyPos.p.y) - texH / 2);
 
@@ -133,7 +140,7 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 	case ColliderType::PLATFORM:
 		LOG("Collision PLATFORM");
 		//reset the jump flag when touching the ground
-		isJumping = false;
+		if(state == Player_State::FALL) isJumping = false;
 		break;
 	case ColliderType::ITEM:
 		LOG("Collision ITEM");

@@ -6,7 +6,7 @@
 #include "Animation.h"
 
 enum class Player_State{
-IDLE, WALK, JUMP};
+IDLE, WALK, JUMP, FALL, DIE};
 
 enum class Player_Look {
 	LEFT, RIGHT

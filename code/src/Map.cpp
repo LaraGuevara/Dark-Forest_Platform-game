@@ -184,6 +184,8 @@ bool Map::Load(std::string path, std::string fileName)
         // L08 TODO 7: Assign collider type
         // Later you can create a function here to load and create the colliders from the map
 
+
+        // NO BORRAR
         for (pugi::xml_node objectNode = mapFileXML.child("map").child("objectgroup"); objectNode != NULL; objectNode = objectNode.next_sibling("objectgroup")) {
             for (pugi::xml_node tileNode = objectNode.child("object"); tileNode != NULL; tileNode = tileNode.next_sibling("object")) {
                 LOG("%d, %d", tileNode.attribute("x").as_int(), tileNode.attribute("y").as_int());
