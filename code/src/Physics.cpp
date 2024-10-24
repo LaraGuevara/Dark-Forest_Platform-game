@@ -160,7 +160,7 @@ PhysBody* Physics::CreateRectangleSensor(int x, int y, int width, int height, bo
 	// Create our custom PhysBody class
 	PhysBody* pbody = new PhysBody();
 	pbody->body = b;
-	//b->SetUserData(pbody);
+	b->GetUserData().pointer = (uintptr_t)pbody;
 	pbody->width = width;
 	pbody->height = height;
 
@@ -340,6 +340,12 @@ void Physics::BeginContact(b2Contact* contact)
 	// Call the OnCollision listener function to bodies A and B, passing as inputs our custom PhysBody classes
 	PhysBody* physA = (PhysBody*)contact->GetFixtureA()->GetBody()->GetUserData().pointer;
 	PhysBody* physB = (PhysBody*)contact->GetFixtureB()->GetBody()->GetUserData().pointer;
+
+	b2Filter disabledFilter;
+	disabledFilter.categoryBits = 0;
+	disabledFilter.maskBits = 0;
+
+	
 
 	if (physA && physA->listener != NULL) {
 		if (physB) // Ensure physB is also valid
