@@ -6055,12 +6055,12 @@
   </data>
  </layer>
  <objectgroup id="8" name="Capa de Objetos 1">
-  <object id="7" x="-0.5" y="259" width="140.5" height="61"/>
-  <object id="8" x="211" y="259.5" width="281.5" height="60"/>
-  <object id="9" x="496.5" y="225" width="46.5" height="13.5"/>
-  <object id="10" x="560.5" y="193" width="62.5" height="13.5"/>
-  <object id="11" x="656.5" y="208.5" width="30.5" height="13.5"/>
-  <object id="12" x="691" y="259.5" width="108.5" height="60"/>
-  <object id="13" x="289" y="209" width="62" height="13.5"/>
+  <object id="7" x="-0.5" y="260.667" width="140.5" height="59.3333"/>
+  <object id="8" x="211" y="260.167" width="281.5" height="59.3333"/>
+  <object id="9" x="496.5" y="226.667" width="46.5" height="11.8333"/>
+  <object id="10" x="560.5" y="194.667" width="62.5" height="11.8333"/>
+  <object id="11" x="656.5" y="210.5" width="30.5" height="11.5"/>
+  <object id="12" x="691" y="260.833" width="108.5" height="58.6667"/>
+  <object id="13" x="289" y="210.667" width="62" height="11.8333"/>
  </objectgroup>
 </map>
