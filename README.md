@@ -11,7 +11,9 @@
 
 ## ACKNOWLEDGEMENTS
 ---
-* Player sprite credit: [Cats || Pixel Asset Pack by Pop Shop Packs](https://pop-shop-packs.itch.io/cats-pixel-asset-pack)
+* Player sprite credit:
+  * [Cats || Pixel Asset Pack by Pop Shop Packs](https://pop-shop-packs.itch.io/cats-pixel-asset-pack)
+  * [Ghost || Pixel Asset Pack by Pop Shop Packs](https://pop-shop-packs.itch.io/ghost-pixel-asset-pack?download)
 * Tilesets credits:
   * [SugarLand TileSet by GatDeSucre](https://gatdesucre.itch.io/sugarland-tileset)
   * [Retro Cloud Tileset by ohnoponogames](https://ohnoponogames.itch.io/retro-cloud-tileset)
