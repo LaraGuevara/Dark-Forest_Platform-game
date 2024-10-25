@@ -42,12 +42,17 @@ bool Player::Start() {
 
 	// L08 TODO 5: Add physics to the player - initialize physics body
 	pbody = Engine::GetInstance().physics.get()->CreateCircle((int)position.getX(), (int)position.getY(), texH / 2, bodyType::DYNAMIC);
+	sensor = Engine::GetInstance().physics.get()->CreateRectangleSensor((int)position.getX(), (int)(position.getY() + texH), texH, 5, bodyType::KINEMATIC);
 
 	// L08 TODO 6: Assign player class (using "this") to the listener of the pbody. This makes the Physics module to call the OnCollision method
 	pbody->listener = this;
+	sensor->listener = this;
+	//fixture:setFilterData(1,0,0) desactivar default si no se cambia lo de mak
+	//fixture:setFilterData(1,65535,0) para activar de nuevo
 
 	// L08 TODO 7: Assign collider type
 	pbody->ctype = ColliderType::PLAYER;
+	sensor->ctype = ColliderType::SENSOR;
 
 	return true;
 }
@@ -111,11 +116,23 @@ bool Player::Update(float dt)
 	pbody->body->SetLinearVelocity(velocity);
 
 	b2Transform pbodyPos = pbody->body->GetTransform();
+	if (isJumping) {
+		if ((int)position.getY() > METERS_TO_PIXELS(pbodyPos.p.y) - texH / 2) {
+			state = Player_State::JUMP;
+		}
+		else state = Player_State::FALL;
+	}
+
 	position.setX(METERS_TO_PIXELS(pbodyPos.p.x) - texH / 2);
 	position.setY(METERS_TO_PIXELS(pbodyPos.p.y) - texH / 2);
 
+	//sensor->body->SetTransform({ position.getX(), (position.getY() + 8) }, 0.0f);
+
 	Engine::GetInstance().render.get()->DrawTexture(texture, (int)position.getX() - texW/6, (int)position.getY(), &currentAnimation->GetCurrentFrame(), flip);
 	currentAnimation->Update();
+
+	b2Vec2 playerPos = pbody->body->GetPosition();
+	sensor->body->SetTransform({ playerPos.x, playerPos.y - 0.4f}, sensor->body->GetAngle());
 	return true;
 }
 
@@ -128,18 +145,24 @@ bool Player::CleanUp()
 
 // L08 TODO 6: Define OnCollision function for the player. 
 void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
+
+	if(physA->ctype == ColliderType::SENSOR) LOG("SENSOR");
+
 	switch (physB->ctype)
 	{
 	case ColliderType::PLATFORM:
-		LOG("Collision PLATFORM");
+		LOG("%s Collision PLATFORM ", physA->ctype);
 		//reset the jump flag when touching the ground
-		isJumping = false;
+		if(state == Player_State::FALL) isJumping = false;
 		break;
 	case ColliderType::ITEM:
 		LOG("Collision ITEM");
 		break;
 	case ColliderType::UNKNOWN:
 		LOG("Collision UNKNOWN");
+		break;
+	case ColliderType::SENSOR:
+		LOG("Collision SENSOR");
 		break;
 	default:
 		break;
@@ -158,6 +181,9 @@ void Player::OnCollisionEnd(PhysBody* physA, PhysBody* physB)
 		break;
 	case ColliderType::UNKNOWN:
 		LOG("End Collision UNKNOWN");
+		break;
+	case ColliderType::SENSOR:
+		LOG("End Collision SENSOR");
 		break;
 	default:
 		break;

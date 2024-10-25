@@ -183,14 +183,19 @@ bool Map::Load(std::string path, std::string fileName)
         // L08 TODO 3: Create colliders
         // L08 TODO 7: Assign collider type
         // Later you can create a function here to load and create the colliders from the map
-        PhysBody* c1 = Engine::GetInstance().physics.get()->CreateRectangle(224 + 128, 260 + 32, 256, 64, STATIC);
-        c1->ctype = ColliderType::PLATFORM;
 
-        /*PhysBody* c2 = Engine::GetInstance().physics.get()->CreateRectangle(352 + 64, 150 + 32, 128, 64, STATIC);
-        c2->ctype = ColliderType::PLATFORM;*/
 
-        PhysBody* c3 = Engine::GetInstance().physics.get()->CreateRectangle(0, 260 + 32, 300, 64, STATIC);
-        c3->ctype = ColliderType::PLATFORM;
+        // NO BORRAR
+        for (pugi::xml_node objectNode = mapFileXML.child("map").child("objectgroup"); objectNode != NULL; objectNode = objectNode.next_sibling("objectgroup")) {
+            for (pugi::xml_node tileNode = objectNode.child("object"); tileNode != NULL; tileNode = tileNode.next_sibling("object")) {
+                LOG("%d, %d", tileNode.attribute("x").as_int(), tileNode.attribute("y").as_int());
+                int width = tileNode.attribute("width").as_int();
+                int height = tileNode.attribute("height").as_int();
+                PhysBody* c1 = Engine::GetInstance().physics.get()->CreateRectangle(tileNode.attribute("x").as_int() + width/2, tileNode.attribute("y").as_int() + height/2, width, height, STATIC);
+                c1->ctype = ColliderType::PLATFORM;
+                rectangles.push_back(c1);
+            }
+        }
 
         ret = true;
 

@@ -6,7 +6,7 @@
 #include "Animation.h"
 
 enum class Player_State{
-IDLE, WALK, JUMP};
+IDLE, WALK, JUMP, FALL, DIE};
 
 enum class Player_Look {
 	LEFT, RIGHT
@@ -51,6 +51,8 @@ public:
 
 	// L08 TODO 5: Add physics to the player - declare a Physics body
 	PhysBody* pbody;
+	PhysBody* sensor;
+
 	float jumpForce = 1.2f; // The force to apply when jumping
 	bool isJumping = false; // Flag to check if the player is currently jumping
 	bool isMoving = false;
