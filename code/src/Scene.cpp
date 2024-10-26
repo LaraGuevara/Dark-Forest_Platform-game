@@ -28,20 +28,17 @@ bool Scene::Awake()
 	LOG("Loading Scene");
 	bool ret = true;
 
-	//L04: TODO 3b: Instantiate the player using the entity manager
 	player = (Player*)Engine::GetInstance().entityManager->CreateEntity(EntityType::PLAYER);
 	player->SetParameters(configParameters.child("entities").child("player"));
 	
-	//L08 Create a new item using the entity manager and set the position to (200, 672) to test
-	Item* item = (Item*) Engine::GetInstance().entityManager->CreateEntity(EntityType::ITEM);
-	item->position = Vector2D(100, 0);
+	/*Item* item = (Item*) Engine::GetInstance().entityManager->CreateEntity(EntityType::ITEM);
+	item->position = Vector2D(100, 0);*/
 	return ret;
 }
 
 // Called before the first frame
 bool Scene::Start()
 {
-	//L06 TODO 3: Call the function to load the map. 
 	Engine::GetInstance().map->Load("Assets/Maps/", "CandyMap.tmx");
 	helptex = Engine::GetInstance().textures.get()->Load("Assets/Textures/help.png");
 
@@ -71,7 +68,7 @@ bool Scene::Update(float dt)
 	if (Engine::GetInstance().render.get()->camera.x >= 0)
 		Engine::GetInstance().render.get()->camera.x = 0;
 
-	int max = Engine::GetInstance().map.get()->GetTileColumns() * Engine::GetInstance().map.get()->GetTileSize();
+	int max = (Engine::GetInstance().map.get()->GetTileColumns() * Engine::GetInstance().map.get()->GetTileSize());
 	if (Engine::GetInstance().render.get()->camera.x <= -max)
 		Engine::GetInstance().render.get()->camera.x = -max;
 

@@ -45,6 +45,7 @@ public:
 
 public:
 
+	bool respawn;
 	//Declare player parameters
 	float speed = 5.0f;
 	SDL_Texture* texture = NULL;
@@ -57,9 +58,10 @@ public:
 	PhysBody* pbody;
 	PhysBody* sensor;
 
-	float jumpForce = 1.2f; // The force to apply when jumping
+	float jumpForce = 1.4f; // The force to apply when jumping
 	bool isJumping = false; // Flag to check if the player is currently jumping
 	bool isMoving = false;
+	bool isDying = false;
 	Player_State state = Player_State::IDLE;
 	Player_Look look = Player_Look::RIGHT;
 
@@ -71,7 +73,7 @@ public:
 	Animation jumping;
 	Animation death;
 
-	float gravityScale;
+	Vector2D checkpoint;
 
 	bool godMode;
 };

@@ -33,6 +33,10 @@ bool Player::Start() {
 	texW = parameters.attribute("w").as_int();
 	texH = parameters.attribute("h").as_int();
 
+	//set checkpoint (starting point)
+	checkpoint.setX(position.getX());
+	checkpoint.setY(position.getY());
+
 	//Load animations
 	idle.LoadAnimations(parameters.child("animations").child("idle"));
 	walking.LoadAnimations(parameters.child("animations").child("walking"));
@@ -48,108 +52,140 @@ bool Player::Start() {
 
 	pbody->ctype = ColliderType::PLAYER;
 	sensor->ctype = ColliderType::SENSOR;
-	gravityScale = pbody->body->GetGravityScale();
 
 	return true;
 }
 
 bool Player::Update(float dt)
 {
+	respawn = false;
 	b2Vec2 velocity = b2Vec2(0, -GRAVITY_Y);
+	if(isDying) velocity.y = 0;
 	isMoving = false;
 
 	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_F10) == KEY_DOWN) {
 		if (godMode) {
 			godMode = false;
 			pbody->body->SetType(b2_dynamicBody);
-			//pbody->body->SetGravityScale(gravityScale);
+			pbody->body->SetAwake(true);
 		}
 		else {
 			godMode = true;
 			pbody->body->SetType(b2_kinematicBody);
-			//pbody->body->SetGravityScale(0.0f);
 		}
 	}
 
-	// Move left
-	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_A) == KEY_REPEAT) {
-		velocity.x = -0.2 * dt;
-		isMoving = true;
-		look = Player_Look::LEFT;
-	}
-
-	// Move right
-	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) {
-		velocity.x = 0.2 * dt;
-		isMoving = true;
-		look = Player_Look::RIGHT;
-	}
-	
-	//Jump
-	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN && isJumping == false) {
-		// Apply an initial upward force
-		pbody->body->ApplyLinearImpulseToCenter(b2Vec2(0, -jumpForce), true);
-		isJumping = true;
-	}
-
-	if (godMode) {
-		bool moving = false;
-		if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_W) == KEY_REPEAT) {
-			velocity.y = -0.2 * dt;
-			moving = true;
+	if (state != Player_State::DIE) {
+		// Move left
+		if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_A) == KEY_REPEAT) {
+			velocity.x = -0.2 * dt;
+			isMoving = true;
+			look = Player_Look::LEFT;
 		}
 
-		if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_S) == KEY_REPEAT) {
-			velocity.y = 0.2 * dt;
-			moving = true;
+		// Move right
+		if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) {
+			velocity.x = 0.2 * dt;
+			isMoving = true;
+			look = Player_Look::RIGHT;
 		}
 
-		if (!moving) {
-			velocity.y = 0;
+		//Jump
+		if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN && isJumping == false) {
+			// Apply an initial upward force
+			pbody->body->ApplyLinearImpulseToCenter(b2Vec2(0, -jumpForce), true);
+			isJumping = true;
 		}
-	}  
 
-	// If the player is jumpling, we don't want to apply gravity, we use the current velocity prduced by the jump
-	if(isJumping == true)
-	{
-		velocity = pbody->body->GetLinearVelocity();
+		if (godMode) {
+			bool moving = false;
+			if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_W) == KEY_REPEAT) {
+				velocity.y = -0.2 * dt;
+				moving = true;
+			}
+
+			if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_S) == KEY_REPEAT) {
+				velocity.y = 0.2 * dt;
+				moving = true;
+			}
+
+			if (!moving) {
+				velocity.y = 0;
+			}
+		}
+
+		// If the player is jumpling, we don't want to apply gravity, we use the current velocity prduced by the jump
+		if (isJumping == true)
+		{
+			velocity = pbody->body->GetLinearVelocity();
+		}
+
+		if (isMoving && state != Player_State::DIE) {
+			if (state != Player_State::WALK) {
+				state = Player_State::WALK;
+				currentAnimation = &walking;
+			}
+		}
+		else if (isJumping) {
+			if (state != Player_State::JUMP) {
+				state = Player_State::JUMP;
+				currentAnimation = &jumping;
+			}
+		}
+		else {
+			if (state != Player_State::IDLE) {
+				state = Player_State::IDLE;
+				currentAnimation = &idle;
+			}
+		}
+
+		if (look == Player_Look::LEFT) flip = SDL_FLIP_HORIZONTAL;
+		else flip = SDL_FLIP_NONE;
+
+
+		// Apply the velocity to the player
+		pbody->body->SetLinearVelocity(velocity);
+
+		b2Transform pbodyPos = pbody->body->GetTransform();
+		if (isJumping && state != Player_State::DIE) {
+			if ((int)position.getY() > METERS_TO_PIXELS(pbodyPos.p.y) - texH / 2) {
+				state = Player_State::JUMP;
+			}
+			else state = Player_State::FALL;
+		}
+
+		position.setX(METERS_TO_PIXELS(pbodyPos.p.x) - texH / 2);
+		position.setY(METERS_TO_PIXELS(pbodyPos.p.y) - texH / 2);
+
+		if (!godMode) {
+			if (position.getY() >= 290) {
+				pbody->body->SetType(b2_kinematicBody);
+				isJumping = false;
+				state = Player_State::DIE;
+				death.Reset();
+				currentAnimation = &death;
+				isDying = true;
+			}
+		}
 	}
 
-	if(isMoving){
-		if (state != Player_State::WALK) {
-			state = Player_State::WALK;
-			currentAnimation = &walking;
+	if (state == Player_State::DIE) {
+		pbody->body->SetLinearVelocity(velocity);
+		if (isDying) {
+			if (death.HasFinished()) {
+				pbody->body->SetType(b2_dynamicBody);
+				pbody->body->SetAwake(true);
+				b2Transform pbodyPos = pbody->body->GetTransform();
+				pbody->body->SetTransform({ checkpoint.getX() / (checkpoint.getX() / 2), checkpoint.getY() }, pbody->body->GetAngle());
+				respawn = true;
+				isDying = false;
+				state = Player_State::IDLE;
+				look = Player_Look::RIGHT;
+				currentAnimation = &idle;
+				death.Reset();
+			}
 		}
 	}
-	else if(isJumping){
-		if (state != Player_State::JUMP) {
-			state = Player_State::JUMP;
-			currentAnimation = &jumping;
-		}
-	}
-	else {
-		if (state != Player_State::IDLE) {
-			state = Player_State::IDLE;
-			currentAnimation = &idle;
-		}
-	}
-
-	if (look == Player_Look::LEFT) flip = SDL_FLIP_HORIZONTAL;
-	else flip = SDL_FLIP_NONE;
-
-	// Apply the velocity to the player
-	pbody->body->SetLinearVelocity(velocity);
-
-	b2Transform pbodyPos = pbody->body->GetTransform();
-	if (isJumping) {
-		if ((int)position.getY() > METERS_TO_PIXELS(pbodyPos.p.y) - texH / 2) {
-			state = Player_State::JUMP;
-		}
-		else state = Player_State::FALL;
-	}
-
-	position.setX(METERS_TO_PIXELS(pbodyPos.p.x) - texH / 2);
-	position.setY(METERS_TO_PIXELS(pbodyPos.p.y) - texH / 2);
 
 	Engine::GetInstance().render.get()->DrawTexture(texture, (int)position.getX() - texW/6, (int)position.getY(), &currentAnimation->GetCurrentFrame(), flip);
 	currentAnimation->Update();
@@ -175,7 +211,8 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 	case ColliderType::PLATFORM:
 		LOG("%s Collision PLATFORM ", physA->ctype);
 		//reset the jump flag when touching the ground
-		if(state == Player_State::FALL) isJumping = false;
+		isJumping = false;
+		//if(state == Player_State::FALL) isJumping = false;
 		break;
 	case ColliderType::ITEM:
 		LOG("Collision ITEM");
