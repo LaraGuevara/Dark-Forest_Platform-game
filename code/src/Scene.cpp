@@ -56,20 +56,14 @@ bool Scene::PreUpdate()
 // Called each loop iteration
 bool Scene::Update(float dt)
 {
-	//L03 TODO 3: Make the camera movement independent of framerate
-	float camSpeed = 1;
+	Engine::GetInstance().render.get()->camera.x = (player->GetXPos() * -1) + 200;
 
-	if(Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_UP) == KEY_REPEAT)
-		Engine::GetInstance().render.get()->camera.y -= ceil(camSpeed * dt);
+	if (Engine::GetInstance().render.get()->camera.x >= 0)
+		Engine::GetInstance().render.get()->camera.x = 0;
 
-	if(Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_DOWN) == KEY_REPEAT)
-		Engine::GetInstance().render.get()->camera.y += ceil(camSpeed * dt);
-
-	if(Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT)
-		Engine::GetInstance().render.get()->camera.x -= ceil(camSpeed * dt);
-
-	if(Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT)
-		Engine::GetInstance().render.get()->camera.x += ceil(camSpeed * dt);
+	int max = Engine::GetInstance().map.get()->GetTileColumns() * Engine::GetInstance().map.get()->GetTileSize();
+	if (Engine::GetInstance().render.get()->camera.x <= -max)
+		Engine::GetInstance().render.get()->camera.x = -max;
 
 	return true;
 }

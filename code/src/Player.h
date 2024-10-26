@@ -39,6 +39,10 @@ public:
 		this->parameters = parameters;
 	}
 
+	int GetXPos() {
+		return position.getX();
+	}
+
 public:
 
 	//Declare player parameters
@@ -65,4 +69,5 @@ public:
 	Animation idle;
 	Animation walking;
 	Animation jumping;
+	Animation death;
 };

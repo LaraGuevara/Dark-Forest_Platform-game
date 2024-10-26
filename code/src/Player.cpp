@@ -19,15 +19,12 @@ Player::~Player() {
 
 bool Player::Awake() {
 
-	//L03: TODO 2: Initialize Player parameters
 	position = Vector2D(0, 0);
 	return true;
 }
 
 bool Player::Start() {
 
-	//L03: TODO 2: Initialize Player parameters
-	//texture = Engine::GetInstance().textures.get()->Load("Assets/Textures/player/Animations.png");
 	texture = Engine::GetInstance().textures.get()->Load(parameters.attribute("texture").as_string());
 	position.setX(parameters.attribute("x").as_int());
 	position.setY(parameters.attribute("y").as_int());
@@ -38,19 +35,15 @@ bool Player::Start() {
 	idle.LoadAnimations(parameters.child("animations").child("idle"));
 	walking.LoadAnimations(parameters.child("animations").child("walking"));
 	jumping.LoadAnimations(parameters.child("animations").child("jumping"));
+	death.LoadAnimations(parameters.child("animations").child("death"));
 	currentAnimation = &idle;
 
-	// L08 TODO 5: Add physics to the player - initialize physics body
 	pbody = Engine::GetInstance().physics.get()->CreateCircle((int)position.getX(), (int)position.getY(), texH / 2, bodyType::DYNAMIC);
 	sensor = Engine::GetInstance().physics.get()->CreateRectangleSensor((int)position.getX(), (int)(position.getY() + texH), texH, 5, bodyType::KINEMATIC);
 
-	// L08 TODO 6: Assign player class (using "this") to the listener of the pbody. This makes the Physics module to call the OnCollision method
 	pbody->listener = this;
 	sensor->listener = this;
-	//fixture:setFilterData(1,0,0) desactivar default si no se cambia lo de mak
-	//fixture:setFilterData(1,65535,0) para activar de nuevo
 
-	// L08 TODO 7: Assign collider type
 	pbody->ctype = ColliderType::PLAYER;
 	sensor->ctype = ColliderType::SENSOR;
 
@@ -59,7 +52,6 @@ bool Player::Start() {
 
 bool Player::Update(float dt)
 {
-	// L08 TODO 5: Add physics to the player - updated player position using physics
 	b2Vec2 velocity = b2Vec2(0, -GRAVITY_Y);
 	isMoving = false;
 
@@ -126,8 +118,6 @@ bool Player::Update(float dt)
 	position.setX(METERS_TO_PIXELS(pbodyPos.p.x) - texH / 2);
 	position.setY(METERS_TO_PIXELS(pbodyPos.p.y) - texH / 2);
 
-	//sensor->body->SetTransform({ position.getX(), (position.getY() + 8) }, 0.0f);
-
 	Engine::GetInstance().render.get()->DrawTexture(texture, (int)position.getX() - texW/6, (int)position.getY(), &currentAnimation->GetCurrentFrame(), flip);
 	currentAnimation->Update();
 
@@ -143,7 +133,6 @@ bool Player::CleanUp()
 	return true;
 }
 
-// L08 TODO 6: Define OnCollision function for the player. 
 void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 
 	if(physA->ctype == ColliderType::SENSOR) LOG("SENSOR");

@@ -52,6 +52,16 @@
             <frame x="240" y="64" w="48" h="32"/>
             <frame x="288" y="64" w="48" h="32"/>
           </jumping>
+                 <death loop="false" speed ="0.075">
+            <frame x="0" y="96" w="48" h="32"/>
+            <frame x="48" y="96" w="48" h="32"/>
+            <frame x="96" y="96" w="48" h="32"/>
+            <frame x="144" y="96" w="48" h="32"/>
+            <frame x="192" y="96" w="48" h="32"/>
+            <frame x="240" y="96" w="48" h="32"/>
+            <frame x="288" y="96" w="48" h="32"/>
+            <frame x="336" y="96" w="48" h="32"/>
+          </death>
         </animations>
       </player>
     </entities>
