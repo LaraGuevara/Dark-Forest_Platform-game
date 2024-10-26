@@ -125,4 +125,6 @@ private:
 
 	//L05 TODO 2: Declare a xml_document to load the config file
 	pugi::xml_document configFile;
+
+	bool sixtyfps = true;
 };

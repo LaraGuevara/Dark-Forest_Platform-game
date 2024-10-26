@@ -128,6 +128,17 @@ bool Engine::Update() {
     bool ret = true;
     PrepareUpdate();
 
+    if (input->GetKey(SDL_SCANCODE_F11) == KEY_DOWN) {
+        if (sixtyfps) {
+            maxFrameDuration = 32;
+            sixtyfps = false;
+        }
+        else {
+            maxFrameDuration = 16;
+            sixtyfps = true;
+        }
+    }
+
     if (input->GetWindowEvent(WE_QUIT) == true)
         ret = false;
 

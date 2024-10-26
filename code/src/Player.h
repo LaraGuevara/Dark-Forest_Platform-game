@@ -70,4 +70,8 @@ public:
 	Animation walking;
 	Animation jumping;
 	Animation death;
+
+	float gravityScale;
+
+	bool godMode;
 };

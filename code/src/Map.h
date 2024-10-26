@@ -72,7 +72,6 @@ struct TileSet
 
 };
 
-// L06: TODO 1: Create a struct needed to hold the information to Map node
 struct MapData
 {
 	int width;

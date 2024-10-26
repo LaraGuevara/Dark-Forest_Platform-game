@@ -25,6 +25,8 @@ bool Player::Awake() {
 
 bool Player::Start() {
 
+	godMode = false;
+
 	texture = Engine::GetInstance().textures.get()->Load(parameters.attribute("texture").as_string());
 	position.setX(parameters.attribute("x").as_int());
 	position.setY(parameters.attribute("y").as_int());
@@ -46,6 +48,7 @@ bool Player::Start() {
 
 	pbody->ctype = ColliderType::PLAYER;
 	sensor->ctype = ColliderType::SENSOR;
+	gravityScale = pbody->body->GetGravityScale();
 
 	return true;
 }
@@ -54,6 +57,19 @@ bool Player::Update(float dt)
 {
 	b2Vec2 velocity = b2Vec2(0, -GRAVITY_Y);
 	isMoving = false;
+
+	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_F10) == KEY_DOWN) {
+		if (godMode) {
+			godMode = false;
+			pbody->body->SetType(b2_dynamicBody);
+			//pbody->body->SetGravityScale(gravityScale);
+		}
+		else {
+			godMode = true;
+			pbody->body->SetType(b2_kinematicBody);
+			//pbody->body->SetGravityScale(0.0f);
+		}
+	}
 
 	// Move left
 	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_A) == KEY_REPEAT) {
@@ -75,6 +91,23 @@ bool Player::Update(float dt)
 		pbody->body->ApplyLinearImpulseToCenter(b2Vec2(0, -jumpForce), true);
 		isJumping = true;
 	}
+
+	if (godMode) {
+		bool moving = false;
+		if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_W) == KEY_REPEAT) {
+			velocity.y = -0.2 * dt;
+			moving = true;
+		}
+
+		if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_S) == KEY_REPEAT) {
+			velocity.y = 0.2 * dt;
+			moving = true;
+		}
+
+		if (!moving) {
+			velocity.y = 0;
+		}
+	}  
 
 	// If the player is jumpling, we don't want to apply gravity, we use the current velocity prduced by the jump
 	if(isJumping == true)

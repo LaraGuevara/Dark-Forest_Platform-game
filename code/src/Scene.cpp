@@ -43,6 +43,7 @@ bool Scene::Start()
 {
 	//L06 TODO 3: Call the function to load the map. 
 	Engine::GetInstance().map->Load("Assets/Maps/", "CandyMap.tmx");
+	helptex = Engine::GetInstance().textures.get()->Load("Assets/Textures/help.png");
 
 	return true;
 }
@@ -56,6 +57,15 @@ bool Scene::PreUpdate()
 // Called each loop iteration
 bool Scene::Update(float dt)
 {
+	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_H) == KEY_DOWN) {
+		if (help) help = false;
+		else help = true;
+	}
+
+	if (help) {
+		Engine::GetInstance().render.get()->DrawTexture(helptex, 150, -45);
+	}
+	
 	Engine::GetInstance().render.get()->camera.x = (player->GetXPos() * -1) + 200;
 
 	if (Engine::GetInstance().render.get()->camera.x >= 0)

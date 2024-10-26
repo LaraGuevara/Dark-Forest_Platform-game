@@ -34,7 +34,9 @@ public:
 
 private:
 	SDL_Texture* img;
+	SDL_Texture* helptex;
 
 	//L03: TODO 3b: Declare a Player attribute
 	Player* player;
+	bool help = false;
 };
