@@ -92,6 +92,7 @@ bool Scene::CleanUp()
 	LOG("Freeing scene");
 
 	SDL_DestroyTexture(img);
+	SDL_DestroyTexture(helptex);
 
 	return true;
 }
