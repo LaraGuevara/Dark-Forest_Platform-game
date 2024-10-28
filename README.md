@@ -22,7 +22,7 @@
 ---
 This first release consist of the first level of the game. It is a simple plataform level based, without enemies or collectibles. It is themed after a candyland, and it's protagonists is a cotton candy kitty. 
 
-[Last release]()
+[Last release](https://github.com/LaraGuevara/Platform-game/releases/download/v.0.1/v.0.1.PixelPioneers-Platformer-Alpha.zip)
 
 
 ## GAMEPLAY
