@@ -18,7 +18,7 @@
   </window>
   
   <scene>
-    <map path="Assets/Maps/" name="CityTileMap.tmx"/>
+    <map path="Assets/Maps/" name="NewCandyMap.tmx"/>
     <entities>
       <player x="100" y="0" w="48" h ="32" texture="Assets/Textures/player/Animations.png">
         <animations>

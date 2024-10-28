@@ -39,7 +39,7 @@ bool Scene::Awake()
 // Called before the first frame
 bool Scene::Start()
 {
-	Engine::GetInstance().map->Load("Assets/Maps/", "CandyMap.tmx");
+	Engine::GetInstance().map->Load("Assets/Maps/", "NewCandyMap.tmx");
 	helptex = Engine::GetInstance().textures.get()->Load("Assets/Textures/help.png");
 
 	return true;
@@ -63,12 +63,12 @@ bool Scene::Update(float dt)
 		Engine::GetInstance().render.get()->DrawTexture(helptex, 150, -45);
 	}
 	
-	Engine::GetInstance().render.get()->camera.x = (player->GetXPos() * -1) + 200;
+	Engine::GetInstance().render.get()->camera.x = ((player->GetXPos() * -1) + 200) *2;
 
 	if (Engine::GetInstance().render.get()->camera.x >= 0)
 		Engine::GetInstance().render.get()->camera.x = 0;
 
-	int max = (Engine::GetInstance().map.get()->GetTileColumns() * Engine::GetInstance().map.get()->GetTileSize());
+	int max = (200 * Engine::GetInstance().map.get()->GetTileSize());
 	if (Engine::GetInstance().render.get()->camera.x <= -max)
 		Engine::GetInstance().render.get()->camera.x = -max;
 
