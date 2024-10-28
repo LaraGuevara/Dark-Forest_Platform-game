@@ -68,7 +68,7 @@ bool Scene::Update(float dt)
 	if (Engine::GetInstance().render.get()->camera.x >= 0)
 		Engine::GetInstance().render.get()->camera.x = 0;
 
-	int max = (200 * Engine::GetInstance().map.get()->GetTileSize());
+	int max = (315 * Engine::GetInstance().map.get()->GetTileSize());
 	if (Engine::GetInstance().render.get()->camera.x <= -max)
 		Engine::GetInstance().render.get()->camera.x = -max;
 
