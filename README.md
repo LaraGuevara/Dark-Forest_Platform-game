@@ -20,17 +20,42 @@
 
 ## GAME
 ---
+This first release consist of the first level of the game. It is a simple plataform level based, without enemies or collectibles. It is themed after a candyland, and it's protagonists is a cotton candy kitty. 
 
+[Last release]()
 
 
 ## GAMEPLAY
 ---
-* 
+* A move left
+* D move right
+* SPACE jump
+
+  GOD MODE:
+  W up
+  A left
+  S down
+  D right
 
 ### DEBUG FUNCTIONS 
 ---
-* 
+* H Shows / hides a help menu showing the keys
+* F9 Visualize the colliders / logic
+* F10 God Mode (fly around, cannot be killed)
+* F11 Enable/Disable FPS cap to 30
 
 ## FEATURES
 ---
-* 
+* PLayer with animations and colliders
+* Object with collision
+* Diverse map
+* PLataforms with dynamic created colliders
+
+  ## MEMBER'S WORK
+---
+*Class work->
+       + Basic project, world cration, player, basic movements, animations, colliders
+* Lara Guevara->
+       +Debug mode, 
+* Maria Besora->
+       +Level design and map creation
