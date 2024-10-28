@@ -58,7 +58,7 @@ public:
 	PhysBody* pbody;
 	PhysBody* sensor;
 
-	float jumpForce = 1.4f; // The force to apply when jumping
+	float jumpForce = 1.8f; // The force to apply when jumping
 	bool isJumping = false; // Flag to check if the player is currently jumping
 	bool isMoving = false;
 	bool isDying = false;
