@@ -50,12 +50,3 @@ This first release consist of the first level of the game. It is a simple plataf
 * Object with collision
 * Diverse map
 * PLataforms with dynamic created colliders
-
-  ## MEMBER'S WORK
----
-*Class work->
-       + Basic project, world cration, player, basic movements, animations, colliders
-* Lara Guevara->
-       +Debug mode, 
-* Maria Besora->
-       +Level design and map creation
