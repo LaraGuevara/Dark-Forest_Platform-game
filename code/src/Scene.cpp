@@ -11,6 +11,7 @@
 #include "Player.h"
 #include "Map.h"
 #include "Item.h"
+#include "Enemy.h"
 
 Scene::Scene() : Module()
 {
@@ -33,6 +34,13 @@ bool Scene::Awake()
 	
 	/*Item* item = (Item*) Engine::GetInstance().entityManager->CreateEntity(EntityType::ITEM);
 	item->position = Vector2D(100, 0);*/
+
+	for (pugi::xml_node enemyNode = configParameters.child("entities").child("enemies").child("enemy"); enemyNode; enemyNode = enemyNode.next_sibling("enemy"))
+	{
+		Enemy* enemy = (Enemy*)Engine::GetInstance().entityManager->CreateEntity(EntityType::ENEMY);
+		enemy->SetParameters(enemyNode);
+		enemyList.push_back(enemy);
+	}
 	return ret;
 }
 
