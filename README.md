@@ -17,6 +17,9 @@
 * Tilesets credits:
   * [SugarLand TileSet by GatDeSucre](https://gatdesucre.itch.io/sugarland-tileset)
   * [Retro Cloud Tileset by ohnoponogames](https://ohnoponogames.itch.io/retro-cloud-tileset)
+* Enemies sprite credit:
+  * [Blobfish || Pixel Asset Pack by Pop Shop Packs](https://pop-shop-packs.itch.io/blobfish-pixel-asset-pack)
+  * [BEE! by KingKelpo](https://kingkelp.itch.io/bee)
 
 ## GAME
 ---
