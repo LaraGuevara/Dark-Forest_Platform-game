@@ -35,12 +35,12 @@ bool Scene::Awake()
 	/*Item* item = (Item*) Engine::GetInstance().entityManager->CreateEntity(EntityType::ITEM);
 	item->position = Vector2D(100, 0);*/
 
-	for (pugi::xml_node enemyNode = configParameters.child("entities").child("enemies").child("enemy"); enemyNode; enemyNode = enemyNode.next_sibling("enemy"))
+	/*for (pugi::xml_node enemyNode = configParameters.child("entities").child("enemies").child("enemy"); enemyNode; enemyNode = enemyNode.next_sibling("enemy"))
 	{
 		Enemy* enemy = (Enemy*)Engine::GetInstance().entityManager->CreateEntity(EntityType::ENEMY);
 		enemy->SetParameters(enemyNode);
 		enemyList.push_back(enemy);
-	}
+	}*/
 	return ret;
 }
 
@@ -104,3 +104,10 @@ bool Scene::CleanUp()
 
 	return true;
 }
+
+Vector2D Scene::GetPlayerPosition()
+{
+	return player->GetPosition();
+}
+
+

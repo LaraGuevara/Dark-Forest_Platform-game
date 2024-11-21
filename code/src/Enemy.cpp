@@ -41,6 +41,10 @@ bool Enemy::Start() {
 	//Assign collider type
 	pbody->ctype = ColliderType::ENEMY;
 
+	// Set the enemy type
+	if (parameters.attribute("type").as_string() == "flying") type = EnemyType::FLYING;
+	else type = EnemyType::WALKING;
+
 	// Set the gravity of the body
 	if (!parameters.attribute("gravity").as_bool()) pbody->body->SetGravityScale(0);
 

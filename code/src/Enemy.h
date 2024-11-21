@@ -7,6 +7,11 @@
 
 struct SDL_Texture;
 
+enum EnemyType {
+	FLYING,
+	WALKING
+};
+
 class Enemy : public Entity
 {
 public:
@@ -37,6 +42,7 @@ public:
 private:
 
 	SDL_Texture* texture;
+	EnemyType type;
 	const char* texturePath;
 	int texW, texH;
 	pugi::xml_node parameters;

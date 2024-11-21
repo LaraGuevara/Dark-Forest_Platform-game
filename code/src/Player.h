@@ -43,6 +43,8 @@ public:
 		return position.getX();
 	}
 
+	Vector2D GetPosition();
+
 public:
 
 	bool respawn;
