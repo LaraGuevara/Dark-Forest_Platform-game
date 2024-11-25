@@ -47,7 +47,7 @@ bool Scene::Awake()
 // Called before the first frame
 bool Scene::Start()
 {
-	Engine::GetInstance().map->Load("Assets/Maps/", "NewCandyMap.tmx");
+	Engine::GetInstance().map->Load("Assets/Maps/", "newnocandymap.tmx");
 	helptex = Engine::GetInstance().textures.get()->Load("Assets/Textures/help.png");
 
 	return true;

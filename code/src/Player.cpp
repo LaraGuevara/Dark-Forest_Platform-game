@@ -44,7 +44,8 @@ bool Player::Start() {
 	death.LoadAnimations(parameters.child("animations").child("death"));
 	currentAnimation = &idle;
 
-	pbody = Engine::GetInstance().physics.get()->CreateCircle((int)position.getX(), (int)position.getY(), texH / 2, bodyType::DYNAMIC);
+	pbody = Engine::GetInstance().physics.get()->CreateCircle((int)position.getX() + texH / 2, (int)position.getY() + texH / 2, texW/2, bodyType::DYNAMIC);
+	//pbody = Engine::GetInstance().physics.get()->CreateCircle((int)position.getX() - texW / 2, (int)position.getY() + texH / 2, texH/2, bodyType::DYNAMIC);
 	sensor = Engine::GetInstance().physics.get()->CreateRectangleSensor((int)position.getX(), (int)(position.getY() + texH), texH, 5, bodyType::KINEMATIC);
 
 	pbody->listener = this;
@@ -148,6 +149,7 @@ bool Player::Update(float dt)
 
 		b2Transform pbodyPos = pbody->body->GetTransform();
 		if (isJumping && state != Player_State::DIE) {
+			currentAnimation = &jumping;
 			if ((int)position.getY() > METERS_TO_PIXELS(pbodyPos.p.y) - texH / 2) {
 				state = Player_State::JUMP;
 			}
@@ -158,7 +160,7 @@ bool Player::Update(float dt)
 		position.setY(METERS_TO_PIXELS(pbodyPos.p.y) - texH / 2);
 
 		if (!godMode) {
-			if (position.getY() >= 290) {
+			if (position.getY() >= 282) {
 				pbody->body->SetType(b2_kinematicBody);
 				isJumping = false;
 				state = Player_State::DIE;
@@ -187,7 +189,7 @@ bool Player::Update(float dt)
 		}
 	}
 
-	Engine::GetInstance().render.get()->DrawTexture(texture, (int)position.getX() - texW/6, (int)position.getY(), &currentAnimation->GetCurrentFrame(), flip);
+	Engine::GetInstance().render.get()->DrawTexture(texture, (int)position.getX() + texW/4, (int)position.getY() - texH/6, &currentAnimation->GetCurrentFrame(), flip);
 	currentAnimation->Update();
 
 	b2Vec2 playerPos = pbody->body->GetPosition();
@@ -212,6 +214,7 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 		LOG("%s Collision PLATFORM ", physA->ctype);
 		//reset the jump flag when touching the ground
 		isJumping = false;
+		jumping.Reset();
 		//if(state == Player_State::FALL) isJumping = false;
 		break;
 	case ColliderType::ITEM:
