@@ -227,7 +227,7 @@ Vector2D Map::WorldToMap(int x, int y) {
 
     ret.setX(x / mapData.tileWidth);
     ret.setY(y / mapData.tileHeight);
-
+    
     return ret;
 }
 

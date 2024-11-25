@@ -68,6 +68,9 @@ public:
 	bool PreUpdate();
 	bool PostUpdate();
 	bool CleanUp();
+	bool getDebug() {
+		return debug;
+	}
 
 	// Create basic physics objects
 	PhysBody* CreateRectangle(int x, int y, int width, int height, bodyType type);

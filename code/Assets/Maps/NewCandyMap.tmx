@@ -12,7 +12,7 @@
  <tileset firstgid="1041" name="MapMetadata" tilewidth="16" tileheight="16" tilecount="2" columns="2">
   <image source="MapMetadata.png" width="32" height="16"/>
  </tileset>
- <layer id="1" name="background" width="200" height="20">
+ <layer id="1" name="background" width="200" height="20" visible="0">
   <properties>
    <property name="Draw" type="bool" value="true"/>
   </properties>
@@ -4019,7 +4019,7 @@
    <tile/>
   </data>
  </layer>
- <layer id="5" name="mountains" width="200" height="20" opacity="0.89">
+ <layer id="5" name="mountains" width="200" height="20" visible="0" opacity="0.89">
   <properties>
    <property name="Draw" type="bool" value="true"/>
   </properties>
@@ -8026,7 +8026,7 @@
    <tile/>
   </data>
  </layer>
- <layer id="4" name="clouds" width="200" height="20" opacity="0.9">
+ <layer id="4" name="clouds" width="200" height="20" visible="0" opacity="0.9">
   <properties>
    <property name="Draw" type="bool" value="true"/>
   </properties>
@@ -12033,7 +12033,7 @@
    <tile/>
   </data>
  </layer>
- <layer id="2" name="foreground" width="200" height="20" offsetx="-0.5" offsety="2.5">
+ <layer id="2" name="foreground" width="200" height="20" visible="0" offsetx="-0.5" offsety="2.5">
   <properties>
    <property name="Draw" type="bool" value="true"/>
   </properties>
@@ -16040,7 +16040,7 @@
    <tile gid="277"/>
   </data>
  </layer>
- <layer id="6" name="details" width="200" height="20" offsetx="-6.16667" offsety="2.5">
+ <layer id="6" name="details" width="200" height="20" visible="0" offsetx="-6.16667" offsety="2.5">
   <properties>
    <property name="Draw" type="bool" value="true"/>
   </properties>
@@ -20050,6 +20050,7 @@
  <layer id="7" name="Navigation" width="200" height="20">
   <properties>
    <property name="Draw" type="bool" value="false"/>
+   <property name="Navigation" type="bool" value="true"/>
   </properties>
   <data>
    <tile/>

@@ -63,7 +63,7 @@ void Pathfinding::DrawPath() {
     // Draw visited
     for (const auto& pathTile : visited) {
     	Vector2D pathTileWorld = Engine::GetInstance().map.get()->MapToWorld(pathTile.getX(), pathTile.getY());
-        SDL_Rect rect = { 32,0,32,32 };
+        SDL_Rect rect = { 16,0,16,16 };
         Engine::GetInstance().render.get()->DrawTexture(pathTex, pathTileWorld.getX(), pathTileWorld.getY(),&rect);
     }
 
@@ -80,7 +80,7 @@ void Pathfinding::DrawPath() {
         //Get the position of the frontier tile in the world
         Vector2D pos = Engine::GetInstance().map.get()->MapToWorld(frontierTile.getX(), frontierTile.getY());
         //Draw the frontier tile
-        SDL_Rect rect = { 0,0,32,32 };
+        SDL_Rect rect = { 0,0,16,16 };
         Engine::GetInstance().render.get()->DrawTexture(pathTex, pos.getX(), pos.getY(), &rect);
         //Remove the front element from the queue
         frontierCopy.pop();
@@ -99,7 +99,7 @@ void Pathfinding::DrawPath() {
         //Get the position of the frontier tile in the world
         Vector2D pos = Engine::GetInstance().map.get()->MapToWorld(frontierTile.getX(), frontierTile.getY());
         //Draw the frontier tile
-        SDL_Rect rect = { 0,0,32,32 };
+        SDL_Rect rect = { 0,0,16,16 };
         Engine::GetInstance().render.get()->DrawTexture(pathTex, pos.getX(), pos.getY(), &rect);
         //Remove the front element from the queue
         frontierDijkstraCopy.pop();
@@ -261,7 +261,7 @@ void Pathfinding::PropagateDijkstra() {
     }
 }
 
-void Pathfinding::PropagateAStar(ASTAR_HEURISTICS heuristic) {
+bool Pathfinding::PropagateAStar(ASTAR_HEURISTICS heuristic) {
     Vector2D playerPos = Engine::GetInstance().scene.get()->GetPlayerPosition();
     Vector2D playerPosTile = Engine::GetInstance().map.get()->WorldToMap((int)playerPos.getX(), (int)playerPos.getY());
 
@@ -333,6 +333,7 @@ void Pathfinding::PropagateAStar(ASTAR_HEURISTICS heuristic) {
         }
 
     }
+    return foundDestination;
 }
 
 int Pathfinding::MovementCost(int x, int y) 
