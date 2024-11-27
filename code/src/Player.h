@@ -5,9 +5,10 @@
 #include <SDL2/SDL_mixer.h>
 #include "Box2D/Box2D.h"
 #include "Animation.h"
+#include "Attack.h"
 
 enum class Player_State{
-IDLE, WALK, JUMP, FALL, DIE};
+IDLE, WALK, JUMP, FALL, ATTACK, DIE};
 
 enum class Player_Look {
 	LEFT, RIGHT
@@ -50,6 +51,7 @@ public:
 
 public:
 
+	bool isAttacking = false;
 	bool respawn;
 	//Declare player parameters
 	float speed = 5.0f;
@@ -76,6 +78,7 @@ public:
 	Animation idle;
 	Animation walking;
 	Animation jumping;
+	Animation attack;
 	Animation death;
 
 	Vector2D checkpoint;

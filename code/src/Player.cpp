@@ -42,6 +42,7 @@ bool Player::Start() {
 	walking.LoadAnimations(parameters.child("animations").child("walking"));
 	jumping.LoadAnimations(parameters.child("animations").child("jumping"));
 	death.LoadAnimations(parameters.child("animations").child("death"));
+	attack.LoadAnimations(parameters.child("animations").child("attack"));
 	currentAnimation = &idle;
 
 	pbody = Engine::GetInstance().physics.get()->CreateCircle((int)position.getX() + texH / 2, (int)position.getY() + texH / 2, texW/2, bodyType::DYNAMIC);
@@ -82,7 +83,27 @@ bool Player::Update(float dt)
 		}
 	}
 
-	if (state != Player_State::DIE) {
+	if (isAttacking and state != Player_State::ATTACK) {
+		state = Player_State::ATTACK;
+		currentAnimation = &attack;
+	}
+
+	if (state == Player_State::ATTACK) {
+		if (attack.HasFinished()) {
+			isAttacking = false;
+			if (isJumping) {
+				state = Player_State::JUMP;
+				currentAnimation = &jumping;
+			}
+			else {
+				state = Player_State::IDLE;
+				currentAnimation = &idle;
+			}
+			attack.Reset();
+		}
+	}
+
+	if (state != Player_State::DIE and state != Player_State::ATTACK) {
 		// Move left
 		if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_A) == KEY_REPEAT) {
 			velocity.x = -0.2 * dt;
@@ -128,20 +149,20 @@ bool Player::Update(float dt)
 			velocity = pbody->body->GetLinearVelocity();
 		}
 
-		if (isMoving && state != Player_State::DIE) {
+		if (isMoving && state != Player_State::DIE and state != Player_State::ATTACK) {
 			if (state != Player_State::WALK) {
 				state = Player_State::WALK;
 				currentAnimation = &walking;
 			}
 		}
 		else if (isJumping) {
-			if (state != Player_State::JUMP) {
+			if (state != Player_State::JUMP and state != Player_State::ATTACK) {
 				state = Player_State::JUMP;
 				currentAnimation = &jumping;
 			}
 		}
 		else {
-			if (state != Player_State::IDLE) {
+			if (state != Player_State::IDLE and state != Player_State::ATTACK) {
 				state = Player_State::IDLE;
 				currentAnimation = &idle;
 			}
@@ -199,7 +220,8 @@ bool Player::Update(float dt)
 
 	if (state == Player_State::WALK and Mix_Playing(1) == 0) Mix_PlayChannel(1, runFX, 0);
 
-	Engine::GetInstance().render.get()->DrawTexture(texture, (int)position.getX() + texW/4, (int)position.getY() - texH/6, &currentAnimation->GetCurrentFrame(), flip);
+	if(state == Player_State::ATTACK) Engine::GetInstance().render.get()->DrawTexture(texture, (int)position.getX() + texW / 10, (int)position.getY() - texH / 6, &currentAnimation->GetCurrentFrame(), flip);
+	else Engine::GetInstance().render.get()->DrawTexture(texture, (int)position.getX() + texW / 4, (int)position.getY() - texH / 6, &currentAnimation->GetCurrentFrame(), flip);
 	currentAnimation->Update();
 
 	b2Vec2 playerPos = pbody->body->GetPosition();

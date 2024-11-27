@@ -3,6 +3,7 @@
 #include "Module.h"
 #include "Player.h"
 #include "Enemy.h"
+#include "Attack.h"
 #include <SDL2/SDL_mixer.h>
 
 
@@ -54,5 +55,8 @@ private:
 
 	Mix_Chunk* loadFX;
 	Mix_Chunk* saveFX;
+	Mix_Chunk* attackFX;
 	Mix_Music* backgroundMusic;
+
+	std::vector<Attack*> attackList;
 };

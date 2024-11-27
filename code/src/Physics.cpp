@@ -7,6 +7,7 @@
 #include "Log.h"
 #include "Render.h"
 #include "Player.h"
+#include "Attack.h"
 #include "Window.h"
 #include "box2D/box2d.h"
 

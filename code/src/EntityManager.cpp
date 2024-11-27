@@ -5,6 +5,7 @@
 #include "Scene.h"
 #include "Log.h"
 #include "Item.h"
+#include "Attack.h"
 
 EntityManager::EntityManager() : Module()
 {
@@ -77,6 +78,9 @@ Entity* EntityManager::CreateEntity(EntityType type)
 		break;
 	case EntityType::ENEMY:
 		entity = new Enemy();
+		break;
+	case EntityType::ATTACK:
+		entity = new Attack();
 		break;
 	default:
 		break;

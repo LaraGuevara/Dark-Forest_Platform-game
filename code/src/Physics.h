@@ -26,6 +26,7 @@ enum class ColliderType {
 	PLAYER, 
 	ENEMY,
 	ITEM,
+	ATTACK,
 	PLATFORM, 
 	SENSOR,
 	UNKNOWN
@@ -70,6 +71,10 @@ public:
 	bool CleanUp();
 	bool getDebug() {
 		return debug;
+	}
+
+	void DeleteBody(b2Body* b) {
+		world->DestroyBody(b);
 	}
 
 	// Create basic physics objects

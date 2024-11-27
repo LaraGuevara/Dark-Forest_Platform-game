@@ -54,6 +54,7 @@ bool Scene::Start()
 	Mix_VolumeMusic(60);
 	saveFX = Mix_LoadWAV("Assets/Audio/Fx/Fantasy_UI (30).wav");
 	loadFX = Mix_LoadWAV("Assets/Audio/Fx/Success 1 (subtle).wav");
+	attackFX = Mix_LoadWAV("Assets/Audio/Fx/Ice Throw 1.wav");
 	backgroundMusic = Mix_LoadMUS("Assets/Audio/Fx/Ambient Music.wav");
 	Mix_PlayMusic(backgroundMusic, -1);
 	return true;
@@ -80,6 +81,27 @@ bool Scene::Update(float dt)
 	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_F6) == KEY_DOWN) {
 		LoadState();
 		Mix_PlayChannel(2, loadFX, 0);
+	}
+
+	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_Q) == KEY_DOWN) {
+		Mix_PlayChannel(2, attackFX, 0);
+		player->isAttacking = true;
+		Attack* attack = (Attack*)Engine::GetInstance().entityManager->CreateEntity(EntityType::ATTACK);
+		Vector2D playerPos = GetPlayerPosition();
+		if (player->look == Player_Look::RIGHT) attack->position = Vector2D(playerPos.getX() + 30, playerPos.getY() - 10);
+		else attack->position = Vector2D(playerPos.getX() - 30, playerPos.getY() - 10);
+		attack->SetFlip(player->flip);
+		attack->Start();
+		attackList.push_back(attack);
+	}
+
+	for (int i = 0; i < attackList.size(); i++) {
+		if (attackList[i]->collision) {
+			Engine::GetInstance().physics.get()->DeleteBody(attackList[i]->pbody->body);
+			Engine::GetInstance().entityManager->DestroyEntity(attackList[i]);
+			attackList.erase(attackList.begin() + i);
+			i--;
+		}
 	}
 
 	if (help) Engine::GetInstance().render.get()->DrawTexture(helptex, 150, -45);
