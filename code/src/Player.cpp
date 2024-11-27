@@ -54,6 +54,12 @@ bool Player::Start() {
 	pbody->ctype = ColliderType::PLAYER;
 	sensor->ctype = ColliderType::SENSOR;
 
+	Mix_Volume(1, 90);
+	runFX = Mix_LoadWAV("Assets/Audio/Fx/GRASS - Run 1.wav");
+	jumpStartFX = Mix_LoadWAV("Assets/Audio/Fx/GRASS - Pre Jump 1.wav");
+	jumpEndFX = Mix_LoadWAV("Assets/Audio/Fx/GRASS - Post Jump 1.wav");
+	gameOverFX = Mix_LoadWAV("Assets/Audio/Fx/Game Over.wav");
+
 	return true;
 }
 
@@ -94,6 +100,7 @@ bool Player::Update(float dt)
 		//Jump
 		if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN && isJumping == false) {
 			// Apply an initial upward force
+			Mix_PlayChannel(1, jumpStartFX, 0);
 			pbody->body->ApplyLinearImpulseToCenter(b2Vec2(0, -jumpForce), true);
 			isJumping = true;
 		}
@@ -161,6 +168,7 @@ bool Player::Update(float dt)
 
 		if (!godMode) {
 			if (position.getY() >= 282) {
+				Mix_PlayChannel(2, gameOverFX, 0);
 				pbody->body->SetType(b2_kinematicBody);
 				isJumping = false;
 				state = Player_State::DIE;
@@ -189,6 +197,8 @@ bool Player::Update(float dt)
 		}
 	}
 
+	if (state == Player_State::WALK and Mix_Playing(1) == 0) Mix_PlayChannel(1, runFX, 0);
+
 	Engine::GetInstance().render.get()->DrawTexture(texture, (int)position.getX() + texW/4, (int)position.getY() - texH/6, &currentAnimation->GetCurrentFrame(), flip);
 	currentAnimation->Update();
 
@@ -214,6 +224,7 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 		LOG("%s Collision PLATFORM ", physA->ctype);
 		//reset the jump flag when touching the ground
 		isJumping = false;
+		Mix_PlayChannel(1, jumpEndFX, 0);
 		jumping.Reset();
 		//if(state == Player_State::FALL) isJumping = false;
 		break;

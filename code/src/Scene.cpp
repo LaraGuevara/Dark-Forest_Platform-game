@@ -47,9 +47,15 @@ bool Scene::Awake()
 // Called before the first frame
 bool Scene::Start()
 {
+	Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 1024);
 	Engine::GetInstance().map->Load("Assets/Maps/", "newnocandymap.tmx");
 	helptex = Engine::GetInstance().textures.get()->Load("Assets/Textures/help.png");
 
+	Mix_VolumeMusic(60);
+	saveFX = Mix_LoadWAV("Assets/Audio/Fx/Fantasy_UI (30).wav");
+	loadFX = Mix_LoadWAV("Assets/Audio/Fx/Success 1 (subtle).wav");
+	backgroundMusic = Mix_LoadMUS("Assets/Audio/Fx/Ambient Music.wav");
+	Mix_PlayMusic(backgroundMusic, -1);
 	return true;
 }
 
@@ -67,8 +73,14 @@ bool Scene::Update(float dt)
 		else help = true;
 	}
 
-	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_F5) == KEY_DOWN) SaveState();
-	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_F6) == KEY_DOWN) LoadState();
+	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_F5) == KEY_DOWN) {
+		SaveState();
+		Mix_PlayChannel(2, saveFX, 0);
+	}
+	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_F6) == KEY_DOWN) {
+		LoadState();
+		Mix_PlayChannel(2, loadFX, 0);
+	}
 
 	if (help) Engine::GetInstance().render.get()->DrawTexture(helptex, 150, -45);
 	
@@ -80,6 +92,16 @@ bool Scene::Update(float dt)
 	int max = (315 * Engine::GetInstance().map.get()->GetTileSize());
 	if (Engine::GetInstance().render.get()->camera.x <= -max)
 		Engine::GetInstance().render.get()->camera.x = -max;
+
+	if (player->state == Player_State::DIE) {
+		Mix_PauseMusic();
+		respawn = true;
+	}
+
+	if (respawn and player->state != Player_State::DIE) {
+		respawn = false;
+		Mix_ResumeMusic();
+	}
 
 	return true;
 }

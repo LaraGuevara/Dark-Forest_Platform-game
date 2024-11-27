@@ -2,6 +2,7 @@
 
 #include "Entity.h"
 #include "SDL2/SDL.h"
+#include <SDL2/SDL_mixer.h>
 #include "Box2D/Box2D.h"
 #include "Animation.h"
 
@@ -80,4 +81,9 @@ public:
 	Vector2D checkpoint;
 
 	bool godMode;
+
+	Mix_Chunk* runFX;
+	Mix_Chunk* jumpStartFX;
+	Mix_Chunk* jumpEndFX;
+	Mix_Chunk* gameOverFX;
 };

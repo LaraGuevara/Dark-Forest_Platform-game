@@ -3,6 +3,8 @@
 #include "Module.h"
 #include "Player.h"
 #include "Enemy.h"
+#include <SDL2/SDL_mixer.h>
+
 
 struct SDL_Texture;
 
@@ -48,4 +50,9 @@ private:
 	Player* player;
 	std::vector<Enemy*> enemyList;
 	bool help = false;
+	bool respawn = false;
+
+	Mix_Chunk* loadFX;
+	Mix_Chunk* saveFX;
+	Mix_Music* backgroundMusic;
 };

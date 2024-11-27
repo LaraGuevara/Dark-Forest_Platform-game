@@ -15,7 +15,7 @@
 		<fullscreen_window value="false" />
 	</window>
 	<save>
-		<player x="768" y="240" />
+		<player x="1533" y="144" />
 	</save>
 	<scene>
 		<map path="Assets/Maps/" name="newnocandymap.tmx" />
