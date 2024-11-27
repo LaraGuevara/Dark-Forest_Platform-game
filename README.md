@@ -23,6 +23,7 @@
   * [Fantasy Sound Effects by ivyism](https://ivyism.itch.io/fantasy-pack)
   * [Fantasy UI Sound Effects by Atelier Magicae](https://ateliermagicae.itch.io/fantasy-ui-sound-effects)
   * [Free Ambient Music (Loop) by Mayra](https://mayragandra.itch.io/freeambientmusic)
+  * [Free Fantasy 200 SFX Pack by TomMusic](https://tommusic.itch.io/free-fantasy-200-sfx-pack)
 
 ## GAME
 ---
