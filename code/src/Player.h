@@ -45,6 +45,8 @@ public:
 
 	Vector2D GetPosition();
 
+	void SetPosition(Vector2D pos);
+
 public:
 
 	bool respawn;

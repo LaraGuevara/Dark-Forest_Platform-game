@@ -67,9 +67,10 @@ bool Scene::Update(float dt)
 		else help = true;
 	}
 
-	if (help) {
-		Engine::GetInstance().render.get()->DrawTexture(helptex, 150, -45);
-	}
+	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_F5) == KEY_DOWN) SaveState();
+	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_F6) == KEY_DOWN) LoadState();
+
+	if (help) Engine::GetInstance().render.get()->DrawTexture(helptex, 150, -45);
 	
 	Engine::GetInstance().render.get()->camera.x = ((player->GetXPos() * -1) + 200) *2;
 
@@ -108,6 +109,31 @@ bool Scene::CleanUp()
 Vector2D Scene::GetPlayerPosition()
 {
 	return player->GetPosition();
+}
+
+void Scene::LoadState() {
+	pugi::xml_document loadFile;
+	pugi::xml_parse_result result = loadFile.load_file("config.xml");
+
+	if (result == NULL) LOG("Error loading config.xml: %s", result.description());
+
+	Vector2D playerPos;
+	playerPos.setX(loadFile.child("config").child("save").child("player").attribute("x").as_int());
+	playerPos.setY(loadFile.child("config").child("save").child("player").attribute("y").as_int());
+	player->SetPosition(playerPos);
+}
+
+void Scene::SaveState() {
+	pugi::xml_document saveFile;
+	pugi::xml_parse_result result = saveFile.load_file("config.xml");
+
+	if (result == NULL) LOG("Error loading config.xml: %s", result.description());
+	
+	Vector2D playerPos = player->GetPosition();
+	saveFile.child("config").child("save").child("player").attribute("x").set_value(playerPos.getX());
+	saveFile.child("config").child("save").child("player").attribute("y").set_value(playerPos.getY());
+
+	saveFile.save_file("config.xml");
 }
 
 

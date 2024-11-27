@@ -1,96 +1,96 @@
-<!-- Config file for the engine -->
+<?xml version="1.0"?>
 <config>
-  <engine>
-    <title>My platformer game</title>
-    <maxFrameDuration value="16"/>
-  </engine>
-
-  <render>
-    <vsync value="false"/>
-  </render>
-
-  <window>
-    <resolution width="1280" height="640" scale="2"/>
-    <fullscreen value="false"/>
-    <borderless value="false"/>
-    <resizable value="false"/>
-    <fullscreen_window value="false"/>
-  </window>
-  
-  <scene>
-    <map path="Assets/Maps/" name="newnocandymap.tmx"/>
-    <entities>
-      <player x="100" y="0" w="32" h ="48" texture="Assets/Textures/player/witch.png">
-        <animations>
-          <idle loop="true" speed ="0.075">
-			  <frame x="0" y="0" w="32" h="48"/>
-			  <frame x="32" y="0" w="32" h="48"/>
-			  <frame x="64" y="0" w="32" h="48"/>
-			  <frame x="96" y="0" w="32" h="48"/>
-			  <frame x="128" y="0" w="32" h="48"/>
-			  <frame x="160" y="0" w="32" h="48"/>
-          </idle>
-		  <walking loop="true" speed ="0.1">
-			  <frame x="0" y="48" w="32" h="48"/>
-			  <frame x="32" y="48" w="32" h="48"/>
-			  <frame x="64" y="48" w="32" h="48"/>
-			  <frame x="96" y="48" w="32" h="48"/>
-			  <frame x="128" y="48" w="32" h="48"/>
-			  <frame x="160" y="48" w="32" h="48"/>
-			  <frame x="192" y="48" w="32" h="48"/>
-			  <frame x="224" y="48" w="32" h="48"/>
-          </walking>
-		  <attack loop="false" speed ="0.075">
-				<frame x="0" y="96" w="48" h="48"/>
-				<frame x="48" y="96" w="48" h="48"/>
-				<frame x="96" y="96" w="48" h="48"/>
-			    <frame x="144" y="96" w="48" h="48"/>
-			    <frame x="192" y="96" w="48" h="48"/>
-			</attack>
-		  <jumping loop="false" speed ="0.2">
-            <frame x="0" y="144" w="32" h="48"/>
-            <frame x="32" y="144" w="32" h="48"/>
-            <frame x="64" y="144" w="32" h="48"/>
-            <frame x="96" y="144" w="32" h="48"/>
-            <frame x="128" y="144" w="32" h="48"/>
-            <frame x="160" y="144" w="32" h="48"/>
-            <frame x="192" y="144" w="32" h="48"/>
-			<frame x="224" y="144" w="32" h="48"/>
-			<frame x="256" y="144" w="32" h="48"/>
-          </jumping>
-			<damage loop="false" speed ="0.075">
-				<frame x="0" y="192" w="32" h="48"/>
-				<frame x="32" y="192" w="32" h="48"/>
-				<frame x="64" y="192" w="32" h="48"/>
-			</damage>
-                 <death loop="false" speed ="0.075">
-            <frame x="0" y="240" w="32" h="48"/>
-            <frame x="32" y="240" w="32" h="48"/>
-            <frame x="64" y="240" w="32" h="48"/>
-            <frame x="96" y="240" w="32" h="48"/>
-            <frame x="128" y="240" w="32" h="48"/>
-            <frame x="160" y="240" w="32" h="48"/>
-            <frame x="192" y="240" w="32" h="48"/>
-            <frame x="224" y="240" w="32" h="48"/>
-			<frame x="256" y="240" w="32" h="48"/>
-			<frame x="288" y="240" w="32" h="48"/>
-			<frame x="320" y="240" w="32" h="48"/>
-			<frame x="352" y="240" w="32" h="48"/>
-          </death>
-        </animations>
-      </player>
-      <enemies>
-        <enemy name="badguy" x="300" y="160" w="32" h="32" texture="Assets/Textures/enemies/walking_enemy.png" gravity="true">
-          <animations>
-            <idle loop="true" speed ="0.5">
-              <frame x="0" y="0" w="32" h="32"/>
-              <frame x="32" y="0" w="32" h="32"/>
-              <frame x="64" y="0" w="32" h="32"/>
-              <frame x="96" y="0" w="32" h="32"/>
-            </idle>
-          </animations>
-          </enemy>
-      </enemies>
-    </entities>
-  </scene>
+	<engine>
+		<title>My platformer game</title>
+		<maxFrameDuration value="16" />
+	</engine>
+	<render>
+		<vsync value="false" />
+	</render>
+	<window>
+		<resolution width="1280" height="640" scale="2" />
+		<fullscreen value="false" />
+		<borderless value="false" />
+		<resizable value="false" />
+		<fullscreen_window value="false" />
+	</window>
+	<save>
+		<player x="768" y="240" />
+	</save>
+	<scene>
+		<map path="Assets/Maps/" name="newnocandymap.tmx" />
+		<entities>
+			<player x="100" y="0" w="32" h="48" texture="Assets/Textures/player/witch.png">
+				<animations>
+					<idle loop="true" speed="0.075">
+						<frame x="0" y="0" w="32" h="48" />
+						<frame x="32" y="0" w="32" h="48" />
+						<frame x="64" y="0" w="32" h="48" />
+						<frame x="96" y="0" w="32" h="48" />
+						<frame x="128" y="0" w="32" h="48" />
+						<frame x="160" y="0" w="32" h="48" />
+					</idle>
+					<walking loop="true" speed="0.1">
+						<frame x="0" y="48" w="32" h="48" />
+						<frame x="32" y="48" w="32" h="48" />
+						<frame x="64" y="48" w="32" h="48" />
+						<frame x="96" y="48" w="32" h="48" />
+						<frame x="128" y="48" w="32" h="48" />
+						<frame x="160" y="48" w="32" h="48" />
+						<frame x="192" y="48" w="32" h="48" />
+						<frame x="224" y="48" w="32" h="48" />
+					</walking>
+					<attack loop="false" speed="0.075">
+						<frame x="0" y="96" w="48" h="48" />
+						<frame x="48" y="96" w="48" h="48" />
+						<frame x="96" y="96" w="48" h="48" />
+						<frame x="144" y="96" w="48" h="48" />
+						<frame x="192" y="96" w="48" h="48" />
+					</attack>
+					<jumping loop="false" speed="0.2">
+						<frame x="0" y="144" w="32" h="48" />
+						<frame x="32" y="144" w="32" h="48" />
+						<frame x="64" y="144" w="32" h="48" />
+						<frame x="96" y="144" w="32" h="48" />
+						<frame x="128" y="144" w="32" h="48" />
+						<frame x="160" y="144" w="32" h="48" />
+						<frame x="192" y="144" w="32" h="48" />
+						<frame x="224" y="144" w="32" h="48" />
+						<frame x="256" y="144" w="32" h="48" />
+					</jumping>
+					<damage loop="false" speed="0.075">
+						<frame x="0" y="192" w="32" h="48" />
+						<frame x="32" y="192" w="32" h="48" />
+						<frame x="64" y="192" w="32" h="48" />
+					</damage>
+					<death loop="false" speed="0.075">
+						<frame x="0" y="240" w="32" h="48" />
+						<frame x="32" y="240" w="32" h="48" />
+						<frame x="64" y="240" w="32" h="48" />
+						<frame x="96" y="240" w="32" h="48" />
+						<frame x="128" y="240" w="32" h="48" />
+						<frame x="160" y="240" w="32" h="48" />
+						<frame x="192" y="240" w="32" h="48" />
+						<frame x="224" y="240" w="32" h="48" />
+						<frame x="256" y="240" w="32" h="48" />
+						<frame x="288" y="240" w="32" h="48" />
+						<frame x="320" y="240" w="32" h="48" />
+						<frame x="352" y="240" w="32" h="48" />
+					</death>
+				</animations>
+			</player>
+			<enemies>
+				<enemy name="badguy" x="300" y="160" w="32" h="32" texture="Assets/Textures/enemies/walking_enemy.png" gravity="true">
+					<animations>
+						<idle loop="true" speed="0.5">
+							<frame x="0" y="0" w="32" h="32" />
+							<frame x="32" y="0" w="32" h="32" />
+							<frame x="64" y="0" w="32" h="32" />
+							<frame x="96" y="0" w="32" h="32" />
+						</idle>
+					</animations>
+				</enemy>
+			</enemies>
+		</entities>
+	</scene>
 </config>

@@ -36,6 +36,10 @@ public:
 	// Return the player position
 	Vector2D GetPlayerPosition();
 
+	void LoadState();
+
+	void SaveState();
+
 private:
 	SDL_Texture* img;
 	SDL_Texture* helptex;
