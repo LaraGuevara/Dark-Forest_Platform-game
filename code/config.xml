@@ -15,7 +15,10 @@
 		<fullscreen_window value="false" />
 	</window>
 	<save>
-		<player x="862" y="191" />
+		<player x="848" y="191" />
+		<enemies>
+			<enemy name="walkingEnemy1" x="444" y="239" />
+		</enemies>
 	</save>
 	<scene>
 		<map path="Assets/Maps/" name="newnocandymap.tmx" />
@@ -80,7 +83,7 @@
 				</animations>
 			</player>
 			<enemies>
-				<enemy name="badguy" x="300" y="160" w="32" h="32" texture="Assets/Textures/enemies/walking_enemy.png" gravity="true">
+				<enemy name="walkingEnemy1" x="300" y="160" w="32" h="32" texture="Assets/Textures/enemies/walking_enemy.png" gravity="true">
 					<animations>
 						<idle loop="true" speed="0.5">
 							<frame x="0" y="0" w="32" h="32" />
