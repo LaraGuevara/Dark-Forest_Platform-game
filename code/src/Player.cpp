@@ -188,7 +188,7 @@ bool Player::Update(float dt)
 		position.setY(METERS_TO_PIXELS(pbodyPos.p.y) - texH / 2);
 
 		if (!godMode) {
-			if (position.getY() >= 282) {
+			if (position.getY() >= 282 or enemyDeath == true) {
 				Mix_PlayChannel(2, gameOverFX, 0);
 				pbody->body->SetType(b2_kinematicBody);
 				isJumping = false;
@@ -210,6 +210,7 @@ bool Player::Update(float dt)
 				pbody->body->SetTransform({ checkpoint.getX() / (checkpoint.getX() / 2), checkpoint.getY() }, pbody->body->GetAngle());
 				respawn = true;
 				isDying = false;
+				enemyDeath = false;
 				state = Player_State::IDLE;
 				look = Player_Look::RIGHT;
 				currentAnimation = &idle;
@@ -252,6 +253,10 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 		break;
 	case ColliderType::ITEM:
 		LOG("Collision ITEM");
+		break;
+	case ColliderType::ENEMY:
+		LOG("Collision ENEMY");
+		enemyDeath = true;
 		break;
 	case ColliderType::UNKNOWN:
 		LOG("Collision UNKNOWN");

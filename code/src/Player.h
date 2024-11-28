@@ -84,6 +84,7 @@ public:
 	Vector2D checkpoint;
 
 	bool godMode;
+	bool enemyDeath = false;
 
 	Mix_Chunk* runFX;
 	Mix_Chunk* jumpStartFX;

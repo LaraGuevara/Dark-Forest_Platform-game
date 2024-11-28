@@ -15,7 +15,7 @@
 		<fullscreen_window value="false" />
 	</window>
 	<save>
-		<player x="798" y="240" />
+		<player x="771" y="240" />
 	</save>
 	<scene>
 		<map path="Assets/Maps/" name="newnocandymap.tmx" />
@@ -88,6 +88,12 @@
 							<frame x="64" y="0" w="32" h="32" />
 							<frame x="96" y="0" w="32" h="32" />
 						</idle>
+						<death loop="false" speed="0.5">
+						    <frame x="0" y="128" w="32" h="32" />
+							<frame x="32" y="128" w="32" h="32" />
+							<frame x="64" y="128" w="32" h="32" />
+							<frame x="96" y="128" w="32" h="32" />
+						</death>
 					</animations>
 				</enemy>
 			</enemies>

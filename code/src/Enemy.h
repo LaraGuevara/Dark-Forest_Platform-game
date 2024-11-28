@@ -7,6 +7,11 @@
 
 struct SDL_Texture;
 
+enum EnemyState {
+	ALIVE,
+	DEAD
+};
+
 enum EnemyType {
 	FLYING,
 	WALKING
@@ -37,7 +42,13 @@ public:
 
 	void ResetPath();
 
+	void OnCollision(PhysBody* physA, PhysBody* physB);
+
+	void OnCollisionEnd(PhysBody* physA, PhysBody* physB);
+
 public:
+	EnemyState state = EnemyState::ALIVE;
+	PhysBody* pbody;
 
 private:
 
@@ -48,6 +59,9 @@ private:
 	pugi::xml_node parameters;
 	Animation* currentAnimation = nullptr;
 	Animation idle;
-	PhysBody* pbody;
+	Animation death;
+
+	bool isDying = false;
+	bool deathAttack = false;
 	Pathfinding* pathfinding;
 };

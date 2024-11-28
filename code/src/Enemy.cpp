@@ -33,6 +33,7 @@ bool Enemy::Start() {
 
 	//Load animations
 	idle.LoadAnimations(parameters.child("animations").child("idle"));
+	death.LoadAnimations(parameters.child("animations").child("death"));
 	currentAnimation = &idle;
 	
 	//Add a physics to an item - initialize the physics body
@@ -40,6 +41,7 @@ bool Enemy::Start() {
 
 	//Assign collider type
 	pbody->ctype = ColliderType::ENEMY;
+	pbody->listener = this;
 
 	// Set the enemy type
 	if (parameters.attribute("type").as_string() == "flying") type = EnemyType::FLYING;
@@ -58,10 +60,23 @@ bool Enemy::Start() {
 bool Enemy::Update(float dt)
 {
 	// Pathfinding testing inputs
-	if (pathfinding->PropagateAStar(MANHATTAN)) {
+	if (deathAttack and isDying == false){
+		isDying = true;
+		//pbody->body->SetType(b2_kinematicBody);
+		death.Reset();
+		currentAnimation = &death;
+	}
+	else if (isDying){
+		if (death.HasFinished()) state = EnemyState::DEAD;
+	}
+	else if (pathfinding->PropagateAStar(MANHATTAN)) {
 		Vector2D pos = GetPosition();
 		Vector2D tilePos = Engine::GetInstance().map.get()->WorldToMap(pos.getX(), pos.getY());
 		pathfinding->ResetPath(tilePos);
+
+		if (Engine::GetInstance().physics.get()->getDebug()) {
+			pathfinding->DrawPath();
+		}
 	}
 
 	/*if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_R) == KEY_DOWN) {
@@ -97,9 +112,6 @@ bool Enemy::Update(float dt)
 	currentAnimation->Update();
 
 	// Draw pathfinding 
-	if (Engine::GetInstance().physics.get()->getDebug()) {
-		pathfinding->DrawPath();
-	}
 
 	return true;
 }
@@ -126,4 +138,28 @@ void Enemy::ResetPath() {
 	Vector2D pos = GetPosition();
 	Vector2D tilePos = Engine::GetInstance().map.get()->WorldToMap(pos.getX(), pos.getY());
 	pathfinding->ResetPath(tilePos);
+}
+
+void Enemy::OnCollision(PhysBody* physA, PhysBody* physB) {
+
+	switch (physB->ctype)
+	{
+	case ColliderType::ATTACK:
+		deathAttack = true;
+		//state = EnemyState::DEAD;
+		break;
+	default:
+		break;
+	}
+}
+
+void Enemy::OnCollisionEnd(PhysBody* physA, PhysBody* physB)
+{
+	switch (physB->ctype)
+	{
+	case ColliderType::ATTACK:
+		break;
+	default:
+		break;
+	}
 }

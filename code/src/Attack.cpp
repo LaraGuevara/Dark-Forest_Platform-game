@@ -33,9 +33,6 @@ bool Attack::Start() {
 	
 	animation.LoadAnimations(loadFile.child("config").child("scene").child("entities").child("attack").child("animation").child("idle"));
 	currentAnimation = &animation;
-
-	texH = 32;
-	texW = 32;
 	
 	// L08 TODO 4: Add a physics to an item - initialize the physics body
 	//Engine::GetInstance().textures.get()->GetSize(texture, texW, texH);
@@ -56,14 +53,15 @@ bool Attack::Start() {
 bool Attack::Update(float dt)
 {
 	// L08 TODO 4: Add a physics to an item - update the position of the object from the physics.  
-	pbody->body->SetLinearVelocity(velocity);
-	b2Transform pbodyPos = pbody->body->GetTransform();
-	position.setX(METERS_TO_PIXELS(pbodyPos.p.x) - texH / 2);
-	position.setY(METERS_TO_PIXELS(pbodyPos.p.y) - texH / 2);
-
-	Engine::GetInstance().render.get()->DrawTexture(texture, (int)position.getX() + texW / 4, (int)position.getY() - texH / 6, &currentAnimation->GetCurrentFrame(), flip);
-	currentAnimation->Update();
-
+	if (!collision) {
+		pbody->body->SetLinearVelocity(velocity);
+		b2Transform pbodyPos = pbody->body->GetTransform();
+		position.setX(METERS_TO_PIXELS(pbodyPos.p.x) - texH / 2);
+		position.setY(METERS_TO_PIXELS(pbodyPos.p.y) - texH / 2);
+		Engine::GetInstance().render.get()->DrawTexture(texture, (int)position.getX() + texW / 4, (int)position.getY() - texH / 6, &currentAnimation->GetCurrentFrame(), flip);
+		currentAnimation->Update();
+	}
+	
 	return true;
 }
 

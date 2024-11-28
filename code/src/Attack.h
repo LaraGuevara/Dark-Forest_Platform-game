@@ -38,7 +38,8 @@ public:
 private:
 
 	SDL_Texture* texture;
-	int texW, texH;
+	int texH = 32;
+	int texW = 32;
 
 	//L08 TODO 4: Add a physics to an item
 

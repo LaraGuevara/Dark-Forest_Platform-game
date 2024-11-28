@@ -104,6 +104,15 @@ bool Scene::Update(float dt)
 		}
 	}
 
+	for (int i = 0; i < enemyList.size(); i++) {
+		if (enemyList[i]->state == EnemyState::DEAD) {
+			Engine::GetInstance().physics.get()->DeleteBody(enemyList[i]->pbody->body);
+			Engine::GetInstance().entityManager->DestroyEntity(enemyList[i]);
+			attackList.erase(attackList.begin() + i);
+			i--;
+		}
+	}
+
 	if (help) Engine::GetInstance().render.get()->DrawTexture(helptex, 150, -45);
 	
 	Engine::GetInstance().render.get()->camera.x = ((player->GetXPos() * -1) + 200) *2;
