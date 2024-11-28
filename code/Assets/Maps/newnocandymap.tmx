@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="200" height="20" tilewidth="16" tileheight="16" infinite="0" nextlayerid="12" nextobjectid="57">
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="200" height="20" tilewidth="16" tileheight="16" infinite="0" nextlayerid="12" nextobjectid="58">
  <tileset firstgid="1" name="MapMetadata" tilewidth="16" tileheight="16" tilecount="2" columns="2">
   <image source="MapMetadata.png" width="32" height="16"/>
  </tileset>
@@ -24063,6 +24063,7 @@
  </layer>
  <layer id="7" name="Collisions" width="200" height="20">
   <properties>
+   <property name="Collisions" type="bool" value="true"/>
    <property name="Draw" type="bool" value="false"/>
   </properties>
   <data>
@@ -24768,6 +24769,7 @@
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="2"/>
    <tile/>
    <tile/>
    <tile/>
@@ -25212,6 +25214,7 @@
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="2"/>
    <tile/>
    <tile/>
    <tile/>
@@ -26317,9 +26320,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="2"/>
    <tile/>
    <tile/>
    <tile/>
@@ -32104,5 +32105,6 @@
   <object id="52" x="1521" y="161.5" width="223" height="47.1667"/>
   <object id="53" x="1569" y="113.5" width="175.333" height="46.5"/>
   <object id="54" x="1616.33" y="66.5" width="126.5" height="47.5"/>
+  <object id="57" x="-6.66667" y="0.333333" width="3206.83" height="3.66667"/>
  </objectgroup>
 </map>

@@ -258,6 +258,17 @@ MapLayer* Map::GetNavigationLayer() {
     return nullptr;
 }
 
+MapLayer* Map::GetCollisionLayer() {
+    for (const auto& layer : mapData.layers) {
+        if (layer->properties.GetProperty("Collisions") != NULL &&
+            layer->properties.GetProperty("Collisions")->value) {
+            return layer;
+        }
+    }
+
+    return nullptr;
+}
+
 
 Properties::Property* Properties::GetProperty(const char* name)
 {

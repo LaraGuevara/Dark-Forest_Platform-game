@@ -44,6 +44,11 @@ public:
 	void SaveState();
 
 private:
+	Map* map;
+	MapLayer* layerCol;
+
+	int checkpointGid = 2;
+
 	SDL_Texture* img;
 	SDL_Texture* helptex;
 

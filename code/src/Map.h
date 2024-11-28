@@ -140,6 +140,8 @@ public:
 
     MapLayer* GetNavigationLayer();
 
+    MapLayer* GetCollisionLayer();
+
 public: 
     std::string mapFileName;
     std::string mapPath;

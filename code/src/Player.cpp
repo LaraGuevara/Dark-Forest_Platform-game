@@ -119,7 +119,7 @@ bool Player::Update(float dt)
 		}
 
 		//Jump
-		if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN && isJumping == false) {
+		if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN && isJumping == false && godMode == false) {
 			// Apply an initial upward force
 			Mix_PlayChannel(1, jumpStartFX, 0);
 			pbody->body->ApplyLinearImpulseToCenter(b2Vec2(0, -jumpForce), true);
@@ -207,7 +207,8 @@ bool Player::Update(float dt)
 				pbody->body->SetType(b2_dynamicBody);
 				pbody->body->SetAwake(true);
 				b2Transform pbodyPos = pbody->body->GetTransform();
-				pbody->body->SetTransform({ checkpoint.getX() / (checkpoint.getX() / 2), checkpoint.getY() }, pbody->body->GetAngle());
+				/*if (checkpointDone) pbody->body->SetTransform({ checkpoint.getX() / (checkpoint.getX() / 2), checkpoint.getY() }, pbody->body->GetAngle());*/
+				SetPosition(checkpoint);
 				respawn = true;
 				isDying = false;
 				enemyDeath = false;

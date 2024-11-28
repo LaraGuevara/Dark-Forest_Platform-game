@@ -47,6 +47,10 @@ public:
 
 	Vector2D GetPosition();
 
+	void SetCheckpoint(Vector2D pos) {
+		checkpoint = pos;
+	}
+
 	void SetPosition(Vector2D pos);
 
 public:
@@ -85,6 +89,7 @@ public:
 
 	bool godMode;
 	bool enemyDeath = false;
+	bool checkpointDone = false;
 
 	Mix_Chunk* runFX;
 	Mix_Chunk* jumpStartFX;
