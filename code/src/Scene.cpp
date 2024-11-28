@@ -56,7 +56,7 @@ bool Scene::Start()
 	loadFX = Mix_LoadWAV("Assets/Audio/Fx/Success 1 (subtle).wav");
 	attackFX = Mix_LoadWAV("Assets/Audio/Fx/Ice Throw 1.wav");
 	backgroundMusic = Mix_LoadMUS("Assets/Audio/Fx/Ambient Music.wav");
-	Mix_PlayMusic(backgroundMusic, -1);
+	//Mix_PlayMusic(backgroundMusic, -1);
 
 	map = Engine::GetInstance().map.get();
 	layerCol = map->GetCollisionLayer();
@@ -87,15 +87,16 @@ bool Scene::Update(float dt)
 		Mix_PlayChannel(2, loadFX, 0);
 	}
 
-	if (layerCol != nullptr) {
+	if (layerCol != nullptr and player->state != Player_State::DIE) {
 		Vector2D playerPos = player->GetPosition();
 		Vector2D playerPosTile = Engine::GetInstance().map.get()->WorldToMap((int)playerPos.getX(), (int)playerPos.getY());
 		int gid = layerCol->Get(playerPosTile.getX(), playerPosTile.getY());
-		if (gid == checkpointGid) {
+		if (gid == checkpointGid and playerPosTile != lastCheckpoint) {
+			lastCheckpoint = playerPosTile;
 			Mix_PlayChannel(2, saveFX, 0);
 			player->SetCheckpoint(playerPos);
 			SaveState();
-			LOG("CHECKPOINT");
+			LOG("CHECKPOINT (%d, %d)", (int)playerPos.getX(), (int)playerPos.getY()-2);
 		}
 	}
 

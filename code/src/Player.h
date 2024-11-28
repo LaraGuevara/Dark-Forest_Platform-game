@@ -48,6 +48,7 @@ public:
 	Vector2D GetPosition();
 
 	void SetCheckpoint(Vector2D pos) {
+		pos.setY(pos.getY() - 2);
 		checkpoint = pos;
 	}
 

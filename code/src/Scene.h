@@ -46,6 +46,7 @@ public:
 private:
 	Map* map;
 	MapLayer* layerCol;
+	Vector2D lastCheckpoint = { 0,0 };
 
 	int checkpointGid = 2;
 
