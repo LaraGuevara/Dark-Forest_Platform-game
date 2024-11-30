@@ -51,15 +51,15 @@ bool Scene::Start()
 	Engine::GetInstance().map->Load("Assets/Maps/", "newnocandymap.tmx");
 	helptex = Engine::GetInstance().textures.get()->Load("Assets/Textures/help.png");
 
+	//create checkpoints
+	checkpointList = Engine::GetInstance().map->LoadCheckpoints();
+
 	Mix_VolumeMusic(60);
 	saveFX = Mix_LoadWAV("Assets/Audio/Fx/Fantasy_UI (30).wav");
 	loadFX = Mix_LoadWAV("Assets/Audio/Fx/Success 1 (subtle).wav");
 	attackFX = Mix_LoadWAV("Assets/Audio/Fx/Ice Throw 1.wav");
 	backgroundMusic = Mix_LoadMUS("Assets/Audio/Fx/Ambient Music.wav");
 	Mix_PlayMusic(backgroundMusic, -1);
-
-	map = Engine::GetInstance().map.get();
-	layerCol = map->GetCollisionLayer();
 	
 	return true;
 }
@@ -90,17 +90,15 @@ bool Scene::Update(float dt)
 	}
 
 	//checkpoint
-	if (layerCol != nullptr and player->state != Player_State::DIE) {
-		Vector2D playerPos = player->GetPosition();
-		Vector2D playerPosTile = Engine::GetInstance().map.get()->WorldToMap((int)playerPos.getX(), (int)playerPos.getY());
-		int gid = layerCol->Get(playerPosTile.getX(), playerPosTile.getY());
-		//check if checkpoint is already active
-		if (gid == checkpointGid and playerPosTile != lastCheckpoint) {
-			lastCheckpoint = playerPosTile;
+	for (auto c : checkpointList) {
+		if (!c->deactivate and c->isActive == true and player->state != Player_State::DIE) {
+			Vector2D playerPos = player->GetPosition();
+			Vector2D playerPosTile = Engine::GetInstance().map.get()->WorldToMap((int)playerPos.getX(), (int)playerPos.getY());
 			Mix_PlayChannel(2, saveFX, 0);
 			player->SetCheckpoint(playerPos);
 			SaveState();
-			LOG("CHECKPOINT (%d, %d)", (int)playerPos.getX(), (int)playerPos.getY()-2);
+			c->deactivate = true;
+			LOG("CHECKPOINT (%d, %d)", (int)playerPos.getX(), (int)playerPos.getY() - 2);
 		}
 	}
 

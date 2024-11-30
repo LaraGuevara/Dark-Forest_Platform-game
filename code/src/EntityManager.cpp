@@ -82,6 +82,9 @@ Entity* EntityManager::CreateEntity(EntityType type)
 	case EntityType::ATTACK:
 		entity = new Attack();
 		break;
+	case EntityType::SENSOR:
+		entity = new Sensor();
+		break;
 	default:
 		break;
 	}
@@ -114,8 +117,17 @@ bool EntityManager::Update(float dt)
 	bool ret = true;
 	for(const auto entity : entities)
 	{
-		if (entity->active == false) continue;
-		ret = entity->Update(dt);
+		if (entity->type != EntityType::PLAYER and entity->type != EntityType::ENEMY) {
+			if (entity->active == false) continue;
+			ret = entity->Update(dt);
+		}
+	}
+	for (const auto entity : entities)
+	{
+		if (entity->type == EntityType::PLAYER or entity->type == EntityType::ENEMY) {
+			if (entity->active == false) continue;
+			ret = entity->Update(dt);
+		}
 	}
 	return ret;
 }

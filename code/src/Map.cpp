@@ -5,6 +5,8 @@
 #include "Map.h"
 #include "Log.h"
 #include "Physics.h"
+#include "EntityManager.h"
+#include "Sensor.h"
 
 #include <math.h>
 
@@ -260,15 +262,39 @@ MapLayer* Map::GetNavigationLayer() {
     return nullptr;
 }
 
-MapLayer* Map::GetCollisionLayer() {
+MapLayer* Map::GetCheckpointLayer() {
     for (const auto& layer : mapData.layers) {
-        if (layer->properties.GetProperty("Collisions") != NULL &&
-            layer->properties.GetProperty("Collisions")->value) {
+        if (layer->properties.GetProperty("Checkpoint") != NULL &&
+            layer->properties.GetProperty("Checkpoint")->value) {
             return layer;
         }
     }
 
     return nullptr;
+}
+
+std::vector<Sensor*> Map::LoadCheckpoints() {
+    MapLayer* checkLayer = GetCheckpointLayer();
+    std::vector<Sensor*> checkpoints;
+
+    for (int i = 0; i < checkLayer->width; i++) {
+        for (int j = 0; j < checkLayer->height; j++) {
+            //Get the gid from tile
+            int gid = checkLayer->Get(i, j);
+            //Check if the gid is a checkpoint
+            if (gid == checkpointGid) {
+                Sensor* cp = (Sensor*)Engine::GetInstance().entityManager->CreateEntity(EntityType::SENSOR);
+                cp->type = SensorType::CHECKPOINT;
+                Vector2D pos;
+                pos.setX(i);
+                pos.setY(j);
+                pos = MapToWorld(pos.getX(), pos.getY());
+                cp->position = pos;
+                checkpoints.push_back(cp);
+            }
+        }
+    }
+    return checkpoints;
 }
 
 

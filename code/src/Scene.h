@@ -4,6 +4,7 @@
 #include "Player.h"
 #include "Enemy.h"
 #include "Attack.h"
+#include "Sensor.h"
 #include <SDL2/SDL_mixer.h>
 
 
@@ -44,12 +45,6 @@ public:
 	void SaveState();
 
 private:
-	Map* map;
-	MapLayer* layerCol;
-	Vector2D lastCheckpoint = { 0,0 };
-
-	int checkpointGid = 2;
-
 	SDL_Texture* img;
 	SDL_Texture* helptex;
 
@@ -65,4 +60,5 @@ private:
 	Mix_Music* backgroundMusic;
 
 	std::vector<Attack*> attackList;
+	std::vector<Sensor*> checkpointList;
 };

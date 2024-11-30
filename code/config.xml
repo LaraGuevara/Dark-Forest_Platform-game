@@ -15,7 +15,7 @@
 		<fullscreen_window value="false" />
 	</window>
 	<save>
-		<player x="863" y="191" />
+		<player x="835" y="191" />
 		<enemies>
 			<enemy name="walkingEnemy1" x="316" y="193" />
 		</enemies>
@@ -126,6 +126,27 @@
 					</idle>
 				</animation>
 			</attack>
+			<checkpoint w="48" h="48" texture="Assets/Textures/checkpoint.png">
+				<animations>
+					<idle loop="true" speed="0">
+						<frame x="0" y="0" w="48" h="48" />
+					</idle>
+					<active loop="true" speed="0.05">
+						<frame x="144" y="48" w="48" h="48" />
+						<frame x="192" y="48" w="48" h="48" />
+						<frame x="240" y="48" w="48" h="48" />
+						<frame x="144" y="96" w="48" h="48" />
+						<frame x="192" y="96" w="48" h="48" />
+						<frame x="240" y="96" w="48" h="48" />
+						<frame x="144" y="144" w="48" h="48" />
+						<frame x="192" y="144" w="48" h="48" />
+						<frame x="240" y="144" w="48" h="48" />
+						<frame x="144" y="192" w="48" h="48" />
+						<frame x="192" y="192" w="48" h="48" />
+						<frame x="240" y="192" w="48" h="48" />
+					</active>
+				</animations>
+			</checkpoint>
 		</entities>
 	</scene>
 </config>

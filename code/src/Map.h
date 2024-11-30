@@ -2,6 +2,7 @@
 
 #include "Module.h"
 #include "Physics.h"
+#include "Sensor.h"
 #include <list>
 #include <vector>
 
@@ -140,7 +141,9 @@ public:
 
     MapLayer* GetNavigationLayer();
 
-    MapLayer* GetCollisionLayer();
+    MapLayer* GetCheckpointLayer();
+
+    std::vector<Sensor*> LoadCheckpoints();
 
 public: 
     std::string mapFileName;
@@ -151,4 +154,6 @@ private:
     // L06: DONE 1: Declare a variable data of the struct MapData
     MapData mapData;
     std::list<PhysBody*> rectangles;
+
+    int checkpointGid = 2;
 };
