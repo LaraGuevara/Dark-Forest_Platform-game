@@ -73,13 +73,13 @@ bool Enemy::Update(float dt)
 		if (death.HasFinished()) state = EnemyState::DEAD;
 	}
 	else if (pathfinding->PropagateAStar(MANHATTAN)) {
-		Vector2D pos = GetPosition();
+		/*Vector2D pos = GetPosition();
 		Vector2D tilePos = Engine::GetInstance().map.get()->WorldToMap(pos.getX(), pos.getY());
 		pathfinding->ResetPath(tilePos);
 
 		if (Engine::GetInstance().physics.get()->getDebug()) {
 			pathfinding->DrawPath();
-		}
+		}*/
 	}
 
 	/*if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_R) == KEY_DOWN) {

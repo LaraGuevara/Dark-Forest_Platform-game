@@ -15,9 +15,9 @@
 		<fullscreen_window value="false" />
 	</window>
 	<save>
-		<player x="848" y="191" />
+		<player x="863" y="191" />
 		<enemies>
-			<enemy name="walkingEnemy1" x="444" y="239" />
+			<enemy name="walkingEnemy1" x="316" y="193" />
 		</enemies>
 	</save>
 	<scene>

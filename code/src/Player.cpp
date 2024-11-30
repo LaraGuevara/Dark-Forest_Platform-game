@@ -71,6 +71,7 @@ bool Player::Update(float dt)
 	if(isDying) velocity.y = 0;
 	isMoving = false;
 
+	// turn god mode on/off
 	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_F10) == KEY_DOWN) {
 		if (godMode) {
 			godMode = false;
@@ -83,11 +84,13 @@ bool Player::Update(float dt)
 		}
 	}
 
+	//check if player is attacking and set animation
 	if (isAttacking and state != Player_State::ATTACK) {
 		state = Player_State::ATTACK;
 		currentAnimation = &attack;
 	}
 
+	// reset attack
 	if (state == Player_State::ATTACK) {
 		if (attack.HasFinished()) {
 			isAttacking = false;
@@ -126,13 +129,16 @@ bool Player::Update(float dt)
 			isJumping = true;
 		}
 
+		//god mode movement
 		if (godMode) {
 			bool moving = false;
+			//move up
 			if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_W) == KEY_REPEAT) {
 				velocity.y = -0.2 * dt;
 				moving = true;
 			}
 
+			//move down
 			if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_S) == KEY_REPEAT) {
 				velocity.y = 0.2 * dt;
 				moving = true;
@@ -149,7 +155,9 @@ bool Player::Update(float dt)
 			velocity = pbody->body->GetLinearVelocity();
 		}
 
-		if (isMoving && state != Player_State::DIE and state != Player_State::ATTACK) {
+
+		//change animation and state
+		if (isMoving and state != Player_State::DIE and state != Player_State::ATTACK) {
 			if (state != Player_State::WALK) {
 				state = Player_State::WALK;
 				currentAnimation = &walking;
@@ -187,8 +195,9 @@ bool Player::Update(float dt)
 		position.setX(METERS_TO_PIXELS(pbodyPos.p.x) - texH / 2);
 		position.setY(METERS_TO_PIXELS(pbodyPos.p.y) - texH / 2);
 
+		//check if player has died
 		if (!godMode) {
-			if (position.getY() >= 282 or enemyDeath == true) {
+			if (playerDeath == true) {
 				Mix_PlayChannel(2, gameOverFX, 0);
 				pbody->body->SetType(b2_kinematicBody);
 				isJumping = false;
@@ -200,6 +209,7 @@ bool Player::Update(float dt)
 		}
 	}
 
+	//reset death
 	if (state == Player_State::DIE) {
 		pbody->body->SetLinearVelocity(velocity);
 		if (isDying) {
@@ -207,11 +217,10 @@ bool Player::Update(float dt)
 				pbody->body->SetType(b2_dynamicBody);
 				pbody->body->SetAwake(true);
 				b2Transform pbodyPos = pbody->body->GetTransform();
-				/*if (checkpointDone) pbody->body->SetTransform({ checkpoint.getX() / (checkpoint.getX() / 2), checkpoint.getY() }, pbody->body->GetAngle());*/
 				SetPosition(checkpoint);
 				respawn = true;
 				isDying = false;
-				enemyDeath = false;
+				playerDeath = false;
 				state = Player_State::IDLE;
 				look = Player_Look::RIGHT;
 				currentAnimation = &idle;
@@ -220,8 +229,10 @@ bool Player::Update(float dt)
 		}
 	}
 
+	//run soundfx
 	if (state == Player_State::WALK and Mix_Playing(1) == 0) Mix_PlayChannel(1, runFX, 0);
 
+	//render
 	if(state == Player_State::ATTACK) Engine::GetInstance().render.get()->DrawTexture(texture, (int)position.getX() + texW / 10, (int)position.getY() - texH / 6, &currentAnimation->GetCurrentFrame(), flip);
 	else Engine::GetInstance().render.get()->DrawTexture(texture, (int)position.getX() + texW / 4, (int)position.getY() - texH / 6, &currentAnimation->GetCurrentFrame(), flip);
 	currentAnimation->Update();
@@ -257,13 +268,17 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 		break;
 	case ColliderType::ENEMY:
 		LOG("Collision ENEMY");
-		if(!godMode) enemyDeath = true;
+		if(!godMode) playerDeath = true;
 		break;
 	case ColliderType::UNKNOWN:
 		LOG("Collision UNKNOWN");
 		break;
 	case ColliderType::SENSOR:
 		LOG("Collision SENSOR");
+		break;
+	case ColliderType::DEATH:
+		LOG("Collision DEATH");
+		if (!godMode) playerDeath = true;
 		break;
 	default:
 		break;

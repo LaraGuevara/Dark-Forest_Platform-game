@@ -170,7 +170,9 @@ bool Map::Load(std::string path, std::string fileName)
                 int width = tileNode.attribute("width").as_int();
                 int height = tileNode.attribute("height").as_int();
                 PhysBody* c1 = Engine::GetInstance().physics.get()->CreateRectangle(tileNode.attribute("x").as_int() + width/2, tileNode.attribute("y").as_int() + height/2, width, height, STATIC);
-                c1->ctype = ColliderType::PLATFORM;
+                if (tileNode.child("properties") != NULL and tileNode.child("properties").child("property").attribute("value").as_bool() == true) {
+                    c1->ctype = ColliderType::DEATH;
+                } else c1->ctype = ColliderType::PLATFORM;
                 rectangles.push_back(c1);
             }
         }

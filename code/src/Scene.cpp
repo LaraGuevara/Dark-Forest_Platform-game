@@ -56,7 +56,7 @@ bool Scene::Start()
 	loadFX = Mix_LoadWAV("Assets/Audio/Fx/Success 1 (subtle).wav");
 	attackFX = Mix_LoadWAV("Assets/Audio/Fx/Ice Throw 1.wav");
 	backgroundMusic = Mix_LoadMUS("Assets/Audio/Fx/Ambient Music.wav");
-	//Mix_PlayMusic(backgroundMusic, -1);
+	Mix_PlayMusic(backgroundMusic, -1);
 
 	map = Engine::GetInstance().map.get();
 	layerCol = map->GetCollisionLayer();
@@ -73,11 +73,13 @@ bool Scene::PreUpdate()
 // Called each loop iteration
 bool Scene::Update(float dt)
 {
+	//help menu
 	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_H) == KEY_DOWN) {
 		if (help) help = false;
 		else help = true;
 	}
 
+	//load and save
 	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_F5) == KEY_DOWN) {
 		SaveState();
 		Mix_PlayChannel(2, saveFX, 0);
@@ -87,10 +89,12 @@ bool Scene::Update(float dt)
 		Mix_PlayChannel(2, loadFX, 0);
 	}
 
+	//checkpoint
 	if (layerCol != nullptr and player->state != Player_State::DIE) {
 		Vector2D playerPos = player->GetPosition();
 		Vector2D playerPosTile = Engine::GetInstance().map.get()->WorldToMap((int)playerPos.getX(), (int)playerPos.getY());
 		int gid = layerCol->Get(playerPosTile.getX(), playerPosTile.getY());
+		//check if checkpoint is already active
 		if (gid == checkpointGid and playerPosTile != lastCheckpoint) {
 			lastCheckpoint = playerPosTile;
 			Mix_PlayChannel(2, saveFX, 0);
@@ -100,6 +104,7 @@ bool Scene::Update(float dt)
 		}
 	}
 
+	//attack creation
 	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_Q) == KEY_DOWN) {
 		Mix_PlayChannel(2, attackFX, 0);
 		player->isAttacking = true;
@@ -112,6 +117,7 @@ bool Scene::Update(float dt)
 		attackList.push_back(attack);
 	}
 
+	//check and delete finished attack effects
 	for (int i = 0; i < attackList.size(); i++) {
 		if (attackList[i]->collision) {
 			Engine::GetInstance().physics.get()->DeleteBody(attackList[i]->pbody->body);
@@ -121,6 +127,7 @@ bool Scene::Update(float dt)
 		}
 	}
 
+	//check and delete dead enemies
 	for (int i = 0; i < enemyList.size(); i++) {
 		if (enemyList[i]->state == EnemyState::DEAD) {
 			Engine::GetInstance().physics.get()->DeleteBody(enemyList[i]->pbody->body);
@@ -188,11 +195,13 @@ void Scene::LoadState() {
 
 	if (result == NULL) LOG("Error loading config.xml: %s", result.description());
 
+	//load player position
 	Vector2D playerPos;
 	playerPos.setX(loadFile.child("config").child("save").child("player").attribute("x").as_int());
 	playerPos.setY(loadFile.child("config").child("save").child("player").attribute("y").as_int());
 	player->SetPosition(playerPos);
 
+	//load alive enemies (deleting alive ones)
 	for (int i = 0; i < enemyList.size(); i++) {
 		bool alive = false;
 		std::string enemyName = enemyList[i]->name;
@@ -222,10 +231,12 @@ void Scene::SaveState() {
 
 	if (result == NULL) LOG("Error loading config.xml: %s", result.description());
 	
+	//save player postion
 	Vector2D playerPos = player->GetPosition();
 	saveFile.child("config").child("save").child("player").attribute("x").set_value(playerPos.getX());
 	saveFile.child("config").child("save").child("player").attribute("y").set_value(playerPos.getY());
 
+	//save alive enemies and their postions
 	pugi::xml_node enemiesNode = saveFile.child("config").child("save").child("enemies");
 	Vector2D enemyPos;
 	while (enemiesNode.remove_child("enemy"));
