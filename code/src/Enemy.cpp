@@ -80,12 +80,14 @@ bool Enemy::Update(float dt)
 
 	if(!isDying) {
 		b2Vec2 velocity = b2Vec2(0, -GRAVITY_Y);
-		isFalling = true;
 
 		Vector2D pos = GetPosition();
 		Vector2D tilePos = Engine::GetInstance().map.get()->WorldToMap(pos.getX(), pos.getY());
+
+		//reset pathfinding
 		pathfinding->ResetPath(tilePos);
 
+		//propagate pathfinding until player is found
 		bool found = false;
 		while(found == false) {
 			found = pathfinding->PropagateAStar(MANHATTAN);
@@ -93,25 +95,26 @@ bool Enemy::Update(float dt)
 				pathfinding->DrawPath();
 			}
 		}
+
+		//get the pos to travel to
 		int length = pathfinding->breadcrumbs.size();
 		Vector2D nextPos = Engine::GetInstance().map.get()->WorldToMap(pathfinding->breadcrumbs[length-2].getX(), pathfinding->breadcrumbs[length - 2].getY());
 
+		//check if tile is jumpable
 		bool jumpable = Engine::GetInstance().map.get()->IsTileJumpable(pos.getX(), pos.getY());
 
-		bool moved = false;
+		//Check if next tile is to the right or left and add movement 
 		if(nextPos.getX() > pos.getX()){
 			velocity.x = 0.2 * dt;
 			look = EnemyLook::LEFT;
-			moved = true;
 		}
 		else {
 			velocity.x = -0.2 * dt;
 			look = EnemyLook::RIGHT;
-			moved = true;
 		}
 
+		//jumping
 		if (isJumping == false and jumpable == true) {
-			LOG("JUMP");
 			pbody->body->ApplyLinearImpulseToCenter(b2Vec2(0, -(jumpForce/2)), true);
 			isJumping = true;
 		}
@@ -166,7 +169,6 @@ void Enemy::OnCollision(PhysBody* physA, PhysBody* physB) {
 		if (isJumping) {
 			isJumping = false;
 		}
-		isFalling = false;
 		break;
 	case ColliderType::ATTACK:
 		life = life - physB->damageDone;

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="200" height="20" tilewidth="16" tileheight="16" infinite="0" nextlayerid="13" nextobjectid="59">
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="200" height="20" tilewidth="16" tileheight="16" infinite="0" nextlayerid="13" nextobjectid="61">
  <tileset firstgid="1" name="MapMetadata" tilewidth="16" tileheight="16" tilecount="2" columns="2">
   <image source="MapMetadata.png" width="32" height="16"/>
  </tileset>
@@ -36118,5 +36118,7 @@
     <property name="Death" type="bool" value="true"/>
    </properties>
   </object>
+  <object id="59" x="-0.666667" y="3.55271e-15" width="3.33333" height="318.667"/>
+  <object id="60" x="3196.67" y="0.666667" width="3.33333" height="327.333"/>
  </objectgroup>
 </map>

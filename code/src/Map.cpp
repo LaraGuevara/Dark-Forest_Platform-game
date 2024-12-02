@@ -325,10 +325,8 @@ bool Map::IsTileJumpable(int x, int y) {
     x = pos.getX();
     y = pos.getY();
     if (layerJump != nullptr) {
-        LOG("CHECK JUMP: %d, %d", x, y);
         if (x >= 0 && y >= 0 && x < mapData.width && y < mapData.height) {
             int gid = layerJump->Get(x, y);
-            LOG("GID %d", gid);
             if (gid == jumpingGid) return true;
         }
     }
