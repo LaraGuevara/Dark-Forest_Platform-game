@@ -16,6 +16,8 @@
 * Tilesets credits:
   * [Oak Woods — Environment Asset 🍂 by brullov](https://brullov.itch.io/oak-woods)
   * [STRINGSTAR FIELDS by Trixie](https://trixelized.itch.io/starstring-fields)
+* UI sprites credit:
+ *[UI books & more](https://srtoasty.itch.io/ui-assets-pack-2)   
 * Enemies sprite credit:
   * [Blobfish || Pixel Asset Pack by Pop Shop Packs](https://pop-shop-packs.itch.io/blobfish-pixel-asset-pack)
 * Music and sound credits:
