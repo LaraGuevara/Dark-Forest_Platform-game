@@ -273,6 +273,16 @@ MapLayer* Map::GetCheckpointLayer() {
     return nullptr;
 }
 
+MapLayer* Map::GetJumpingLayer() {
+    for (const auto& layer : mapData.layers) {
+        if (layer->properties.GetProperty("Jumping") != NULL &&
+            layer->properties.GetProperty("Jumping")->value) {
+            return layer;
+        }
+    }
+    return nullptr;
+}
+
 std::vector<Sensor*> Map::LoadCheckpoints() {
     MapLayer* checkLayer = GetCheckpointLayer();
     std::vector<Sensor*> checkpoints;
@@ -307,5 +317,22 @@ Properties::Property* Properties::GetProperty(const char* name)
     }
 
     return nullptr;
+}
+
+bool Map::IsTileJumpable(int x, int y) {
+    MapLayer* layerJump = GetJumpingLayer();
+    Vector2D pos = WorldToMap(x, y);
+    x = pos.getX();
+    y = pos.getY();
+    if (layerJump != nullptr) {
+        LOG("CHECK JUMP: %d, %d", x, y);
+        if (x >= 0 && y >= 0 && x < mapData.width && y < mapData.height) {
+            int gid = layerJump->Get(x, y);
+            LOG("GID %d", gid);
+            if (gid == jumpingGid) return true;
+        }
+    }
+
+    return false;
 }
 

@@ -12,6 +12,11 @@ enum EnemyState {
 	DEAD
 };
 
+enum EnemyLook {
+	LEFT,
+	RIGHT
+};
+
 enum EnemyType {
 	FLYING,
 	WALKING
@@ -52,6 +57,8 @@ public:
 
 private:
 
+	float jumpForce = 1.8f;
+
 	SDL_Texture* texture;
 	EnemyType type;
 	const char* texturePath;
@@ -62,6 +69,12 @@ private:
 	Animation death;
 
 	bool isDying = false;
-	bool deathAttack = false;
+	bool isDead = false;
+	bool isJumping = false;
+	bool isFalling = true;
+
 	Pathfinding* pathfinding;
+
+	EnemyLook look = EnemyLook::LEFT;
+	SDL_RendererFlip flip;
 };

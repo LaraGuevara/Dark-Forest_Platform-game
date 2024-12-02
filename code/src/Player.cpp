@@ -42,8 +42,13 @@ bool Player::Start() {
 	walking.LoadAnimations(parameters.child("animations").child("walking"));
 	jumping.LoadAnimations(parameters.child("animations").child("jumping"));
 	death.LoadAnimations(parameters.child("animations").child("death"));
+	damage.LoadAnimations(parameters.child("animations").child("damage"));
 	attack.LoadAnimations(parameters.child("animations").child("attack"));
 	currentAnimation = &idle;
+
+	//set life
+	life = parameters.attribute("life").as_int();
+	lifeValue = life;
 
 	pbody = Engine::GetInstance().physics.get()->CreateCircle((int)position.getX() + texH / 2, (int)position.getY() + texH / 2, texW/2, bodyType::DYNAMIC);
 	//pbody = Engine::GetInstance().physics.get()->CreateCircle((int)position.getX() - texW / 2, (int)position.getY() + texH / 2, texH/2, bodyType::DYNAMIC);
@@ -81,6 +86,25 @@ bool Player::Update(float dt)
 		else {
 			godMode = true;
 			pbody->body->SetType(b2_kinematicBody);
+		}
+	}
+
+	if(life <= 0) {
+		playerDeath = true;
+		isDamaged = false;
+	}
+
+	if (isDamaged and state != Player_State::DAMAGE){
+		state = Player_State::DAMAGE;
+		currentAnimation = &damage;
+	}
+
+	if (state == Player_State::DAMAGE) {
+		if (damage.HasFinished()) {
+			isDamaged = false;
+			state = Player_State::IDLE;
+			currentAnimation = &idle;
+			damage.Reset();
 		}
 	}
 
@@ -219,6 +243,7 @@ bool Player::Update(float dt)
 				b2Transform pbodyPos = pbody->body->GetTransform();
 				SetPosition(checkpoint);
 				respawn = true;
+				life = lifeValue;
 				isDying = false;
 				playerDeath = false;
 				state = Player_State::IDLE;
@@ -258,9 +283,11 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 	case ColliderType::PLATFORM:
 		LOG("%s Collision PLATFORM ", physA->ctype);
 		//reset the jump flag when touching the ground
-		isJumping = false;
-		Mix_PlayChannel(1, jumpEndFX, 0);
-		jumping.Reset();
+		if (isJumping) {
+			isJumping = false;
+			Mix_PlayChannel(1, jumpEndFX, 0);
+			jumping.Reset();
+		}
 		//if(state == Player_State::FALL) isJumping = false;
 		break;
 	case ColliderType::ITEM:
@@ -268,7 +295,11 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 		break;
 	case ColliderType::ENEMY:
 		LOG("Collision ENEMY");
-		if(!godMode) playerDeath = true;
+		if(!godMode) {
+			life = life - physB->damageDone;
+			isDamaged = true;
+			LOG("PLAYER DAMAGE %d", life);
+		}
 		break;
 	case ColliderType::UNKNOWN:
 		LOG("Collision UNKNOWN");

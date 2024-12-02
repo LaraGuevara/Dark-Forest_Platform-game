@@ -13,6 +13,7 @@ Pathfinding::Pathfinding() {
     tileX = Engine::GetInstance().textures.get()->Load("Assets/Maps/x.png");
     map = Engine::GetInstance().map.get();
     layerNav = map->GetNavigationLayer();
+    layerJump = map->GetJumpingLayer();
 
     // Initialize the costSoFar with all elements set to 0
     costSoFar = std::vector<std::vector<int>>(map->GetWidth(), std::vector<int>(map->GetHeight(), 0));

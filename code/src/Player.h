@@ -8,7 +8,7 @@
 #include "Attack.h"
 
 enum class Player_State{
-IDLE, WALK, JUMP, FALL, ATTACK, DIE};
+IDLE, WALK, JUMP, FALL, ATTACK, DAMAGE, DIE};
 
 enum class Player_Look {
 	LEFT, RIGHT
@@ -56,8 +56,12 @@ public:
 
 public:
 
+	int lifeValue;
+
 	bool isAttacking = false;
+	bool isDamaged = false;
 	bool respawn;
+
 	//Declare player parameters
 	float speed = 5.0f;
 	SDL_Texture* texture = NULL;
@@ -84,6 +88,7 @@ public:
 	Animation walking;
 	Animation jumping;
 	Animation attack;
+	Animation damage;
 	Animation death;
 
 	Vector2D checkpoint;

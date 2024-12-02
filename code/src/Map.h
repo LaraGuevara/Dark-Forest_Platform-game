@@ -143,7 +143,11 @@ public:
 
     MapLayer* GetCheckpointLayer();
 
+    MapLayer* GetJumpingLayer();
+
     std::vector<Sensor*> LoadCheckpoints();
+
+    bool IsTileJumpable(int x, int y);
 
 public: 
     std::string mapFileName;
@@ -156,4 +160,5 @@ private:
     std::list<PhysBody*> rectangles;
 
     int checkpointGid = 2;
+    int jumpingGid = 2; //Gid of jumpable tiles
 };

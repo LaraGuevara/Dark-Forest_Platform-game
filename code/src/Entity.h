@@ -71,6 +71,7 @@ public:
 
 	std::string name;
 	EntityType type;
+	int life;
 	bool active = true;
 	Vector2D position;       
 	bool renderable = true;

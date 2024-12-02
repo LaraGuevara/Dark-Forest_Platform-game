@@ -15,7 +15,7 @@
 		<fullscreen_window value="false" />
 	</window>
 	<save>
-		<player x="835" y="191" />
+		<player x="837" y="191" />
 		<enemies>
 			<enemy name="walkingEnemy1" x="316" y="193" />
 		</enemies>
@@ -23,7 +23,7 @@
 	<scene>
 		<map path="Assets/Maps/" name="newnocandymap.tmx" />
 		<entities>
-			<player x="100" y="0" w="32" h="48" texture="Assets/Textures/player/witch.png">
+			<player x="100" y="0" w="32" h="48" life="10" texture="Assets/Textures/player/witch.png">
 				<animations>
 					<idle loop="true" speed="0.075">
 						<frame x="0" y="0" w="32" h="48" />
@@ -83,7 +83,7 @@
 				</animations>
 			</player>
 			<enemies>
-				<enemy name="walkingEnemy1" x="300" y="160" w="32" h="32" texture="Assets/Textures/enemies/walking_enemy.png" gravity="true">
+				<enemy name="walkingEnemy1" x="300" y="160" w="32" h="32" life="3" damage="2" texture="Assets/Textures/enemies/walking_enemy.png" gravity="true">
 					<animations>
 						<idle loop="true" speed="0.5">
 							<frame x="0" y="0" w="32" h="32" />
@@ -100,7 +100,7 @@
 					</animations>
 				</enemy>
 			</enemies>
-			<attack gravity="false" w="32" h="32" texture="Assets/Textures/attack.png">
+			<attack gravity="false" w="32" h="32" damage="1" texture="Assets/Textures/attack.png">
 				<animation>
 					<idle loop="false" speed="0.3">
 						<frame x="0" y="0" w="32" h="32" />

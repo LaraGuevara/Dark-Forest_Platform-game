@@ -39,16 +39,18 @@ bool Enemy::Start() {
 	//Add a physics to an item - initialize the physics body
 	pbody = Engine::GetInstance().physics.get()->CreateCircle((int)position.getX() + texH / 2, (int)position.getY() + texH / 2, texH / 2, bodyType::DYNAMIC);
 
-	//Assign collider type
+	//Assign collider type and damage 
 	pbody->ctype = ColliderType::ENEMY;
+	pbody->damageDone = parameters.attribute("damage").as_int();
 	pbody->listener = this;
 
 	// Set the enemy type
 	if (parameters.attribute("type").as_string() == "flying") type = EnemyType::FLYING;
 	else type = EnemyType::WALKING;
 	
-	// Set name
+	// Set name and life values
 	name = parameters.attribute("name").as_string();
+	life = parameters.attribute("life").as_int();
 
 	// Set the gravity of the body
 	if (!parameters.attribute("gravity").as_bool()) pbody->body->SetGravityScale(0);
@@ -63,58 +65,71 @@ bool Enemy::Start() {
 bool Enemy::Update(float dt)
 {
 	// Pathfinding testing inputs
-	if (deathAttack and isDying == false){
+	if (life <= 0) isDead = true;
+	
+	if (isDead and isDying == false){
 		isDying = true;
-		//pbody->body->SetType(b2_kinematicBody);
-		death.Reset();
+		//death.Reset();
 		currentAnimation = &death;
 	}
-	else if (isDying){
+	
+	if (isDying){
 		if (death.HasFinished()) state = EnemyState::DEAD;
 	}
-	else if (pathfinding->PropagateAStar(MANHATTAN)) {
-		/*Vector2D pos = GetPosition();
+
+
+	if(!isDying) {
+		b2Vec2 velocity = b2Vec2(0, -GRAVITY_Y);
+		isFalling = true;
+
+		Vector2D pos = GetPosition();
 		Vector2D tilePos = Engine::GetInstance().map.get()->WorldToMap(pos.getX(), pos.getY());
 		pathfinding->ResetPath(tilePos);
 
-		if (Engine::GetInstance().physics.get()->getDebug()) {
-			pathfinding->DrawPath();
-		}*/
+		bool found = false;
+		while(found == false) {
+			found = pathfinding->PropagateAStar(MANHATTAN);
+			if (Engine::GetInstance().physics.get()->getDebug()) {
+				pathfinding->DrawPath();
+			}
+		}
+		int length = pathfinding->breadcrumbs.size();
+		Vector2D nextPos = Engine::GetInstance().map.get()->WorldToMap(pathfinding->breadcrumbs[length-2].getX(), pathfinding->breadcrumbs[length - 2].getY());
+
+		bool jumpable = Engine::GetInstance().map.get()->IsTileJumpable(pos.getX(), pos.getY());
+
+		bool moved = false;
+		if(nextPos.getX() > pos.getX()){
+			velocity.x = 0.2 * dt;
+			look = EnemyLook::LEFT;
+			moved = true;
+		}
+		else {
+			velocity.x = -0.2 * dt;
+			look = EnemyLook::RIGHT;
+			moved = true;
+		}
+
+		if (isJumping == false and jumpable == true) {
+			LOG("JUMP");
+			pbody->body->ApplyLinearImpulseToCenter(b2Vec2(0, -(jumpForce/2)), true);
+			isJumping = true;
+		}
+
+		if (isJumping == true) velocity = pbody->body->GetLinearVelocity();
+
+
+		pbody->body->SetLinearVelocity(velocity);
+		b2Transform pbodyPos = pbody->body->GetTransform();
+
+		position.setX(METERS_TO_PIXELS(pbodyPos.p.x) - texH / 2);
+		position.setY(METERS_TO_PIXELS(pbodyPos.p.y) - texH / 2);
+
+		if (look == EnemyLook::LEFT) flip = SDL_FLIP_HORIZONTAL;
+		else flip = SDL_FLIP_NONE;
+
+		Engine::GetInstance().render.get()->DrawTexture(texture, (int)position.getX() + texW / 10, (int)position.getY() - texH / 6, &currentAnimation->GetCurrentFrame(), flip);
 	}
-
-	/*if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_R) == KEY_DOWN) {
-		Vector2D pos = GetPosition();
-		Vector2D tilePos = Engine::GetInstance().map.get()->WorldToMap(pos.getX(),pos.getY());
-		pathfinding->ResetPath(tilePos);
-	}
-
-	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_J) == KEY_DOWN) {
-		pathfinding->PropagateBFS();
-	}
-
-	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_J) == KEY_REPEAT &&
-		Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT) {
-		pathfinding->PropagateBFS();
-	}
-
-	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_K) == KEY_DOWN) {
-		pathfinding->PropagateDijkstra();
-	}
-
-	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_K) == KEY_REPEAT &&
-		Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT) {
-		pathfinding->PropagateDijkstra();
-	}*/
-
-	// L08 TODO 4: Add a physics to an item - update the position of the object from the physics.  
-	b2Transform pbodyPos = pbody->body->GetTransform();
-	position.setX(METERS_TO_PIXELS(pbodyPos.p.x) - texH / 2);
-	position.setY(METERS_TO_PIXELS(pbodyPos.p.y) - texH / 2);
-
-	Engine::GetInstance().render.get()->DrawTexture(texture, (int)position.getX(), (int)position.getY(), &currentAnimation->GetCurrentFrame());
-	currentAnimation->Update();
-
-	// Draw pathfinding 
 
 	return true;
 }
@@ -147,9 +162,18 @@ void Enemy::OnCollision(PhysBody* physA, PhysBody* physB) {
 
 	switch (physB->ctype)
 	{
+	case ColliderType::PLATFORM:
+		if (isJumping) {
+			isJumping = false;
+		}
+		isFalling = false;
+		break;
 	case ColliderType::ATTACK:
-		deathAttack = true;
-		//state = EnemyState::DEAD;
+		life = life - physB->damageDone;
+		LOG("DAMAGE %d", life);
+		break;
+	case ColliderType::DEATH:
+		state = EnemyState::DEAD;
 		break;
 	default:
 		break;

@@ -44,8 +44,6 @@ private:
 	int texH = 32;
 	int texW = 32;
 
-	b2Vec2 velocity;
-	float speed = 5.8f;
 	Animation idle;
 	Animation active;
 	Animation* currentAnimation = nullptr;

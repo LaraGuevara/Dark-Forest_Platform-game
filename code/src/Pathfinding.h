@@ -43,6 +43,7 @@ public:
     // L11: BFS Pathfinding variables
     Map* map;
     MapLayer* layerNav;
+    MapLayer* layerJump;
     std::queue<Vector2D> frontier;
     std::vector<Vector2D> visited;
     SDL_Texture* pathTex = nullptr;
@@ -60,6 +61,7 @@ public:
 
     int blockedGid = 1041; //Gid of the tiles that block the path - Important adjust this value to your map
     int highCostGid = 50; //Gid of the tiles that have high cost - Important adjust this value to your map
+    int jumpingGid = 2; //Gid of jumpable tiles 
 
 };
 

@@ -41,6 +41,7 @@ bool Attack::Start() {
 
 	// L08 TODO 7: Assign collider type
 	pbody->ctype = ColliderType::ATTACK;
+	pbody->damageDone = loadFile.child("config").child("scene").child("entities").child("attack").attribute("damage").as_int();
 
 	pbody->listener = this;
 
