@@ -39,10 +39,17 @@ bool Enemy::Start() {
 	//Add a physics to an item - initialize the physics body
 	pbody = Engine::GetInstance().physics.get()->CreateCircle((int)position.getX() + texH / 2, (int)position.getY() + texH / 2, texH / 2, bodyType::DYNAMIC);
 
+	//create sensor for radious around enemy (to activate pathfinding)
+	sensor = Engine::GetInstance().physics.get()->CreateCircleSensor((int)position.getX() + texH / 2, (int)position.getY() + texH / 2, texH*4, bodyType::KINEMATIC);
+
 	//Assign collider type and damage 
 	pbody->ctype = ColliderType::ENEMY;
+	sensor->ctype = ColliderType::SENSOR;
+
 	pbody->damageDone = parameters.attribute("damage").as_int();
+
 	pbody->listener = this;
+	sensor->listener = this;
 
 	// Set the enemy type
 	if (parameters.attribute("type").as_string() == "flying") type = EnemyType::FLYING;
@@ -69,8 +76,9 @@ bool Enemy::Update(float dt)
 	
 	if (isDead and isDying == false){
 		isDying = true;
-		//death.Reset();
+		death.Reset();
 		currentAnimation = &death;
+		LOG("ENEMY DEATH");
 	}
 	
 	if (isDying){
@@ -79,60 +87,69 @@ bool Enemy::Update(float dt)
 
 
 	if(!isDying) {
-		b2Vec2 velocity = b2Vec2(0, -GRAVITY_Y);
+		//if player is within radious, activate pathfinding
+		if (playerActivate) {
+			b2Vec2 velocity = b2Vec2(0, -GRAVITY_Y);
 
-		Vector2D pos = GetPosition();
-		Vector2D tilePos = Engine::GetInstance().map.get()->WorldToMap(pos.getX(), pos.getY());
+			Vector2D pos = GetPosition();
+			Vector2D tilePos = Engine::GetInstance().map.get()->WorldToMap(pos.getX(), pos.getY());
 
-		//reset pathfinding
-		pathfinding->ResetPath(tilePos);
+			//reset pathfinding
+			pathfinding->ResetPath(tilePos);
 
-		//propagate pathfinding until player is found
-		bool found = false;
-		while(found == false) {
-			found = pathfinding->PropagateAStar(MANHATTAN);
-			if (Engine::GetInstance().physics.get()->getDebug()) {
-				pathfinding->DrawPath();
+			//propagate pathfinding until player is found
+			bool found = false;
+			while (found == false) {
+				found = pathfinding->PropagateAStar(MANHATTAN);
+				if (Engine::GetInstance().physics.get()->getDebug()) {
+					pathfinding->DrawPath();
+				}
 			}
+
+			//get the pos to travel to
+			int length = pathfinding->breadcrumbs.size();
+			Vector2D nextPos = Engine::GetInstance().map.get()->WorldToMap(pathfinding->breadcrumbs[length - 2].getX(), pathfinding->breadcrumbs[length - 2].getY());
+
+			//check if tile is jumpable
+			bool jumpable = Engine::GetInstance().map.get()->IsTileJumpable(pos.getX(), pos.getY());
+
+			//Check if next tile is to the right or left and add movement 
+			if (nextPos.getX() > pos.getX()) {
+				velocity.x = 0.2 * dt;
+				look = EnemyLook::LEFT;
+			}
+			else {
+				velocity.x = -0.2 * dt;
+				look = EnemyLook::RIGHT;
+			}
+
+			//jumping
+			if (isJumping == false and jumpable == true) {
+				pbody->body->ApplyLinearImpulseToCenter(b2Vec2(0, -(jumpForce / 2)), true);
+				isJumping = true;
+			}
+
+			if (isJumping == true) velocity = pbody->body->GetLinearVelocity();
+
+
+			pbody->body->SetLinearVelocity(velocity);
 		}
-
-		//get the pos to travel to
-		int length = pathfinding->breadcrumbs.size();
-		Vector2D nextPos = Engine::GetInstance().map.get()->WorldToMap(pathfinding->breadcrumbs[length-2].getX(), pathfinding->breadcrumbs[length - 2].getY());
-
-		//check if tile is jumpable
-		bool jumpable = Engine::GetInstance().map.get()->IsTileJumpable(pos.getX(), pos.getY());
-
-		//Check if next tile is to the right or left and add movement 
-		if(nextPos.getX() > pos.getX()){
-			velocity.x = 0.2 * dt;
-			look = EnemyLook::LEFT;
-		}
-		else {
-			velocity.x = -0.2 * dt;
-			look = EnemyLook::RIGHT;
-		}
-
-		//jumping
-		if (isJumping == false and jumpable == true) {
-			pbody->body->ApplyLinearImpulseToCenter(b2Vec2(0, -(jumpForce/2)), true);
-			isJumping = true;
-		}
-
-		if (isJumping == true) velocity = pbody->body->GetLinearVelocity();
-
-
-		pbody->body->SetLinearVelocity(velocity);
-		b2Transform pbodyPos = pbody->body->GetTransform();
-
-		position.setX(METERS_TO_PIXELS(pbodyPos.p.x) - texH / 2);
-		position.setY(METERS_TO_PIXELS(pbodyPos.p.y) - texH / 2);
-
-		if (look == EnemyLook::LEFT) flip = SDL_FLIP_HORIZONTAL;
-		else flip = SDL_FLIP_NONE;
-
-		Engine::GetInstance().render.get()->DrawTexture(texture, (int)position.getX() + texW / 10, (int)position.getY() - texH / 6, &currentAnimation->GetCurrentFrame(), flip);
 	}
+
+	b2Transform pbodyPos = pbody->body->GetTransform();
+
+	position.setX(METERS_TO_PIXELS(pbodyPos.p.x) - texH / 2);
+	position.setY(METERS_TO_PIXELS(pbodyPos.p.y) - texH / 2);
+
+	if (look == EnemyLook::LEFT) flip = SDL_FLIP_HORIZONTAL;
+	else flip = SDL_FLIP_NONE;
+
+	currentAnimation->Update();
+
+	Engine::GetInstance().render.get()->DrawTexture(texture, (int)position.getX() + texW / 10, (int)position.getY() - texH / 6, &currentAnimation->GetCurrentFrame(), flip);
+
+	b2Vec2 enemyPos = pbody->body->GetPosition();
+	sensor->body->SetTransform({ enemyPos.x, enemyPos.y }, 0);
 
 	return true;
 }
@@ -170,6 +187,12 @@ void Enemy::OnCollision(PhysBody* physA, PhysBody* physB) {
 			isJumping = false;
 		}
 		break;
+	case ColliderType::PLAYER:
+		if(physA->ctype == ColliderType::SENSOR and playerActivate == false){
+			LOG("ENEMY ACTIVE");
+			playerActivate = true;
+		}
+		break;
 	case ColliderType::ATTACK:
 		life = life - physB->damageDone;
 		LOG("DAMAGE %d", life);
@@ -187,6 +210,12 @@ void Enemy::OnCollisionEnd(PhysBody* physA, PhysBody* physB)
 	switch (physB->ctype)
 	{
 	case ColliderType::ATTACK:
+		break;
+	case ColliderType::PLAYER:
+		if (physA->ctype == ColliderType::SENSOR and playerActivate == true) {
+			LOG("ENEMY DISABLED");
+			playerActivate = false;
+		}
 		break;
 	default:
 		break;

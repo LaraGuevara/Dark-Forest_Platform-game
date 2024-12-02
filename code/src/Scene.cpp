@@ -129,6 +129,7 @@ bool Scene::Update(float dt)
 	for (int i = 0; i < enemyList.size(); i++) {
 		if (enemyList[i]->state == EnemyState::DEAD) {
 			Engine::GetInstance().physics.get()->DeleteBody(enemyList[i]->pbody->body);
+			Engine::GetInstance().physics.get()->DeleteBody(enemyList[i]->sensor->body);
 			Engine::GetInstance().entityManager->DestroyEntity(enemyList[i]);
 			enemyList.erase(enemyList.begin() + i);
 			i--;

@@ -53,7 +53,9 @@ public:
 
 public:
 	EnemyState state = EnemyState::ALIVE;
+	bool playerActivate = false;
 	PhysBody* pbody;
+	PhysBody* sensor;
 
 private:
 
