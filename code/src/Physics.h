@@ -31,7 +31,6 @@ enum class ColliderType {
 	DEATH,
 	SENSOR,
 	UNKNOWN
-	// ..
 };
 
 // Small class to return to other modules to track position and rotation of physics bodies
@@ -52,7 +51,12 @@ public:
 	int width = 0;
 	int height = 0;
 
+	//to save damage to use in oncollision functions
 	int damageDone = 0;
+	//so damage is only done once
+	bool active = false;
+	//to check look
+	bool lookRight = false;
 
 	b2Body* body;
 	Entity* listener;

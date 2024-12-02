@@ -141,8 +141,14 @@ bool Enemy::Update(float dt)
 	position.setX(METERS_TO_PIXELS(pbodyPos.p.x) - texH / 2);
 	position.setY(METERS_TO_PIXELS(pbodyPos.p.y) - texH / 2);
 
-	if (look == EnemyLook::LEFT) flip = SDL_FLIP_HORIZONTAL;
-	else flip = SDL_FLIP_NONE;
+	if (look == EnemyLook::LEFT) {
+		flip = SDL_FLIP_HORIZONTAL;
+		pbody->lookRight = false;
+	}
+	else {
+		flip = SDL_FLIP_NONE;
+		pbody->lookRight = true;
+	}
 
 	currentAnimation->Update();
 

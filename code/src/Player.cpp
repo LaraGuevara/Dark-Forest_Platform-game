@@ -94,7 +94,16 @@ bool Player::Update(float dt)
 		isDamaged = false;
 	}
 
-	if (isDamaged and state != Player_State::DAMAGE){
+	if (isDamaged and state != Player_State::DAMAGE and playerDeath != true){
+		if (damageRight) velocity = b2Vec2(0.1, -jumpForce);
+		else  velocity = b2Vec2(-0.1, -jumpForce);
+		pbody->body->SetLinearVelocity(velocity);
+
+		b2Transform pbodyPos = pbody->body->GetTransform();
+
+		position.setX(METERS_TO_PIXELS(pbodyPos.p.x) - texH / 2);
+		position.setY(METERS_TO_PIXELS(pbodyPos.p.y) - texH / 2);
+
 		state = Player_State::DAMAGE;
 		currentAnimation = &damage;
 	}
@@ -130,7 +139,7 @@ bool Player::Update(float dt)
 		}
 	}
 
-	if (state != Player_State::DIE and state != Player_State::ATTACK) {
+	if (state != Player_State::DIE and state != Player_State::ATTACK and state != Player_State::DAMAGE){
 		// Move left
 		if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_A) == KEY_REPEAT) {
 			velocity.x = -0.2 * dt;
@@ -295,9 +304,12 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 		break;
 	case ColliderType::ENEMY:
 		LOG("Collision ENEMY");
-		if(!godMode) {
+		if(!godMode and physB->active == false) {
 			life = life - physB->damageDone;
 			isDamaged = true;
+			physB->active = true;
+			if (physB->lookRight) damageRight = true;
+			else damageRight = false;
 			LOG("PLAYER DAMAGE %d", life);
 		}
 		break;
@@ -331,6 +343,10 @@ void Player::OnCollisionEnd(PhysBody* physA, PhysBody* physB)
 		break;
 	case ColliderType::SENSOR:
 		LOG("End Collision SENSOR");
+		break;
+	case ColliderType::ENEMY:
+		LOG("End Collision ENEMY");
+		if (physB->active == true) physB->active = false;
 		break;
 	default:
 		break;

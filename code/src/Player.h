@@ -96,6 +96,7 @@ public:
 	bool godMode;
 	bool playerDeath = false;
 	bool checkpointDone = false;
+	bool damageRight = false;
 
 	Mix_Chunk* runFX;
 	Mix_Chunk* jumpStartFX;
