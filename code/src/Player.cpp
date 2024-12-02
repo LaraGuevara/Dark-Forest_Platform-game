@@ -95,15 +95,6 @@ bool Player::Update(float dt)
 	}
 
 	if (isDamaged and state != Player_State::DAMAGE and playerDeath != true){
-		if (damageRight) velocity = b2Vec2(0.1, -jumpForce);
-		else  velocity = b2Vec2(-0.1, -jumpForce);
-		pbody->body->SetLinearVelocity(velocity);
-
-		b2Transform pbodyPos = pbody->body->GetTransform();
-
-		position.setX(METERS_TO_PIXELS(pbodyPos.p.x) - texH / 2);
-		position.setY(METERS_TO_PIXELS(pbodyPos.p.y) - texH / 2);
-
 		state = Player_State::DAMAGE;
 		currentAnimation = &damage;
 	}
