@@ -151,11 +151,11 @@ void Enemy::WalkingEnemyUpdate(float dt){
 
 		//Check if next tile is to the right or left and add movement 
 		if (nextPos.getX() > pos.getX()) {
-			velocity.x = 0.2 * dt;
+			velocity.x = 0.1 * dt;
 			look = EnemyLook::LEFT;
 		}
 		else {
-			velocity.x = -0.2 * dt;
+			velocity.x = -0.1 * dt;
 			look = EnemyLook::RIGHT;
 		}
 
@@ -191,14 +191,14 @@ void Enemy::WalkingEnemyUpdate(float dt){
 		else if (look == EnemyLook::LEFT) {
 			bool jumpable = Engine::GetInstance().map.get()->IsTileJumpable(pos.getX(), pos.getY());
 			if(!jumpable){
-				velocity.x = 0.2 * dt;
+				velocity.x = 0.1 * dt;
 				AnimState = EnemyAnimationState::MOVING;
 			} else AnimState = EnemyAnimationState::IDLE;
 			--idleCount;
 		} else if (look == EnemyLook::RIGHT) {
 			bool jumpable = Engine::GetInstance().map.get()->IsTileJumpable(pos.getX(), pos.getY());
 			if (!jumpable) {
-				velocity.x = -0.2 * dt;
+				velocity.x = -0.1 * dt;
 				AnimState = EnemyAnimationState::MOVING;
 			} else AnimState = EnemyAnimationState::IDLE;
 			--idleCount;

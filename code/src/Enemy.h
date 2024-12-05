@@ -5,7 +5,7 @@
 #include "Animation.h"
 #include "Pathfinding.h"
 
-#define IDLECOUNT 32
+#define IDLECOUNT 64
 
 struct SDL_Texture;
 
