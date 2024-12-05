@@ -49,7 +49,7 @@ bool Scene::Start()
 {
 	Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 1024);
 	Engine::GetInstance().map->Load("Assets/Maps/", "newnocandymap.tmx");
-	helptex = Engine::GetInstance().textures.get()->Load("Assets/Textures/help.png");
+	helptex = Engine::GetInstance().textures.get()->Load("Assets/Textures/menu.png");
 
 	//create checkpoints
 	checkpointList = Engine::GetInstance().map->LoadCheckpoints();
@@ -136,7 +136,7 @@ bool Scene::Update(float dt)
 		}
 	}
 
-	if (help) Engine::GetInstance().render.get()->DrawTexture(helptex, 150, -45, NULL, SDL_FLIP_NONE, false);
+	if (help) Engine::GetInstance().render.get()->DrawTexture(helptex, 900, -10, NULL, SDL_FLIP_NONE, false);
 	
 	Engine::GetInstance().render.get()->camera.x = ((player->GetXPos() * -1) + 200) *2;
 
