@@ -136,7 +136,7 @@ bool Scene::Update(float dt)
 		}
 	}
 
-	if (help) Engine::GetInstance().render.get()->DrawTexture(helptex, 150, -45);
+	if (help) Engine::GetInstance().render.get()->DrawTexture(helptex, 150, -45, NULL, SDL_FLIP_NONE, false);
 	
 	Engine::GetInstance().render.get()->camera.x = ((player->GetXPos() * -1) + 200) *2;
 
