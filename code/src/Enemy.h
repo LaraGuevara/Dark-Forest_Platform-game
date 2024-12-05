@@ -5,7 +5,7 @@
 #include "Animation.h"
 #include "Pathfinding.h"
 
-#define IDLECOUNT 2
+#define IDLECOUNT 32
 
 struct SDL_Texture;
 
@@ -76,7 +76,8 @@ private:
 	EnemyAnimationState AnimState;
 
 	float jumpForce = 1.8f;
-	int idleCount = 2;
+	int idleCount = IDLECOUNT;
+	bool idleMove = true;
 
 	SDL_Texture* texture;
 	EnemyType type;

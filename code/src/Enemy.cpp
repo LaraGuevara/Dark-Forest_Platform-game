@@ -123,11 +123,11 @@ bool Enemy::Update(float dt)
 }
 
 void Enemy::WalkingEnemyUpdate(float dt){
+	b2Vec2 velocity = b2Vec2(0, -GRAVITY_Y);
+	Vector2D pos = GetPosition();
+
 	//if player is within radious, activate pathfinding
 	if (playerActivate) {
-		b2Vec2 velocity = b2Vec2(0, -GRAVITY_Y);
-
-		Vector2D pos = GetPosition();
 		Vector2D tilePos = Engine::GetInstance().map.get()->WorldToMap(pos.getX(), pos.getY());
 
 		//reset pathfinding
@@ -170,6 +170,39 @@ void Enemy::WalkingEnemyUpdate(float dt){
 
 		if (isJumping == true) velocity = pbody->body->GetLinearVelocity();
 
+		pbody->body->SetLinearVelocity(velocity);
+	}
+	else {
+		//if player isn't within range: do idle pattern
+		if (idleCount == 0) {
+			if(idleMove) idleMove = false;
+			else {
+				idleMove = true;
+				if (look == EnemyLook::LEFT) look = EnemyLook::RIGHT;
+				else look = EnemyLook::LEFT;
+			}
+			idleCount = IDLECOUNT;
+		}
+
+		if (!idleMove) {
+			--idleCount;
+			if(AnimState != EnemyAnimationState::IDLE) AnimState = EnemyAnimationState::IDLE;
+		}
+		else if (look == EnemyLook::LEFT) {
+			bool jumpable = Engine::GetInstance().map.get()->IsTileJumpable(pos.getX(), pos.getY());
+			if(!jumpable){
+				velocity.x = 0.2 * dt;
+				AnimState = EnemyAnimationState::MOVING;
+			} else AnimState = EnemyAnimationState::IDLE;
+			--idleCount;
+		} else if (look == EnemyLook::RIGHT) {
+			bool jumpable = Engine::GetInstance().map.get()->IsTileJumpable(pos.getX(), pos.getY());
+			if (!jumpable) {
+				velocity.x = -0.2 * dt;
+				AnimState = EnemyAnimationState::MOVING;
+			} else AnimState = EnemyAnimationState::IDLE;
+			--idleCount;
+		} 
 		pbody->body->SetLinearVelocity(velocity);
 	}
 }
