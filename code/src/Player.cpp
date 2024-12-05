@@ -130,108 +130,7 @@ bool Player::Update(float dt)
 		}
 	}
 
-	if (state != Player_State::DIE and state != Player_State::ATTACK and state != Player_State::DAMAGE){
-		// Move left
-		if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_A) == KEY_REPEAT) {
-			velocity.x = -0.2 * dt;
-			isMoving = true;
-			look = Player_Look::LEFT;
-		}
-
-		// Move right
-		if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) {
-			velocity.x = 0.2 * dt;
-			isMoving = true;
-			look = Player_Look::RIGHT;
-		}
-
-		//Jump
-		if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN && isJumping == false && godMode == false) {
-			// Apply an initial upward force
-			Mix_PlayChannel(1, jumpStartFX, 0);
-			pbody->body->ApplyLinearImpulseToCenter(b2Vec2(0, -jumpForce), true);
-			isJumping = true;
-		}
-
-		//god mode movement
-		if (godMode) {
-			bool moving = false;
-			//move up
-			if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_W) == KEY_REPEAT) {
-				velocity.y = -0.2 * dt;
-				moving = true;
-			}
-
-			//move down
-			if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_S) == KEY_REPEAT) {
-				velocity.y = 0.2 * dt;
-				moving = true;
-			}
-
-			if (!moving) {
-				velocity.y = 0;
-			}
-		}
-
-		// If the player is jumpling, we don't want to apply gravity, we use the current velocity prduced by the jump
-		if (isJumping == true)
-		{
-			velocity = pbody->body->GetLinearVelocity();
-		}
-
-
-		//change animation and state
-		if (isMoving and state != Player_State::DIE and state != Player_State::ATTACK) {
-			if (state != Player_State::WALK) {
-				state = Player_State::WALK;
-				currentAnimation = &walking;
-			}
-		}
-		else if (isJumping) {
-			if (state != Player_State::JUMP and state != Player_State::ATTACK) {
-				state = Player_State::JUMP;
-				currentAnimation = &jumping;
-			}
-		}
-		else {
-			if (state != Player_State::IDLE and state != Player_State::ATTACK) {
-				state = Player_State::IDLE;
-				currentAnimation = &idle;
-			}
-		}
-
-		if (look == Player_Look::LEFT) flip = SDL_FLIP_HORIZONTAL;
-		else flip = SDL_FLIP_NONE;
-
-
-		// Apply the velocity to the player
-		pbody->body->SetLinearVelocity(velocity);
-
-		b2Transform pbodyPos = pbody->body->GetTransform();
-		if (isJumping && state != Player_State::DIE) {
-			currentAnimation = &jumping;
-			if ((int)position.getY() > METERS_TO_PIXELS(pbodyPos.p.y) - texH / 2) {
-				state = Player_State::JUMP;
-			}
-			else state = Player_State::FALL;
-		}
-
-		position.setX(METERS_TO_PIXELS(pbodyPos.p.x) - texH / 2);
-		position.setY(METERS_TO_PIXELS(pbodyPos.p.y) - texH / 2);
-
-		//check if player has died
-		if (!godMode) {
-			if (playerDeath == true) {
-				Mix_PlayChannel(2, gameOverFX, 0);
-				pbody->body->SetType(b2_kinematicBody);
-				isJumping = false;
-				state = Player_State::DIE;
-				death.Reset();
-				currentAnimation = &death;
-				isDying = true;
-			}
-		}
-	}
+	if (state != Player_State::DIE and state != Player_State::ATTACK and state != Player_State::DAMAGE) velocity = PlayerMovement(dt, velocity);
 
 	//reset death
 	if (state == Player_State::DIE) {
@@ -265,6 +164,108 @@ bool Player::Update(float dt)
 	b2Vec2 playerPos = pbody->body->GetPosition();
 	sensor->body->SetTransform({ playerPos.x, playerPos.y - 0.4f}, sensor->body->GetAngle());
 	return true;
+}
+
+b2Vec2 Player::PlayerMovement(float dt, b2Vec2 velocity) {
+	// Move left
+	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_A) == KEY_REPEAT) {
+		velocity.x = -0.2 * dt;
+		isMoving = true;
+		look = Player_Look::LEFT;
+	}
+
+	// Move right
+	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) {
+		velocity.x = 0.2 * dt;
+		isMoving = true;
+		look = Player_Look::RIGHT;
+	}
+
+	//Jump
+	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN && isJumping == false && godMode == false) {
+		// Apply an initial upward force
+		Mix_PlayChannel(1, jumpStartFX, 0);
+		pbody->body->ApplyLinearImpulseToCenter(b2Vec2(0, -jumpForce), true);
+		isJumping = true;
+	}
+
+	//god mode movement
+	if (godMode) {
+		bool moving = false;
+		//move up
+		if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_W) == KEY_REPEAT) {
+			velocity.y = -0.2 * dt;
+			moving = true;
+		}
+
+		//move down
+		if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_S) == KEY_REPEAT) {
+			velocity.y = 0.2 * dt;
+			moving = true;
+		}
+
+		if (!moving) {
+			velocity.y = 0;
+		}
+	}
+
+	// If the player is jumpling, we don't want to apply gravity, we use the current velocity prduced by the jump
+	if (isJumping == true) velocity = pbody->body->GetLinearVelocity();
+
+
+	//change animation and state
+	if (isMoving and state != Player_State::DIE and state != Player_State::ATTACK) {
+		if (state != Player_State::WALK) {
+			state = Player_State::WALK;
+			currentAnimation = &walking;
+		}
+	}
+	else if (isJumping) {
+		if (state != Player_State::JUMP and state != Player_State::ATTACK) {
+			state = Player_State::JUMP;
+			currentAnimation = &jumping;
+		}
+	}
+	else {
+		if (state != Player_State::IDLE and state != Player_State::ATTACK) {
+			state = Player_State::IDLE;
+			currentAnimation = &idle;
+		}
+	}
+
+	if (look == Player_Look::LEFT) flip = SDL_FLIP_HORIZONTAL;
+	else flip = SDL_FLIP_NONE;
+
+
+	// Apply the velocity to the player
+	pbody->body->SetLinearVelocity(velocity);
+
+	b2Transform pbodyPos = pbody->body->GetTransform();
+	if (isJumping && state != Player_State::DIE) {
+		currentAnimation = &jumping;
+		if ((int)position.getY() > METERS_TO_PIXELS(pbodyPos.p.y) - texH / 2) {
+			state = Player_State::JUMP;
+		}
+		else state = Player_State::FALL;
+	}
+
+	position.setX(METERS_TO_PIXELS(pbodyPos.p.x) - texH / 2);
+	position.setY(METERS_TO_PIXELS(pbodyPos.p.y) - texH / 2);
+
+	//check if player has died
+	if (!godMode) {
+		if (playerDeath == true) {
+			Mix_PlayChannel(2, gameOverFX, 0);
+			pbody->body->SetType(b2_kinematicBody);
+			isJumping = false;
+			state = Player_State::DIE;
+			death.Reset();
+			currentAnimation = &death;
+			isDying = true;
+		}
+	}
+
+	return velocity;
 }
 
 bool Player::CleanUp()

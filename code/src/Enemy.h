@@ -5,11 +5,21 @@
 #include "Animation.h"
 #include "Pathfinding.h"
 
+#define IDLECOUNT 2
+
 struct SDL_Texture;
 
 enum EnemyState {
 	ALIVE,
 	DEAD
+};
+
+enum EnemyAnimationState {
+	SLEEP,
+	IDLE,
+	ATTACK,
+	MOVING,
+	JUMPING
 };
 
 enum EnemyLook {
@@ -35,6 +45,10 @@ public:
 
 	bool Update(float dt);
 
+	void WalkingEnemyUpdate(float dt);
+
+	void FlyingEnemyUpdate(float dt);
+
 	bool CleanUp();
 
 	void SetParameters(pugi::xml_node parameters) {
@@ -59,7 +73,10 @@ public:
 
 private:
 
+	EnemyAnimationState AnimState;
+
 	float jumpForce = 1.8f;
+	int idleCount = 2;
 
 	SDL_Texture* texture;
 	EnemyType type;

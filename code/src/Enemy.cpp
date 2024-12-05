@@ -40,7 +40,7 @@ bool Enemy::Start() {
 	pbody = Engine::GetInstance().physics.get()->CreateCircle((int)position.getX() + texH / 2, (int)position.getY() + texH / 2, texH / 2, bodyType::DYNAMIC);
 
 	//create sensor for radious around enemy (to activate pathfinding)
-	sensor = Engine::GetInstance().physics.get()->CreateCircleSensor((int)position.getX() + texH / 2, (int)position.getY() + texH / 2, texH*4, bodyType::KINEMATIC);
+	sensor = Engine::GetInstance().physics.get()->CreateCircleSensor((int)position.getX() + texH / 2, (int)position.getY() + texH / 2, texH*3, bodyType::KINEMATIC);
 
 	//Assign collider type and damage 
 	pbody->ctype = ColliderType::ENEMY;
@@ -52,8 +52,15 @@ bool Enemy::Start() {
 	sensor->listener = this;
 
 	// Set the enemy type
-	if (parameters.attribute("type").as_string() == "flying") type = EnemyType::FLYING;
-	else type = EnemyType::WALKING;
+	if (parameters.attribute("type").as_string() == "flying") {
+		pbody->body->SetGravityScale(0);
+		type = EnemyType::FLYING;
+		AnimState = EnemyAnimationState::SLEEP;
+	}
+	else {
+		type = EnemyType::WALKING;
+		AnimState = EnemyAnimationState::IDLE;
+	}
 	
 	// Set name and life values
 	name = parameters.attribute("name").as_string();
@@ -87,53 +94,8 @@ bool Enemy::Update(float dt)
 
 
 	if(!isDying) {
-		//if player is within radious, activate pathfinding
-		if (playerActivate) {
-			b2Vec2 velocity = b2Vec2(0, -GRAVITY_Y);
-
-			Vector2D pos = GetPosition();
-			Vector2D tilePos = Engine::GetInstance().map.get()->WorldToMap(pos.getX(), pos.getY());
-
-			//reset pathfinding
-			pathfinding->ResetPath(tilePos);
-
-			//propagate pathfinding until player is found
-			bool found = false;
-			while (found == false) {
-				found = pathfinding->PropagateAStar(MANHATTAN);
-				if (Engine::GetInstance().physics.get()->getDebug()) {
-					pathfinding->DrawPath();
-				}
-			}
-
-			//get the pos to travel to
-			int length = pathfinding->breadcrumbs.size();
-			Vector2D nextPos = Engine::GetInstance().map.get()->WorldToMap(pathfinding->breadcrumbs[length - 2].getX(), pathfinding->breadcrumbs[length - 2].getY());
-
-			//check if tile is jumpable
-			bool jumpable = Engine::GetInstance().map.get()->IsTileJumpable(pos.getX(), pos.getY());
-
-			//Check if next tile is to the right or left and add movement 
-			if (nextPos.getX() > pos.getX()) {
-				velocity.x = 0.2 * dt;
-				look = EnemyLook::LEFT;
-			}
-			else {
-				velocity.x = -0.2 * dt;
-				look = EnemyLook::RIGHT;
-			}
-
-			//jumping
-			if (isJumping == false and jumpable == true) {
-				pbody->body->ApplyLinearImpulseToCenter(b2Vec2(0, -(jumpForce / 2)), true);
-				isJumping = true;
-			}
-
-			if (isJumping == true) velocity = pbody->body->GetLinearVelocity();
-
-
-			pbody->body->SetLinearVelocity(velocity);
-		}
+		if (type == EnemyType::WALKING) WalkingEnemyUpdate(dt);
+		else FlyingEnemyUpdate(dt);
 	}
 
 	b2Transform pbodyPos = pbody->body->GetTransform();
@@ -158,6 +120,106 @@ bool Enemy::Update(float dt)
 	sensor->body->SetTransform({ enemyPos.x, enemyPos.y }, 0);
 
 	return true;
+}
+
+void Enemy::WalkingEnemyUpdate(float dt){
+	//if player is within radious, activate pathfinding
+	if (playerActivate) {
+		b2Vec2 velocity = b2Vec2(0, -GRAVITY_Y);
+
+		Vector2D pos = GetPosition();
+		Vector2D tilePos = Engine::GetInstance().map.get()->WorldToMap(pos.getX(), pos.getY());
+
+		//reset pathfinding
+		pathfinding->ResetPath(tilePos);
+
+		//propagate pathfinding until player is found
+		bool found = false;
+		while (found == false) {
+			found = pathfinding->PropagateAStar(MANHATTAN);
+			if (Engine::GetInstance().physics.get()->getDebug()) {
+				pathfinding->DrawPath();
+			}
+		}
+
+		//get the pos to travel to
+		int length = pathfinding->breadcrumbs.size();
+		Vector2D nextPos = Engine::GetInstance().map.get()->WorldToMap(pathfinding->breadcrumbs[length - 2].getX(), pathfinding->breadcrumbs[length - 2].getY());
+
+		//check if tile is jumpable
+		bool jumpable = Engine::GetInstance().map.get()->IsTileJumpable(pos.getX(), pos.getY());
+
+		//Check if next tile is to the right or left and add movement 
+		if (nextPos.getX() > pos.getX()) {
+			velocity.x = 0.2 * dt;
+			look = EnemyLook::LEFT;
+		}
+		else {
+			velocity.x = -0.2 * dt;
+			look = EnemyLook::RIGHT;
+		}
+
+		//jumping
+		if (isJumping == false and jumpable == true) {
+			pbody->body->ApplyLinearImpulseToCenter(b2Vec2(0, -(jumpForce / 2)), true);
+			isJumping = true;
+			if (AnimState != EnemyAnimationState::JUMPING) {
+				AnimState = EnemyAnimationState::JUMPING;
+			}
+		}
+
+		if (isJumping == true) velocity = pbody->body->GetLinearVelocity();
+
+		pbody->body->SetLinearVelocity(velocity);
+	}
+}
+
+void Enemy::FlyingEnemyUpdate(float dt) {
+	//if player is within radious, activate pathfinding
+	if (playerActivate) {
+		b2Vec2 velocity = b2Vec2(0, 0);
+
+		Vector2D pos = GetPosition();
+		Vector2D tilePos = Engine::GetInstance().map.get()->WorldToMap(pos.getX(), pos.getY());
+
+		//reset pathfinding
+		pathfinding->ResetPath(tilePos);
+
+		//propagate pathfinding until player is found
+		bool found = false;
+		while (found == false) {
+			found = pathfinding->PropagateAStar(MANHATTAN);
+			if (Engine::GetInstance().physics.get()->getDebug()) {
+				pathfinding->DrawPath();
+			}
+		}
+
+		//get the pos to travel to
+		int length = pathfinding->breadcrumbs.size();
+		Vector2D nextPos = Engine::GetInstance().map.get()->WorldToMap(pathfinding->breadcrumbs[length - 2].getX(), pathfinding->breadcrumbs[length - 2].getY());
+
+		//check if tile is jumpable
+		bool jumpable = Engine::GetInstance().map.get()->IsTileJumpable(pos.getX(), pos.getY());
+
+		//Check if next tile is to the right, left, up or down and add movement 
+		if (nextPos.getX() > pos.getX()) {
+			velocity.x = 0.2 * dt;
+			look = EnemyLook::LEFT;
+		}
+		else if (nextPos.getX() < pos.getX()) {
+			velocity.x = -0.2 * dt;
+			look = EnemyLook::RIGHT;
+		}
+		
+		if (nextPos.getY() > pos.getY()) {
+			velocity.y = 0.2 * dt;
+		}
+		else if (nextPos.getY() < pos.getY()) {
+			velocity.y = -0.2 * dt;
+		}
+
+		pbody->body->SetLinearVelocity(velocity);
+	}
 }
 
 bool Enemy::CleanUp()

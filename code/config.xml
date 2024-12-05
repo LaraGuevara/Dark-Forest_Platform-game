@@ -15,10 +15,8 @@
 		<fullscreen_window value="false" />
 	</window>
 	<save>
-		<player x="834" y="191" />
-		<enemies>
-			<enemy name="walkingEnemy1" x="2" y="240" />
-		</enemies>
+		<player x="839" y="179" />
+		<enemies />
 	</save>
 	<scene>
 		<map path="Assets/Maps/" name="newnocandymap.tmx" />
