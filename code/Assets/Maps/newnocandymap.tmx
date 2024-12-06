@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="200" height="20" tilewidth="16" tileheight="16" infinite="0" nextlayerid="13" nextobjectid="61">
+<map version="1.10" tiledversion="1.11.0" orientation="orthogonal" renderorder="right-down" width="200" height="20" tilewidth="16" tileheight="16" infinite="0" nextlayerid="13" nextobjectid="61">
  <tileset firstgid="1" name="MapMetadata" tilewidth="16" tileheight="16" tilecount="2" columns="2">
   <image source="MapMetadata.png" width="32" height="16"/>
  </tileset>
@@ -32583,14 +32583,12 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="2"/>
    <tile/>
    <tile/>
    <tile/>
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="2"/>
    <tile/>
    <tile/>
    <tile/>
@@ -32650,12 +32648,10 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="2"/>
    <tile/>
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="2"/>
    <tile/>
    <tile/>
    <tile/>
@@ -32783,6 +32779,10 @@
    <tile/>
    <tile/>
    <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
    <tile gid="2"/>
    <tile/>
    <tile/>
@@ -33069,7 +33069,6 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="2"/>
    <tile/>
    <tile/>
    <tile/>
@@ -33180,7 +33179,6 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="2"/>
    <tile/>
    <tile/>
    <tile/>
@@ -33220,7 +33218,6 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="2"/>
    <tile/>
    <tile/>
    <tile/>
@@ -33231,7 +33228,6 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="2"/>
    <tile/>
    <tile/>
    <tile/>
@@ -33247,7 +33243,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="2"/>
+   <tile/>
    <tile/>
    <tile/>
    <tile/>
@@ -33269,6 +33265,10 @@
    <tile/>
    <tile/>
    <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
    <tile gid="2"/>
    <tile/>
    <tile/>
@@ -33777,7 +33777,6 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="2"/>
    <tile/>
    <tile/>
    <tile/>
@@ -33862,6 +33861,7 @@
    <tile/>
    <tile/>
    <tile/>
+   <tile/>
    <tile gid="2"/>
    <tile/>
    <tile gid="2"/>
@@ -33953,9 +33953,8 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="2"/>
    <tile/>
-   <tile gid="2"/>
+   <tile/>
    <tile/>
    <tile/>
    <tile/>
@@ -33977,6 +33976,7 @@
    <tile/>
    <tile/>
    <tile/>
+   <tile/>
    <tile gid="2"/>
    <tile/>
    <tile/>
@@ -34013,10 +34013,10 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="2"/>
    <tile/>
    <tile/>
-   <tile gid="2"/>
+   <tile/>
+   <tile/>
    <tile/>
    <tile/>
    <tile/>
@@ -34117,10 +34117,8 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="2"/>
    <tile/>
    <tile/>
-   <tile gid="2"/>
    <tile/>
    <tile/>
    <tile/>
@@ -34153,6 +34151,8 @@
    <tile/>
    <tile/>
    <tile/>
+   <tile/>
+   <tile/>
    <tile gid="2"/>
    <tile/>
    <tile gid="2"/>
@@ -34323,8 +34323,6 @@
    <tile gid="2"/>
    <tile/>
    <tile/>
-   <tile gid="2"/>
-   <tile gid="2"/>
    <tile/>
    <tile/>
    <tile/>
@@ -34333,12 +34331,10 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="2"/>
    <tile/>
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="2"/>
    <tile/>
    <tile/>
    <tile/>
@@ -34349,15 +34345,12 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="2"/>
    <tile/>
-   <tile gid="2"/>
    <tile/>
    <tile/>
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="2"/>
    <tile/>
    <tile/>
    <tile/>
@@ -34368,10 +34361,17 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="2"/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
    <tile/>
    <tile/>
    <tile/>
+   <tile/>
    <tile gid="2"/>
    <tile/>
    <tile/>
@@ -34401,14 +34401,12 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="2"/>
    <tile/>
    <tile/>
    <tile/>
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="2"/>
    <tile/>
    <tile/>
    <tile/>
@@ -34513,9 +34511,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="2"/>
    <tile/>
-   <tile gid="2"/>
    <tile/>
    <tile/>
    <tile/>
@@ -34523,6 +34519,10 @@
    <tile/>
    <tile/>
    <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
    <tile gid="2"/>
    <tile gid="2"/>
    <tile/>
@@ -34544,11 +34544,11 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="2"/>
    <tile/>
-   <tile gid="2"/>
+   <tile/>
    <tile/>
    <tile/>
+   <tile/>
    <tile gid="2"/>
    <tile/>
    <tile gid="2"/>
@@ -34557,7 +34557,6 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="2"/>
    <tile/>
    <tile/>
    <tile/>
@@ -34568,6 +34567,7 @@
    <tile/>
    <tile/>
    <tile/>
+   <tile/>
    <tile gid="2"/>
    <tile/>
    <tile/>
@@ -34838,7 +34838,6 @@
    <tile gid="2"/>
    <tile/>
    <tile gid="2"/>
-   <tile/>
    <tile/>
    <tile/>
    <tile/>
@@ -34891,6 +34890,7 @@
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="2"/>
    <tile/>
    <tile/>
    <tile/>
@@ -34912,7 +34912,6 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="2"/>
    <tile/>
    <tile/>
    <tile/>
@@ -34925,7 +34924,6 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="2"/>
    <tile/>
    <tile/>
    <tile/>
@@ -34940,7 +34938,6 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="2"/>
    <tile/>
    <tile/>
    <tile/>
@@ -34994,9 +34991,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="2"/>
    <tile/>
-   <tile gid="2"/>
    <tile/>
    <tile/>
    <tile/>
@@ -35090,12 +35085,17 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="2"/>
+   <tile/>
    <tile/>
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="2"/>
+   <tile/>
    <tile/>
+   <tile/>
+   <tile/>
+   <tile gid="2"/>
    <tile/>
    <tile/>
    <tile/>
@@ -36090,7 +36090,6 @@
   <object id="9" x="496.5" y="226.667" width="46.5" height="8.16663"/>
   <object id="10" x="560.5" y="194.667" width="62.5" height="11.8333"/>
   <object id="11" x="656.5" y="210.5" width="30.5" height="7.83333"/>
-  <object id="13" x="297.667" y="210.667" width="44.6667" height="11.8333"/>
   <object id="18" x="688.333" y="257.333" width="253" height="63"/>
   <object id="19" x="817" y="208.667" width="93.6666" height="48.3333"/>
   <object id="20" x="991.667" y="220.667" width="47.6666" height="21.6667"/>

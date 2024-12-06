@@ -33,14 +33,33 @@ bool Enemy::Start() {
 
 	//Load animations
 	idle.LoadAnimations(parameters.child("animations").child("idle"));
+	moving.LoadAnimations(parameters.child("animations").child("moving"));
+	attack.LoadAnimations(parameters.child("animations").child("attack"));
+	damage.LoadAnimations(parameters.child("animations").child("damage"));
 	death.LoadAnimations(parameters.child("animations").child("death"));
 	currentAnimation = &idle;
-	
-	//Add a physics to an item - initialize the physics body
-	pbody = Engine::GetInstance().physics.get()->CreateCircle((int)position.getX() + texH / 2, (int)position.getY() + texH / 2, texH / 2, bodyType::DYNAMIC);
+
+	// Set the enemy type
+	if (parameters.attribute("Flyingtype").as_bool() == true) {
+		type = EnemyType::FLYING;
+		AnimState = EnemyAnimationState::SLEEP;
+		//load flying animations
+		sleep.LoadAnimations(parameters.child("animations").child("sleep"));
+		wake.LoadAnimations(parameters.child("animations").child("wake"));
+		//Add a physics to an item - initialize the physics body
+		pbody = Engine::GetInstance().physics.get()->CreateCircle((int)position.getX() + texH / 2, (int)position.getY() + texH / 2, texH / 4, bodyType::DYNAMIC);
+		pbody->body->SetGravityScale(0);
+	}
+	else {
+		type = EnemyType::WALKING;
+		AnimState = EnemyAnimationState::IDLE;
+		look = EnemyLook::RIGHT;
+		//Add a physics to an item - initialize the physics body
+		pbody = Engine::GetInstance().physics.get()->CreateCircle((int)position.getX() + texH / 2, (int)position.getY() + texH / 2, texH / 3, bodyType::DYNAMIC);
+	}
 
 	//create sensor for radious around enemy (to activate pathfinding)
-	sensor = Engine::GetInstance().physics.get()->CreateCircleSensor((int)position.getX() + texH / 2, (int)position.getY() + texH / 2, texH*3, bodyType::KINEMATIC);
+	sensor = Engine::GetInstance().physics.get()->CreateCircleSensor((int)position.getX() + texH / 2, (int)position.getY() + texH / 2, texH * 4, bodyType::KINEMATIC);
 
 	//Assign collider type and damage 
 	pbody->ctype = ColliderType::ENEMY;
@@ -50,17 +69,6 @@ bool Enemy::Start() {
 
 	pbody->listener = this;
 	sensor->listener = this;
-
-	// Set the enemy type
-	if (parameters.attribute("type").as_string() == "flying") {
-		pbody->body->SetGravityScale(0);
-		type = EnemyType::FLYING;
-		AnimState = EnemyAnimationState::SLEEP;
-	}
-	else {
-		type = EnemyType::WALKING;
-		AnimState = EnemyAnimationState::IDLE;
-	}
 	
 	// Set name and life values
 	name = parameters.attribute("name").as_string();
@@ -103,18 +111,21 @@ bool Enemy::Update(float dt)
 	position.setX(METERS_TO_PIXELS(pbodyPos.p.x) - texH / 2);
 	position.setY(METERS_TO_PIXELS(pbodyPos.p.y) - texH / 2);
 
-	if (look == EnemyLook::LEFT) {
-		flip = SDL_FLIP_HORIZONTAL;
+	if (look == EnemyLook::RIGHT) {
+		if (type == EnemyType::WALKING) flip = SDL_FLIP_NONE;
+		else flip = SDL_FLIP_HORIZONTAL;
 		pbody->lookRight = false;
 	}
 	else {
-		flip = SDL_FLIP_NONE;
+		if (type == EnemyType::WALKING) flip = SDL_FLIP_HORIZONTAL;
+		else flip = SDL_FLIP_NONE;
 		pbody->lookRight = true;
 	}
 
 	currentAnimation->Update();
 
-	Engine::GetInstance().render.get()->DrawTexture(texture, (int)position.getX() + texW / 10, (int)position.getY() - texH / 6, &currentAnimation->GetCurrentFrame(), flip);
+	if(type == EnemyType::WALKING and isDying == true) Engine::GetInstance().render.get()->DrawTexture(texture, (int)position.getX() + texW / 10, (int)position.getY() - texH / 6, &currentAnimation->GetCurrentFrame(), flip);
+	else Engine::GetInstance().render.get()->DrawTexture(texture, (int)position.getX() + texW / 10, (int)position.getY() - texH / 6, &currentAnimation->GetCurrentFrame(), flip);
 
 	b2Vec2 enemyPos = pbody->body->GetPosition();
 	sensor->body->SetTransform({ enemyPos.x, enemyPos.y }, 0);
@@ -125,10 +136,16 @@ bool Enemy::Update(float dt)
 void Enemy::WalkingEnemyUpdate(float dt){
 	b2Vec2 velocity = b2Vec2(0, -GRAVITY_Y);
 	Vector2D pos = GetPosition();
+	Vector2D tilePos = Engine::GetInstance().map.get()->WorldToMap(pos.getX(), pos.getY());
+
+	if (resetDirection) {
+		if (look == EnemyLook::LEFT) look = EnemyLook::RIGHT;
+		else look = EnemyLook::LEFT;
+		resetDirection = false;
+	}
 
 	//if player is within radious, activate pathfinding
-	if (playerActivate) {
-		Vector2D tilePos = Engine::GetInstance().map.get()->WorldToMap(pos.getX(), pos.getY());
+	if (playerActivate and playerFound == false) {
 
 		//reset pathfinding
 		pathfinding->ResetPath(tilePos);
@@ -143,25 +160,29 @@ void Enemy::WalkingEnemyUpdate(float dt){
 		}
 
 		//get the pos to travel to
-		int length = pathfinding->breadcrumbs.size();
-		Vector2D nextPos = Engine::GetInstance().map.get()->WorldToMap(pathfinding->breadcrumbs[length - 2].getX(), pathfinding->breadcrumbs[length - 2].getY());
+		std::list<Vector2D>::iterator it = pathfinding->pathTiles.end();
+		--it;
+		--it;
+		Vector2D nextPos = *it;
 
 		//check if tile is jumpable
 		bool jumpable = Engine::GetInstance().map.get()->IsTileJumpable(pos.getX(), pos.getY());
 
 		//Check if next tile is to the right or left and add movement 
-		if (nextPos.getX() > pos.getX()) {
-			velocity.x = 0.1 * dt;
-			look = EnemyLook::LEFT;
-		}
-		else {
-			velocity.x = -0.1 * dt;
+		if (nextPos.getX() > tilePos.getX()) {
+			LOG("RIGHT");
+			velocity.x = 0.15 * dt;
 			look = EnemyLook::RIGHT;
+		}
+		else if (nextPos.getX() < tilePos.getX()) {
+			LOG("LEFT: %d, %d", tilePos.getX(), nextPos.getX());
+			velocity.x = -0.15 * dt;
+			look = EnemyLook::LEFT;
 		}
 
 		//jumping
 		if (isJumping == false and jumpable == true) {
-			pbody->body->ApplyLinearImpulseToCenter(b2Vec2(0, -(jumpForce / 2)), true);
+			pbody->body->ApplyLinearImpulseToCenter(b2Vec2((velocity.x/8), -(jumpForce / 2)), true);
 			isJumping = true;
 			if (AnimState != EnemyAnimationState::JUMPING) {
 				AnimState = EnemyAnimationState::JUMPING;
@@ -172,7 +193,17 @@ void Enemy::WalkingEnemyUpdate(float dt){
 
 		pbody->body->SetLinearVelocity(velocity);
 	}
+	else if (playerFound) {
+		b2Vec2 velocity = b2Vec2(0, 0);
+		pbody->body->SetLinearVelocity(velocity);
+		--idleCount;
+		if (idleCount <= 0) {
+			playerFound = false;
+			idleCount = IDLECOUNT;
+		}
+	}
 	else {
+		pathfinding->ResetPath(tilePos);
 		//if player isn't within range: do idle pattern
 		if (idleCount == 0) {
 			if(idleMove) idleMove = false;
@@ -188,15 +219,15 @@ void Enemy::WalkingEnemyUpdate(float dt){
 			--idleCount;
 			if(AnimState != EnemyAnimationState::IDLE) AnimState = EnemyAnimationState::IDLE;
 		}
-		else if (look == EnemyLook::LEFT) {
-			bool jumpable = Engine::GetInstance().map.get()->IsTileJumpable(pos.getX(), pos.getY());
+		else if (look == EnemyLook::RIGHT) {
+			bool jumpable = Engine::GetInstance().map.get()->IsTileJumpable(pos.getX() + 16, pos.getY() + 16);
 			if(!jumpable){
 				velocity.x = 0.1 * dt;
 				AnimState = EnemyAnimationState::MOVING;
 			} else AnimState = EnemyAnimationState::IDLE;
 			--idleCount;
-		} else if (look == EnemyLook::RIGHT) {
-			bool jumpable = Engine::GetInstance().map.get()->IsTileJumpable(pos.getX(), pos.getY());
+		} else if (look == EnemyLook::LEFT) {
+			bool jumpable = Engine::GetInstance().map.get()->IsTileJumpable(pos.getX() + 16, pos.getY() + 16);
 			if (!jumpable) {
 				velocity.x = -0.1 * dt;
 				AnimState = EnemyAnimationState::MOVING;
@@ -208,12 +239,16 @@ void Enemy::WalkingEnemyUpdate(float dt){
 }
 
 void Enemy::FlyingEnemyUpdate(float dt) {
-	//if player is within radious, activate pathfinding
-	if (playerActivate) {
-		b2Vec2 velocity = b2Vec2(0, 0);
 
-		Vector2D pos = GetPosition();
-		Vector2D tilePos = Engine::GetInstance().map.get()->WorldToMap(pos.getX(), pos.getY());
+	
+
+	b2Vec2 velocity = b2Vec2(0, 0);
+
+	Vector2D pos = GetPosition();
+	Vector2D tilePos = Engine::GetInstance().map.get()->WorldToMap(pos.getX(), pos.getY());
+
+	//if player is within radious, activate pathfinding
+	if (playerActivate and playerFound == false) {
 
 		//reset pathfinding
 		pathfinding->ResetPath(tilePos);
@@ -228,29 +263,74 @@ void Enemy::FlyingEnemyUpdate(float dt) {
 		}
 
 		//get the pos to travel to
-		int length = pathfinding->breadcrumbs.size();
-		Vector2D nextPos = Engine::GetInstance().map.get()->WorldToMap(pathfinding->breadcrumbs[length - 2].getX(), pathfinding->breadcrumbs[length - 2].getY());
-
-		//check if tile is jumpable
-		bool jumpable = Engine::GetInstance().map.get()->IsTileJumpable(pos.getX(), pos.getY());
+		std::list<Vector2D>::iterator it = pathfinding->pathTiles.end();
+		--it;
+		--it;
+		Vector2D nextPos = *it;
 
 		//Check if next tile is to the right, left, up or down and add movement 
-		if (nextPos.getX() > pos.getX()) {
-			velocity.x = 0.2 * dt;
-			look = EnemyLook::LEFT;
-		}
-		else if (nextPos.getX() < pos.getX()) {
-			velocity.x = -0.2 * dt;
+		bool moved = false;
+		if (nextPos.getX() > tilePos.getX()) {
+			velocity.x = 0.15 * dt;
 			look = EnemyLook::RIGHT;
+			moved = true;
+		}
+		else if (nextPos.getX() < tilePos.getX()) {
+			velocity.x = -0.15 * dt;
+			look = EnemyLook::LEFT;
+			moved = true;
 		}
 		
-		if (nextPos.getY() > pos.getY()) {
-			velocity.y = 0.2 * dt;
-		}
-		else if (nextPos.getY() < pos.getY()) {
-			velocity.y = -0.2 * dt;
+		if (!moved) {
+			LOG("%f to %f", tilePos.getY(), nextPos.getY());
+			if (nextPos.getY() < tilePos.getY()) {
+				velocity.y = -0.15 * dt;
+				LOG("UP");
+			}
+			else if (nextPos.getY() > tilePos.getY()) {
+				velocity.y = 0.15 * dt;
+				LOG("DOWN");
+			}
 		}
 
+		pbody->body->SetLinearVelocity(velocity);
+	}
+	else if (playerFound) {
+		b2Vec2 velocity = b2Vec2(0, 0);
+		pbody->body->SetLinearVelocity(velocity);
+		--idleCount;
+		if (idleCount <= 0) {
+			playerFound = false;
+			idleCount = IDLECOUNT;
+		}
+	}
+	else {
+		pathfinding->ResetPath(tilePos);
+		//if player isn't within range: do idle pattern
+		if (idleCount == IDLECOUNT/2) {
+			if (idleMove) idleMove = false;
+			else {
+				idleMove = true;
+				if (look == EnemyLook::LEFT) look = EnemyLook::RIGHT;
+				else look = EnemyLook::LEFT;
+			}
+			idleCount = IDLECOUNT;
+		}
+
+		if (!idleMove) {
+			--idleCount;
+			if (AnimState != EnemyAnimationState::IDLE) AnimState = EnemyAnimationState::IDLE;
+		}
+		else if (look == EnemyLook::RIGHT) {
+			velocity.x = 0.1 * dt;
+			AnimState = EnemyAnimationState::MOVING;
+			--idleCount;
+		}
+		else if (look == EnemyLook::LEFT) {
+			velocity.x = -0.1 * dt;
+			AnimState = EnemyAnimationState::MOVING;
+			--idleCount;
+		}
 		pbody->body->SetLinearVelocity(velocity);
 	}
 }
@@ -289,17 +369,19 @@ void Enemy::OnCollision(PhysBody* physA, PhysBody* physB) {
 		}
 		break;
 	case ColliderType::PLAYER:
-		if(physA->ctype == ColliderType::SENSOR and playerActivate == false){
+		if (physA->ctype == ColliderType::SENSOR and playerActivate == false) {
 			LOG("ENEMY ACTIVE");
 			playerActivate = true;
+			resetDirection = true;
 		}
+		else playerFound = true;
 		break;
 	case ColliderType::ATTACK:
 		life = life - physB->damageDone;
 		LOG("DAMAGE %d", life);
 		break;
 	case ColliderType::DEATH:
-		state = EnemyState::DEAD;
+		if(type == EnemyType::WALKING) state = EnemyState::DEAD;
 		break;
 	default:
 		break;
@@ -316,6 +398,8 @@ void Enemy::OnCollisionEnd(PhysBody* physA, PhysBody* physB)
 		if (physA->ctype == ColliderType::SENSOR and playerActivate == true) {
 			LOG("ENEMY DISABLED");
 			playerActivate = false;
+			resetDirection = true;
+			playerFound = false;
 		}
 		break;
 	default:

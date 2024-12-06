@@ -15,8 +15,10 @@
 		<fullscreen_window value="false" />
 	</window>
 	<save>
-		<player x="839" y="179" />
-		<enemies />
+		<player x="2340" y="96" />
+		<enemies>
+			<enemy name="walkingEnemy1" x="74" y="240" />
+		</enemies>
 	</save>
 	<scene>
 		<map path="Assets/Maps/" name="newnocandymap.tmx" />
@@ -81,19 +83,283 @@
 				</animations>
 			</player>
 			<enemies>
-				<enemy name="walkingEnemy1" x="300" y="160" w="32" h="32" life="3" damage="2" texture="Assets/Textures/enemies/walking_enemy.png" gravity="true">
+				<enemy name="walkingEnemy1" Flyingtype="false" x="1250" y="40" w="48" h="48" life="4" damage="2" texture="Assets/Textures/enemies/walkingEnemy.png" gravity="true">
 					<animations>
-						<idle loop="true" speed="0.5">
-							<frame x="0" y="0" w="32" h="32" />
-							<frame x="32" y="0" w="32" h="32" />
-							<frame x="64" y="0" w="32" h="32" />
-							<frame x="96" y="0" w="32" h="32" />
+						<idle loop="true" speed="0.075">
+							<frame x="0" y="0" w="48" h="48" />
+							<frame x="48" y="0" w="48" h="48" />
+							<frame x="96" y="0" w="48" h="48" />
+							<frame x="144" y="0" w="48" h="48" />
+							<frame x="192" y="0" w="48" h="48" />
+							<frame x="240" y="0" w="48" h="48" />
+							<frame x="288" y="0" w="48" h="48" />
+							<frame x="336" y="0" w="48" h="48" />
 						</idle>
-						<death loop="false" speed="0.5">
-							<frame x="0" y="128" w="32" h="32" />
-							<frame x="32" y="128" w="32" h="32" />
-							<frame x="64" y="128" w="32" h="32" />
-							<frame x="96" y="128" w="32" h="32" />
+						<moving loop="true" speed="0.075">
+							<frame x="0" y="48" w="48" h="48" />
+							<frame x="48" y="48" w="48" h="48" />
+							<frame x="96" y="48" w="48" h="48" />
+							<frame x="144" y="48" w="48" h="48" />
+							<frame x="192" y="48" w="48" h="48" />
+							<frame x="240" y="48" w="48" h="48" />
+							<frame x="288" y="48" w="48" h="48" />
+							<frame x="336" y="48" w="48" h="48" />
+							<frame x="384" y="48" w="48" h="48" />
+							<frame x="432" y="48" w="48" h="48" />
+						</moving>
+						<attack loop="false" speed="0.075">
+							<frame x="0" y="96" w="48" h="48" />
+							<frame x="48" y="96" w="48" h="48" />
+							<frame x="96" y="96" w="48" h="48" />
+							<frame x="144" y="96" w="48" h="48" />
+							<frame x="192" y="96" w="48" h="48" />
+							<frame x="240" y="96" w="48" h="48" />
+							<frame x="288" y="96" w="48" h="48" />
+							<frame x="336" y="96" w="48" h="48" />
+							<frame x="384" y="96" w="48" h="48" />
+							<frame x="432" y="96" w="48" h="48" />
+							<frame x="480" y="96" w="48" h="48" />
+						</attack>
+						<damage loop="false" speed="0.075">
+							<frame x="0" y="144" w="48" h="48" />
+							<frame x="48" y="144" w="48" h="48" />
+							<frame x="96" y="144" w="48" h="48" />
+							<frame x="144" y="144" w="48" h="48" />
+						</damage>
+						<death loop="false" speed="0.075">
+							<frame x="0" y="192" w="64" h="48" />
+							<frame x="64" y="192" w="64" h="48" />
+							<frame x="128" y="192" w="64" h="48" />
+							<frame x="192" y="192" w="64" h="48" />
+							<frame x="256" y="192" w="64" h="48" />
+							<frame x="320" y="192" w="64" h="48" />
+							<frame x="384" y="192" w="64" h="48" />
+							<frame x="448" y="192" w="64" h="48" />
+							<frame x="512" y="192" w="64" h="48" />
+							<frame x="576" y="192" w="64" h="48" />
+							<frame x="640" y="192" w="64" h="48" />
+							<frame x="704" y="192" w="64" h="48" />
+						</death>
+					</animations>
+				</enemy>
+				<enemy name="walkingEnemy2" Flyingtype="false" x="2210" y="10" w="48" h="48" life="4" damage="2" texture="Assets/Textures/enemies/walkingEnemy.png" gravity="false">
+					<animations>
+						<idle loop="true" speed="0.075">
+							<frame x="0" y="0" w="48" h="48" />
+							<frame x="48" y="0" w="48" h="48" />
+							<frame x="96" y="0" w="48" h="48" />
+							<frame x="144" y="0" w="48" h="48" />
+							<frame x="192" y="0" w="48" h="48" />
+							<frame x="240" y="0" w="48" h="48" />
+							<frame x="288" y="0" w="48" h="48" />
+							<frame x="336" y="0" w="48" h="48" />
+						</idle>
+						<moving loop="true" speed="0.075">
+							<frame x="0" y="48" w="48" h="48" />
+							<frame x="48" y="48" w="48" h="48" />
+							<frame x="96" y="48" w="48" h="48" />
+							<frame x="144" y="48" w="48" h="48" />
+							<frame x="192" y="48" w="48" h="48" />
+							<frame x="240" y="48" w="48" h="48" />
+							<frame x="288" y="48" w="48" h="48" />
+							<frame x="336" y="48" w="48" h="48" />
+							<frame x="384" y="48" w="48" h="48" />
+							<frame x="432" y="48" w="48" h="48" />
+						</moving>
+						<attack loop="false" speed="0.075">
+							<frame x="0" y="96" w="48" h="48" />
+							<frame x="48" y="96" w="48" h="48" />
+							<frame x="96" y="96" w="48" h="48" />
+							<frame x="144" y="96" w="48" h="48" />
+							<frame x="192" y="96" w="48" h="48" />
+							<frame x="240" y="96" w="48" h="48" />
+							<frame x="288" y="96" w="48" h="48" />
+							<frame x="336" y="96" w="48" h="48" />
+							<frame x="384" y="96" w="48" h="48" />
+							<frame x="432" y="96" w="48" h="48" />
+							<frame x="480" y="96" w="48" h="48" />
+						</attack>
+						<damage loop="false" speed="0.075">
+							<frame x="0" y="144" w="48" h="48" />
+							<frame x="48" y="144" w="48" h="48" />
+							<frame x="96" y="144" w="48" h="48" />
+							<frame x="144" y="144" w="48" h="48" />
+						</damage>
+						<death loop="false" speed="0.075">
+							<frame x="0" y="192" w="64" h="48" />
+							<frame x="64" y="192" w="64" h="48" />
+							<frame x="128" y="192" w="64" h="48" />
+							<frame x="192" y="192" w="64" h="48" />
+							<frame x="256" y="192" w="64" h="48" />
+							<frame x="320" y="192" w="64" h="48" />
+							<frame x="384" y="192" w="64" h="48" />
+							<frame x="448" y="192" w="64" h="48" />
+							<frame x="512" y="192" w="64" h="48" />
+							<frame x="576" y="192" w="64" h="48" />
+							<frame x="640" y="192" w="64" h="48" />
+							<frame x="704" y="192" w="64" h="48" />
+						</death>
+					</animations>
+				</enemy>
+				<enemy name="flyingEnemy1" Flyingtype="true" x="2480" y="300" w="48" h="48" life="2" damage="1" texture="Assets/Textures/enemies/flyingEnemy.png" gravity="false">
+					<animations>
+						<sleep loop="true" speed="0.075">
+							<frame x="0" y="0" w="48" h="48" />
+							<frame x="48" y="0" w="48" h="48" />
+							<frame x="96" y="0" w="48" h="48" />
+						</sleep>
+						<wake loop="false" speed="0.075">
+							<frame x="0" y="48" w="48" h="48" />
+							<frame x="48" y="48" w="48" h="48" />
+							<frame x="96" y="48" w="48" h="48" />
+							<frame x="144" y="48" w="48" h="48" />
+							<frame x="192" y="48" w="48" h="48" />
+							<frame x="240" y="48" w="48" h="48" />
+							<frame x="288" y="48" w="48" h="48" />
+							<frame x="336" y="48" w="48" h="48" />
+							<frame x="384" y="48" w="48" h="48" />
+							<frame x="432" y="48" w="48" h="48" />
+							<frame x="480" y="48" w="48" h="48" />
+							<frame x="528" y="48" w="48" h="48" />
+							<frame x="576" y="48" w="48" h="48" />
+							<frame x="624" y="48" w="48" h="48" />
+							<frame x="672" y="48" w="48" h="48" />
+							<frame x="720" y="48" w="48" h="48" />
+							<frame x="768" y="48" w="48" h="48" />
+						</wake>
+						<idle loop="true" speed="0.075">
+							<frame x="0" y="96" w="48" h="48" />
+							<frame x="48" y="96" w="48" h="48" />
+							<frame x="96" y="96" w="48" h="48" />
+							<frame x="144" y="96" w="48" h="48" />
+							<frame x="192" y="96" w="48" h="48" />
+							<frame x="240" y="96" w="48" h="48" />
+							<frame x="288" y="96" w="48" h="48" />
+							<frame x="336" y="96" w="48" h="48" />
+							<frame x="384" y="96" w="48" h="48" />
+						</idle>
+						<moving loop="true" speed="0.075">
+							<frame x="0" y="144" w="48" h="48" />
+							<frame x="48" y="144" w="48" h="48" />
+							<frame x="96" y="144" w="48" h="48" />
+							<frame x="144" y="144" w="48" h="48" />
+							<frame x="192" y="144" w="48" h="48" />
+							<frame x="240" y="144" w="48" h="48" />
+							<frame x="288" y="144" w="48" h="48" />
+							<frame x="336" y="144" w="48" h="48" />
+							<frame x="384" y="144" w="48" h="48" />
+						</moving>
+						<attack loop="false" speed="0.075">
+							<frame x="0" y="192" w="48" h="48" />
+							<frame x="48" y="192" w="48" h="48" />
+							<frame x="96" y="192" w="48" h="48" />
+							<frame x="144" y="192" w="48" h="48" />
+							<frame x="192" y="192" w="48" h="48" />
+							<frame x="240" y="192" w="48" h="48" />
+							<frame x="288" y="192" w="48" h="48" />
+							<frame x="336" y="192" w="48" h="48" />
+							<frame x="384" y="192" w="48" h="48" />
+						</attack>
+						<damage loop="false" speed="0.075">
+							<frame x="0" y="240" w="48" h="48" />
+							<frame x="48" y="240" w="48" h="48" />
+							<frame x="96" y="240" w="48" h="48" />
+							<frame x="144" y="240" w="48" h="48" />
+							<frame x="192" y="240" w="48" h="48" />
+						</damage>
+						<death loop="false" speed="0.075">
+							<frame x="0" y="288" w="48" h="48" />
+							<frame x="48" y="288" w="48" h="48" />
+							<frame x="96" y="288" w="48" h="48" />
+							<frame x="144" y="288" w="48" h="48" />
+							<frame x="192" y="288" w="48" h="48" />
+							<frame x="240" y="288" w="48" h="48" />
+							<frame x="288" y="288" w="48" h="48" />
+							<frame x="336" y="288" w="48" h="48" />
+							<frame x="384" y="288" w="48" h="48" />
+							<frame x="432" y="288" w="48" h="48" />
+							<frame x="480" y="288" w="48" h="48" />
+						</death>
+					</animations>
+				</enemy>
+				<enemy name="flyingEnemy2" Flyingtype="true" x="550" y="200" w="48" h="48" life="2" damage="1" texture="Assets/Textures/enemies/flyingEnemy.png" gravity="false">
+					<animations>
+						<sleep loop="true" speed="0.075">
+							<frame x="0" y="0" w="48" h="48" />
+							<frame x="48" y="0" w="48" h="48" />
+							<frame x="96" y="0" w="48" h="48" />
+						</sleep>
+						<wake loop="false" speed="0.075">
+							<frame x="0" y="48" w="48" h="48" />
+							<frame x="48" y="48" w="48" h="48" />
+							<frame x="96" y="48" w="48" h="48" />
+							<frame x="144" y="48" w="48" h="48" />
+							<frame x="192" y="48" w="48" h="48" />
+							<frame x="240" y="48" w="48" h="48" />
+							<frame x="288" y="48" w="48" h="48" />
+							<frame x="336" y="48" w="48" h="48" />
+							<frame x="384" y="48" w="48" h="48" />
+							<frame x="432" y="48" w="48" h="48" />
+							<frame x="480" y="48" w="48" h="48" />
+							<frame x="528" y="48" w="48" h="48" />
+							<frame x="576" y="48" w="48" h="48" />
+							<frame x="624" y="48" w="48" h="48" />
+							<frame x="672" y="48" w="48" h="48" />
+							<frame x="720" y="48" w="48" h="48" />
+							<frame x="768" y="48" w="48" h="48" />
+						</wake>
+						<idle loop="true" speed="0.075">
+							<frame x="0" y="96" w="48" h="48" />
+							<frame x="48" y="96" w="48" h="48" />
+							<frame x="96" y="96" w="48" h="48" />
+							<frame x="144" y="96" w="48" h="48" />
+							<frame x="192" y="96" w="48" h="48" />
+							<frame x="240" y="96" w="48" h="48" />
+							<frame x="288" y="96" w="48" h="48" />
+							<frame x="336" y="96" w="48" h="48" />
+							<frame x="384" y="96" w="48" h="48" />
+						</idle>
+						<moving loop="true" speed="0.075">
+							<frame x="0" y="144" w="48" h="48" />
+							<frame x="48" y="144" w="48" h="48" />
+							<frame x="96" y="144" w="48" h="48" />
+							<frame x="144" y="144" w="48" h="48" />
+							<frame x="192" y="144" w="48" h="48" />
+							<frame x="240" y="144" w="48" h="48" />
+							<frame x="288" y="144" w="48" h="48" />
+							<frame x="336" y="144" w="48" h="48" />
+							<frame x="384" y="144" w="48" h="48" />
+						</moving>
+						<attack loop="false" speed="0.075">
+							<frame x="0" y="192" w="48" h="48" />
+							<frame x="48" y="192" w="48" h="48" />
+							<frame x="96" y="192" w="48" h="48" />
+							<frame x="144" y="192" w="48" h="48" />
+							<frame x="192" y="192" w="48" h="48" />
+							<frame x="240" y="192" w="48" h="48" />
+							<frame x="288" y="192" w="48" h="48" />
+							<frame x="336" y="192" w="48" h="48" />
+							<frame x="384" y="192" w="48" h="48" />
+						</attack>
+						<damage loop="false" speed="0.075">
+							<frame x="0" y="240" w="48" h="48" />
+							<frame x="48" y="240" w="48" h="48" />
+							<frame x="96" y="240" w="48" h="48" />
+							<frame x="144" y="240" w="48" h="48" />
+							<frame x="192" y="240" w="48" h="48" />
+						</damage>
+						<death loop="false" speed="0.075">
+							<frame x="0" y="288" w="48" h="48" />
+							<frame x="48" y="288" w="48" h="48" />
+							<frame x="96" y="288" w="48" h="48" />
+							<frame x="144" y="288" w="48" h="48" />
+							<frame x="192" y="288" w="48" h="48" />
+							<frame x="240" y="288" w="48" h="48" />
+							<frame x="288" y="288" w="48" h="48" />
+							<frame x="336" y="288" w="48" h="48" />
+							<frame x="384" y="288" w="48" h="48" />
+							<frame x="432" y="288" w="48" h="48" />
+							<frame x="480" y="288" w="48" h="48" />
 						</death>
 					</animations>
 				</enemy>

@@ -19,6 +19,7 @@ enum EnemyAnimationState {
 	IDLE,
 	ATTACK,
 	MOVING,
+	DAMAGE,
 	JUMPING
 };
 
@@ -75,7 +76,7 @@ private:
 
 	EnemyAnimationState AnimState;
 
-	float jumpForce = 1.8f;
+	float jumpForce = 2.0f;
 	int idleCount = IDLECOUNT;
 	bool idleMove = true;
 
@@ -84,16 +85,24 @@ private:
 	const char* texturePath;
 	int texW, texH;
 	pugi::xml_node parameters;
+
 	Animation* currentAnimation = nullptr;
+	Animation sleep;
+	Animation wake;
 	Animation idle;
+	Animation moving;
+	Animation attack;
+	Animation damage;
 	Animation death;
 
 	bool isDying = false;
 	bool isDead = false;
 	bool isJumping = false;
 	bool isFalling = true;
+	bool resetDirection = false;
 
 	Pathfinding* pathfinding;
+	bool playerFound = false;
 
 	EnemyLook look = EnemyLook::LEFT;
 	SDL_RendererFlip flip;
