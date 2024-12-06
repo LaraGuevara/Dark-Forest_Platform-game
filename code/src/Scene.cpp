@@ -209,6 +209,7 @@ void Scene::LoadState() {
 				std::string saveName = saveNode.attribute("name").as_string();
 				if (saveName == enemyName) {
 					enemyList[i]->SetPosition(Vector2D(saveNode.attribute("x").as_int(), saveNode.attribute("y").as_int()));
+					enemyList[i]->SetWake();
 					alive = true;
 				}
 			}

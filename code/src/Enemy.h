@@ -57,6 +57,11 @@ public:
 
 	bool CleanUp();
 
+	void SetWake() {
+		isSleeping = false;
+		startPathfinding = true;
+	}
+
 	void SetParameters(pugi::xml_node parameters) {
 		this->parameters = parameters;
 	}
