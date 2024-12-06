@@ -4,6 +4,7 @@
 #include "SDL2/SDL.h"
 #include "Animation.h"
 #include "Pathfinding.h"
+#include <SDL2/SDL_mixer.h>
 
 #define IDLECOUNT 64
 
@@ -114,4 +115,7 @@ private:
 
 	EnemyLook look = EnemyLook::LEFT;
 	SDL_RendererFlip flip;
+
+	Mix_Chunk* AttackFX;
+	Mix_Chunk* DamageFX;
 };

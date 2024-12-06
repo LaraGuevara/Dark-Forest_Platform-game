@@ -38,8 +38,13 @@ bool Enemy::Start() {
 	damage.LoadAnimations(parameters.child("animations").child("damage"));
 	death.LoadAnimations(parameters.child("animations").child("death"));
 
+	//load damage soundfx
+	Mix_Volume(4, 90);
+	DamageFX = Mix_LoadWAV("Assets/Audio/Fx/Spell Impact 1.wav");
+
 	// Set the enemy type
 	if (parameters.attribute("Flyingtype").as_bool() == true) {
+		AttackFX = Mix_LoadWAV("Assets/Audio/Fx/Spell Impact 3.wav");
 		type = EnemyType::FLYING;
 		AnimState = EnemyAnimationState::SLEEP;
 		//load flying animations
@@ -51,6 +56,7 @@ bool Enemy::Start() {
 		currentAnimation = &sleep;
 	}
 	else {
+		AttackFX = Mix_LoadWAV("Assets/Audio/Fx/Rock Meteor Throw 2.wav");
 		type = EnemyType::WALKING;
 		AnimState = EnemyAnimationState::IDLE;
 		look = EnemyLook::RIGHT;
@@ -475,9 +481,11 @@ void Enemy::OnCollision(PhysBody* physA, PhysBody* physB) {
 		else {
 			playerFound = true;
 			isAttacking = true;
+			Mix_PlayChannel(4, AttackFX, 0);
 		}
 		break;
 	case ColliderType::ATTACK:
+		Mix_PlayChannel(4, DamageFX, 0);
 		life = life - physB->damageDone;
 		isDamaged = true;
 		LOG("DAMAGE %d", life);

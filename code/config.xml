@@ -15,12 +15,11 @@
 		<fullscreen_window value="false" />
 	</window>
 	<save>
-		<player x="843" y="172" />
+		<player x="851" y="165" />
 		<enemies>
-			<enemy name="walkingEnemy1" x="1331" y="193" />
-			<enemy name="walkingEnemy2" x="2291" y="96" />
-			<enemy name="flyingEnemy1" x="2504" y="304" />
-			<enemy name="flyingEnemy2" x="350" y="184" />
+			<enemy name="walkingEnemy1" x="1273" y="193" />
+			<enemy name="walkingEnemy2" x="2300" y="96" />
+			<enemy name="flyingEnemy1" x="2579" y="208" />
 		</enemies>
 	</save>
 	<scene>
