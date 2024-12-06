@@ -29,7 +29,7 @@
 
 ## GAME
 ---
-This first release consist of the first level of the game. It is a simple plataform level based, without enemies or collectibles. It is themed after a candyland, and it's protagonists is a cotton candy kitty. 
+This second release consist of the first level of the game. It is a simple plataform level based, however it has two types of enemies, a ground and a flying one. You now have the possiblity to attack the enmies, with it's respecting animations. It is themed after a witch world, and it's protagonists is a nice witch. 
 
 [Last release](https://github.com/LaraGuevara/Platform-game/releases/download/v.0.1/v.0.1.PixelPioneers-Platformer-Alpha.zip)
 
@@ -38,6 +38,7 @@ This first release consist of the first level of the game. It is a simple plataf
 ---
 * A move left
 * D move right
+* Q attack
 * SPACE jump
 
   GOD MODE:
@@ -53,11 +54,17 @@ This first release consist of the first level of the game. It is a simple plataf
 * F10 God Mode (fly around, cannot be killed)
 * F11 Enable/Disable FPS cap to 30
 * F5 Save game
-* f6 Load game
+* F6 Load game
 
 ## FEATURES
 ---
-* PLayer with animations and colliders
+* Player with animations and colliders
 * Object with collision
 * Diverse map
-* PLataforms with dynamic created colliders
+* Plataforms with dynamic created colliders
+* Checkpoints with automatic save (Based on sensors)
+* Saving on command
+* Flying enemy with pathfinding
+* Ground enemy with pathfinding
+* Killing enemies with an attack
+* Audio and fx sounds
