@@ -46,9 +46,13 @@ public:
 
 	bool Update(float dt);
 
+	void UpdateChecks();
+
 	void WalkingEnemyUpdate(float dt);
 
 	void FlyingEnemyUpdate(float dt);
+
+	bool Waking();
 
 	bool CleanUp();
 
@@ -95,10 +99,14 @@ private:
 	Animation damage;
 	Animation death;
 
+	bool isSleeping = true;
+	bool startPathfinding = false;
 	bool isDying = false;
 	bool isDead = false;
 	bool isJumping = false;
 	bool isFalling = true;
+	bool isDamaged = false;
+	bool isAttacking = false;
 	bool resetDirection = false;
 
 	Pathfinding* pathfinding;

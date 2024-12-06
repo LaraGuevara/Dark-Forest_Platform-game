@@ -95,6 +95,7 @@ bool Player::Update(float dt)
 	}
 
 	if (isDamaged and state != Player_State::DAMAGE and playerDeath != true){
+		pbody->body->SetType(b2_staticBody);
 		state = Player_State::DAMAGE;
 		currentAnimation = &damage;
 	}
@@ -104,6 +105,7 @@ bool Player::Update(float dt)
 			isDamaged = false;
 			state = Player_State::IDLE;
 			currentAnimation = &idle;
+			pbody->body->SetType(b2_dynamicBody);
 			damage.Reset();
 		}
 	}
