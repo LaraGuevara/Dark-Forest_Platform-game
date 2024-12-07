@@ -184,14 +184,14 @@ bool Player::Update(float dt)
 b2Vec2 Player::PlayerMovement(float dt, b2Vec2 velocity) {
 	// Move left
 	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_A) == KEY_REPEAT) {
-		velocity.x = -0.2 * dt;
+		velocity.x = -0.2 * 16;
 		isMoving = true;
 		look = Player_Look::LEFT;
 	}
 
 	// Move right
 	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) {
-		velocity.x = 0.2 * dt;
+		velocity.x = 0.2 * 16;
 		isMoving = true;
 		look = Player_Look::RIGHT;
 	}
@@ -209,13 +209,13 @@ b2Vec2 Player::PlayerMovement(float dt, b2Vec2 velocity) {
 		bool moving = false;
 		//move up
 		if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_W) == KEY_REPEAT) {
-			velocity.y = -0.2 * dt;
+			velocity.y = -0.2 * 16;
 			moving = true;
 		}
 
 		//move down
 		if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_S) == KEY_REPEAT) {
-			velocity.y = 0.2 * dt;
+			velocity.y = 0.2 * 16;
 			moving = true;
 		}
 

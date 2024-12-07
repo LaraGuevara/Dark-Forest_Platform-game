@@ -219,12 +219,12 @@ void Enemy::WalkingEnemyUpdate(float dt){
 		//Check if next tile is to the right or left and add movement 
 		if (nextPos.getX() > tilePos.getX()) {
 			LOG("RIGHT");
-			velocity.x = 0.15 * dt;
+			velocity.x = 0.15 * 16;
 			look = EnemyLook::RIGHT;
 		}
 		else if (nextPos.getX() < tilePos.getX()) {
 			LOG("LEFT: %d, %d", tilePos.getX(), nextPos.getX());
-			velocity.x = -0.15 * dt;
+			velocity.x = -0.15 * 16;
 			look = EnemyLook::LEFT;
 		}
 
@@ -278,7 +278,7 @@ void Enemy::WalkingEnemyUpdate(float dt){
 		else if (look == EnemyLook::RIGHT) {
 			bool jumpable = Engine::GetInstance().map.get()->IsTileJumpable(pos.getX() + 16, pos.getY() + 16);
 			if(!jumpable){
-				velocity.x = 0.1 * dt;
+				velocity.x = 0.1 * 16;
 				if (AnimState != EnemyAnimationState::MOVING) {
 					AnimState = EnemyAnimationState::MOVING;
 					currentAnimation = &moving;
@@ -294,7 +294,7 @@ void Enemy::WalkingEnemyUpdate(float dt){
 		} else if (look == EnemyLook::LEFT) {
 			bool jumpable = Engine::GetInstance().map.get()->IsTileJumpable(pos.getX() + 16, pos.getY() + 16);
 			if (!jumpable) {
-				velocity.x = -0.1 * dt;
+				velocity.x = -0.1 * 16;
 				if (AnimState != EnemyAnimationState::MOVING) {
 					AnimState = EnemyAnimationState::MOVING;
 					currentAnimation = &moving;
@@ -347,22 +347,22 @@ void Enemy::FlyingEnemyUpdate(float dt) {
 			//Check if next tile is to the right, left, up or down and add movement 
 			bool moved = false;
 			if (nextPos.getX() > tilePos.getX()) {
-				velocity.x = 0.15 * dt;
+				velocity.x = 0.15 * 16;
 				look = EnemyLook::RIGHT;
 				moved = true;
 			}
 			else if (nextPos.getX() < tilePos.getX()) {
-				velocity.x = -0.15 * dt;
+				velocity.x = -0.15 * 16;
 				look = EnemyLook::LEFT;
 				moved = true;
 			}
 
 			if (!moved) {
 				if (nextPos.getY() < tilePos.getY()) {
-					velocity.y = -0.15 * dt;
+					velocity.y = -0.15 * 16;
 				}
 				else if (nextPos.getY() > tilePos.getY()) {
-					velocity.y = 0.15 * dt;
+					velocity.y = 0.15 * 16;
 				}
 			}
 
@@ -405,7 +405,7 @@ void Enemy::FlyingEnemyUpdate(float dt) {
 			}
 		}
 		else if (look == EnemyLook::RIGHT) {
-			velocity.x = 0.1 * dt;
+			velocity.x = 0.1 * 16;
 			if (AnimState != EnemyAnimationState::MOVING) {
 				AnimState = EnemyAnimationState::MOVING;
 				currentAnimation = &idle;
@@ -413,7 +413,7 @@ void Enemy::FlyingEnemyUpdate(float dt) {
 			--idleCount;
 		}
 		else if (look == EnemyLook::LEFT) {
-			velocity.x = -0.1 * dt;
+			velocity.x = -0.1 * 16;
 			if (AnimState != EnemyAnimationState::MOVING) {
 				AnimState = EnemyAnimationState::MOVING;
 				currentAnimation = &moving;

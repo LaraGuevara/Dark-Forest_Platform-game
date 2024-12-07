@@ -41,6 +41,10 @@ public:
 	// Called before quitting
 	bool CleanUp();
 
+	float GetDt() {
+		return dt;
+	}
+
 private:
 
 	// Private constructor to prevent instantiation
