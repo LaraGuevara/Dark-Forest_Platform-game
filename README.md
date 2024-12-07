@@ -16,16 +16,21 @@
 * Tilesets credits:
   * [Oak Woods — Environment Asset 🍂 by brullov](https://brullov.itch.io/oak-woods)
   * [STRINGSTAR FIELDS by Trixie](https://trixelized.itch.io/starstring-fields)
-* UI sprites credit:
- *[UI books & more](https://srtoasty.itch.io/ui-assets-pack-2)   
+* UI sprites credits:
+  * [UI books & more by Sr.Toasty](https://srtoasty.itch.io/ui-assets-pack-2)
+  * [FREE UI Icons - MoonRoar Asset Series by Studios SoulAres](https://soulares.itch.io/free-ui)
 * Enemies sprite credit:
-  * [Blobfish || Pixel Asset Pack by Pop Shop Packs](https://pop-shop-packs.itch.io/blobfish-pixel-asset-pack)
+  * [Dark Fantasy Enemies by MonoPixelArt](https://monopixelart.itch.io/dark-fantasy-enemies-asset-pack)
+  * [Golems Asset Pack by MonoPixelArt](https://monopixelart.itch.io/golems-pack)
 * Music and sound credits:
   * [FREE - Character Footsteps (Dirt & Grass) (80 sounds effects) by nebula audio](https://nebula-audio.itch.io/character-footsteps-rock-grass-pack-1)
   * [Fantasy Sound Effects by ivyism](https://ivyism.itch.io/fantasy-pack)
   * [Fantasy UI Sound Effects by Atelier Magicae](https://ateliermagicae.itch.io/fantasy-ui-sound-effects)
   * [Free Ambient Music (Loop) by Mayra](https://mayragandra.itch.io/freeambientmusic)
   * [Free Fantasy 200 SFX Pack by TomMusic](https://tommusic.itch.io/free-fantasy-200-sfx-pack)
+* Additional Credits:
+  * Checkpoints: [Cauldron / cooking pot on a fire by kaiowoka](https://kaiowoka.itch.io/cauldron-cooking-pot-on-a-fire)
+  * Attacks: [Thunder Spell Effect 01 by pimen](https://pimen.itch.io/thunder-spell-effect-01)
 
 ## GAME
 ---
@@ -41,11 +46,12 @@ This second release consist of the first level of the game. It is a simple plata
 * Q attack
 * SPACE jump
 
-  GOD MODE:
-  W up
-  A left
-  S down
-  D right
+## GOD MODE:
+---
+* W up
+* A left
+* S down
+* D right
 
 ### DEBUG FUNCTIONS 
 ---
@@ -63,8 +69,9 @@ This second release consist of the first level of the game. It is a simple plata
 * Diverse map
 * Plataforms with dynamic created colliders
 * Checkpoints with automatic save (Based on sensors)
-* Saving on command
+* Saving and loading on command
 * Flying enemy with pathfinding
 * Ground enemy with pathfinding
 * Killing enemies with an attack
+* Health and power bar
 * Audio and fx sounds
