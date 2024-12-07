@@ -7,6 +7,8 @@
 #include "Animation.h"
 #include "Attack.h"
 
+#define ATTACKCOOLDOWN 600
+
 enum class Player_State{
 IDLE, WALK, JUMP, FALL, ATTACK, DAMAGE, DIE};
 
@@ -59,6 +61,8 @@ public:
 public:
 
 	int lifeValue;
+	int power;
+	int attackCooldown = ATTACKCOOLDOWN;
 
 	bool isAttacking = false;
 	bool isDamaged = false;

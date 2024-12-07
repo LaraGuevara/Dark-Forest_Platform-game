@@ -50,6 +50,7 @@ bool Scene::Start()
 	Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 1024);
 	Engine::GetInstance().map->Load("Assets/Maps/", "newnocandymap.tmx");
 	helptex = Engine::GetInstance().textures.get()->Load("Assets/Textures/menu.png");
+	healthbar = Engine::GetInstance().textures.get()->Load("Assets/Textures/healthbar.png");
 
 	//create checkpoints
 	checkpointList = Engine::GetInstance().map->LoadCheckpoints();
@@ -57,7 +58,7 @@ bool Scene::Start()
 	Mix_VolumeMusic(60);
 	saveFX = Mix_LoadWAV("Assets/Audio/Fx/Fantasy_UI (30).wav");
 	loadFX = Mix_LoadWAV("Assets/Audio/Fx/Success 1 (subtle).wav");
-	attackFX = Mix_LoadWAV("Assets/Audio/Fx/Ice Throw 1.wav");
+	attackFX = Mix_LoadWAV("Assets/Audio/Fx/Fireball 2.wav");
 	backgroundMusic = Mix_LoadMUS("Assets/Audio/Fx/Ambient Music.wav");
 	Mix_PlayMusic(backgroundMusic, -1);
 	
@@ -73,6 +74,13 @@ bool Scene::PreUpdate()
 // Called each loop iteration
 bool Scene::Update(float dt)
 {
+	//draw healthbar
+	Engine::GetInstance().render.get()->DrawTexture(healthbar, 10, 20, &healthRect, SDL_FLIP_NONE, false);
+	SDL_Rect pointsRect = { 0,32,32 + (GetPlayerLife()*4), 3};
+	Engine::GetInstance().render.get()->DrawTexture(healthbar, 10, 42, &pointsRect, SDL_FLIP_NONE, false);
+	pointsRect = { 0,35,32 + (GetPlayerPower() * 4), 3 };
+	Engine::GetInstance().render.get()->DrawTexture(healthbar, 10, 56, &pointsRect, SDL_FLIP_NONE, false);
+
 	//help menu
 	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_H) == KEY_DOWN) {
 		if (help) help = false;
@@ -104,15 +112,18 @@ bool Scene::Update(float dt)
 
 	//attack creation
 	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_Q) == KEY_DOWN) {
-		Mix_PlayChannel(2, attackFX, 0);
-		player->isAttacking = true;
-		Attack* attack = (Attack*)Engine::GetInstance().entityManager->CreateEntity(EntityType::ATTACK);
-		Vector2D playerPos = GetPlayerPosition();
-		if (player->look == Player_Look::RIGHT) attack->position = Vector2D(playerPos.getX() + 30, playerPos.getY() - 10);
-		else attack->position = Vector2D(playerPos.getX() - 30, playerPos.getY() - 10);
-		attack->SetFlip(player->flip);
-		attack->Start();
-		attackList.push_back(attack);
+		if (GetPlayerPower() >= 2) {
+			Mix_PlayChannel(2, attackFX, 0);
+			player->isAttacking = true;
+			Attack* attack = (Attack*)Engine::GetInstance().entityManager->CreateEntity(EntityType::ATTACK);
+			Vector2D playerPos = GetPlayerPosition();
+			if (player->look == Player_Look::RIGHT) attack->position = Vector2D(playerPos.getX() + 30, playerPos.getY() - 10);
+			else attack->position = Vector2D(playerPos.getX() - 30, playerPos.getY() - 10);
+			attack->SetFlip(player->flip);
+			attack->Start();
+			attackList.push_back(attack);
+			player->power = player->power - 2;
+		}
 	}
 
 	//check and delete finished attack effects
@@ -136,7 +147,8 @@ bool Scene::Update(float dt)
 		}
 	}
 
-	if (help) Engine::GetInstance().render.get()->DrawTexture(helptex, 900, -10, NULL, SDL_FLIP_NONE, false);
+	//draw help menu
+	if (help) Engine::GetInstance().render.get()->DrawTexture(helptex, 750, 0, NULL, SDL_FLIP_NONE, false);
 	
 	Engine::GetInstance().render.get()->camera.x = ((player->GetXPos() * -1) + 200) *2;
 
@@ -178,6 +190,7 @@ bool Scene::CleanUp()
 
 	SDL_DestroyTexture(img);
 	SDL_DestroyTexture(helptex);
+	SDL_DestroyTexture(healthbar);
 
 	return true;
 }

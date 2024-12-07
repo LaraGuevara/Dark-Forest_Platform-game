@@ -365,27 +365,12 @@
 			</enemies>
 			<attack gravity="false" w="32" h="32" damage="1" texture="Assets/Textures/attack.png">
 				<animation>
-					<idle loop="false" speed="0.3">
+					<idle loop="true" speed="0.1">
 						<frame x="0" y="0" w="32" h="32" />
 						<frame x="32" y="0" w="32" h="32" />
 						<frame x="64" y="0" w="32" h="32" />
 						<frame x="96" y="0" w="32" h="32" />
 						<frame x="128" y="0" w="32" h="32" />
-						<frame x="160" y="0" w="32" h="32" />
-						<frame x="192" y="0" w="32" h="32" />
-						<frame x="224" y="0" w="32" h="32" />
-						<frame x="256" y="0" w="32" h="32" />
-						<frame x="288" y="0" w="32" h="32" />
-						<frame x="320" y="0" w="32" h="32" />
-						<frame x="352" y="0" w="32" h="32" />
-						<frame x="384" y="0" w="32" h="32" />
-						<frame x="416" y="0" w="32" h="32" />
-						<frame x="448" y="0" w="32" h="32" />
-						<frame x="480" y="0" w="32" h="32" />
-						<frame x="512" y="0" w="32" h="32" />
-						<frame x="544" y="0" w="32" h="32" />
-						<frame x="576" y="0" w="32" h="32" />
-						<frame x="608" y="0" w="32" h="32" />
 					</idle>
 				</animation>
 			</attack>

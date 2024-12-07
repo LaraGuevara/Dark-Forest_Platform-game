@@ -488,6 +488,10 @@ void Enemy::OnCollision(PhysBody* physA, PhysBody* physB) {
 		Mix_PlayChannel(4, DamageFX, 0);
 		life = life - physB->damageDone;
 		isDamaged = true;
+		if (isSleeping) {
+			isSleeping = false;
+			startPathfinding = true;
+		}
 		LOG("DAMAGE %d", life);
 		break;
 	case ColliderType::DEATH:

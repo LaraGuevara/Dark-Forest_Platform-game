@@ -49,6 +49,7 @@ bool Player::Start() {
 	//set life
 	life = parameters.attribute("life").as_int();
 	lifeValue = life;
+	power = life;
 
 	pbody = Engine::GetInstance().physics.get()->CreateCircle((int)position.getX() + texH / 2, (int)position.getY() + texH / 2, texW/2, bodyType::DYNAMIC);
 	//pbody = Engine::GetInstance().physics.get()->CreateCircle((int)position.getX() - texW / 2, (int)position.getY() + texH / 2, texH/2, bodyType::DYNAMIC);
@@ -71,6 +72,18 @@ bool Player::Start() {
 
 bool Player::Update(float dt)
 {
+	//earn power points if not full
+	if (power < lifeValue) {
+		--attackCooldown;
+		if (attackCooldown <= 0) {
+			++power;
+			attackCooldown = ATTACKCOOLDOWN;
+		}
+	}
+	else {
+		if(attackCooldown != ATTACKCOOLDOWN) attackCooldown = ATTACKCOOLDOWN;
+	}
+	
 	respawn = false;
 	b2Vec2 velocity = b2Vec2(0, -GRAVITY_Y);
 	if(isDying) velocity.y = 0;
