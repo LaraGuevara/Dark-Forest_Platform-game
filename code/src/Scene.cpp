@@ -111,7 +111,7 @@ bool Scene::Update(float dt)
 	}
 
 	//attack creation
-	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_Q) == KEY_DOWN) {
+	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_Q) == KEY_DOWN and player->state != Player_State::DIE) {
 		if (GetPlayerPower() >= 2) {
 			Mix_PlayChannel(2, attackFX, 0);
 			player->isAttacking = true;
