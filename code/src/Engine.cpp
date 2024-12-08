@@ -137,6 +137,7 @@ bool Engine::Update() {
             maxFrameDuration = 16;
             sixtyfps = true;
         }
+        scene->ChangeTimerVar(sixtyfps);
     }
 
     if (input->GetWindowEvent(WE_QUIT) == true)

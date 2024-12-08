@@ -54,6 +54,8 @@ public:
 
 	void SaveState();
 
+	void ChangeTimerVar(bool sixty);
+
 private:
 	//textures
 	SDL_Texture* img;

@@ -63,6 +63,7 @@ public:
 	int lifeValue;
 	int power;
 	int attackCooldown = ATTACKCOOLDOWN;
+	int timerVar = 1;
 
 	bool isAttacking = false;
 	bool isDamaged = false;

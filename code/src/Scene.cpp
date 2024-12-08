@@ -265,3 +265,19 @@ void Scene::SaveState() {
 }
 
 
+void Scene::ChangeTimerVar(bool sixty) {
+	if (sixty) {
+		player->timerVar = 1;
+		for (auto e : enemyList) {
+			e->timerVar = 1;
+		}
+	}
+	else {
+		player->timerVar = 2;
+		for (auto e : enemyList) {
+			e->timerVar = 2;
+		}
+	}
+}
+
+

@@ -252,7 +252,7 @@ void Enemy::WalkingEnemyUpdate(float dt){
 		--idleCount;
 		if (idleCount <= 0) {
 			playerFound = false;
-			idleCount = IDLECOUNT;
+			idleCount = (IDLECOUNT / timerVar);
 		}
 	}
 	else {
@@ -265,7 +265,7 @@ void Enemy::WalkingEnemyUpdate(float dt){
 				if (look == EnemyLook::LEFT) look = EnemyLook::RIGHT;
 				else look = EnemyLook::LEFT;
 			}
-			idleCount = IDLECOUNT;
+			idleCount = (IDLECOUNT / timerVar);
 		}
 
 		if (!idleMove) {
@@ -381,20 +381,20 @@ void Enemy::FlyingEnemyUpdate(float dt) {
 		--idleCount;
 		if (idleCount <= 0) {
 			playerFound = false;
-			idleCount = IDLECOUNT;
+			idleCount = (IDLECOUNT / timerVar);
 		}
 	}
 	else if (!isSleeping){
 		pathfinding->ResetPath(tilePos);
 		//if player isn't within range: do idle pattern
-		if (idleCount == IDLECOUNT/2) {
+		if (idleCount <= (IDLECOUNT/ timerVar)/2) {
 			if (idleMove) idleMove = false;
 			else {
 				idleMove = true;
 				if (look == EnemyLook::LEFT) look = EnemyLook::RIGHT;
 				else look = EnemyLook::LEFT;
 			}
-			idleCount = IDLECOUNT;
+			idleCount = (IDLECOUNT / timerVar);
 		}
 
 		if (!idleMove) {

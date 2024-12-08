@@ -77,11 +77,11 @@ bool Player::Update(float dt)
 		--attackCooldown;
 		if (attackCooldown <= 0) {
 			++power;
-			attackCooldown = ATTACKCOOLDOWN;
+			attackCooldown = (ATTACKCOOLDOWN/timerVar);
 		}
 	}
 	else {
-		if(attackCooldown != ATTACKCOOLDOWN) attackCooldown = ATTACKCOOLDOWN;
+		if(attackCooldown != (ATTACKCOOLDOWN / timerVar)) attackCooldown = (ATTACKCOOLDOWN / timerVar);
 	}
 	
 	respawn = false;
