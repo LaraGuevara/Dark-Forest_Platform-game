@@ -218,12 +218,12 @@ void Enemy::WalkingEnemyUpdate(float dt){
 
 		//Check if next tile is to the right or left and add movement 
 		if (nextPos.getX() > tilePos.getX()) {
-			LOG("RIGHT");
+			//LOG("RIGHT");
 			velocity.x = 0.15 * 16;
 			look = EnemyLook::RIGHT;
 		}
 		else if (nextPos.getX() < tilePos.getX()) {
-			LOG("LEFT: %d, %d", tilePos.getX(), nextPos.getX());
+			//LOG("LEFT: %d, %d", tilePos.getX(), nextPos.getX());
 			velocity.x = -0.15 * 16;
 			look = EnemyLook::LEFT;
 		}
@@ -265,7 +265,7 @@ void Enemy::WalkingEnemyUpdate(float dt){
 				if (look == EnemyLook::LEFT) look = EnemyLook::RIGHT;
 				else look = EnemyLook::LEFT;
 			}
-			idleCount = (IDLECOUNT / timerVar);
+			idleCount = ((IDLECOUNT/2) / timerVar);
 		}
 
 		if (!idleMove) {
