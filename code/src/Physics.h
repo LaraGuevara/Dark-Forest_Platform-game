@@ -55,6 +55,7 @@ public:
 	int damageDone = 0;
 	//so damage is only done once
 	bool active = false;
+	bool dead = false;
 	//to check look
 	bool lookRight = false;
 

@@ -151,6 +151,7 @@ void Enemy::UpdateChecks() {
 
 	//check if damaged
 	if (isDamaged and AnimState != EnemyAnimationState::DAMAGE and isDead != true) {
+		playerFound = false;
 		pbody->body->SetType(b2_staticBody);
 		AnimState = EnemyAnimationState::DAMAGE;
 		currentAnimation = &damage;
