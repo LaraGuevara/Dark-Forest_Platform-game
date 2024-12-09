@@ -36,7 +36,7 @@
 ---
 This second release consist of the first level of the game. It is a simple plataform level based, however it has two types of enemies, a ground and a flying one. You now have the possiblity to attack the enemies, with it's respecting animations. It is themed after a witch world, and it's protagonists is a nice witch. 
 
-[Last release](https://github.com/LaraGuevara/Platform-game/releases/download/v.0.1/v.0.1.PixelPioneers-Platformer-Alpha.zip)
+[Last release](https://github.com/LaraGuevara/Platform-game/releases/download/v.0.2/PixelPioneers-Platformer-Beta.zip)
 
 
 ## GAMEPLAY
