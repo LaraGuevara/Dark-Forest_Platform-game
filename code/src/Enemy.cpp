@@ -133,11 +133,15 @@ void Enemy::UpdateChecks() {
 
 	//start death animation
 	if (isDead and isDying == false) {
+		pbody->active = true;
+		pbody->dead = true;
 		pbody->body->SetType(b2_staticBody);
 		isDying = true;
 		death.Reset();
 		currentAnimation = &death;
 		LOG("ENEMY DEATH");
+		isDamaged = false;
+		isAttacking = false;
 	}
 
 	//set enemy state to dead to delete enemy
@@ -464,43 +468,50 @@ void Enemy::ResetPath() {
 }
 
 void Enemy::OnCollision(PhysBody* physA, PhysBody* physB) {
-
-	switch (physB->ctype)
-	{
-	case ColliderType::PLATFORM:
-		if (isJumping) {
-			isJumping = false;
+	
+		switch (physB->ctype)
+		{
+		case ColliderType::PLATFORM:
+			if (isJumping) {
+				isJumping = false;
+			}
+			break;
+		case ColliderType::PLAYER:
+			if (!isDead) {
+				if (physA->ctype == ColliderType::SENSOR and playerActivate == false) {
+					LOG("ENEMY ACTIVE");
+					playerActivate = true;
+					resetDirection = true;
+				}
+				else {
+					playerFound = true;
+					isAttacking = true;
+					Mix_PlayChannel(4, AttackFX, 0);
+				}
+			}
+			break;
+		case ColliderType::ATTACK:
+			if (!isDead) {
+				if (physA->ctype == ColliderType::ENEMY) {
+					Mix_PlayChannel(4, DamageFX, 0);
+					life = life - physB->damageDone;
+					isDamaged = true;
+					if (isSleeping) {
+						isSleeping = false;
+						startPathfinding = true;
+					}
+					LOG("DAMAGE %d", life);
+				}
+			}
+			break;
+		case ColliderType::DEATH:
+			if (type == EnemyType::WALKING) state = EnemyState::DEAD;
+			break;
+		default:
+			break;
 		}
-		break;
-	case ColliderType::PLAYER:
-		if (physA->ctype == ColliderType::SENSOR and playerActivate == false) {
-			LOG("ENEMY ACTIVE");
-			playerActivate = true;
-			resetDirection = true;
-		}
-		else {
-			playerFound = true;
-			isAttacking = true;
-			Mix_PlayChannel(4, AttackFX, 0);
-		}
-		break;
-	case ColliderType::ATTACK:
-		Mix_PlayChannel(4, DamageFX, 0);
-		life = life - physB->damageDone;
-		isDamaged = true;
-		if (isSleeping) {
-			isSleeping = false;
-			startPathfinding = true;
-		}
-		LOG("DAMAGE %d", life);
-		break;
-	case ColliderType::DEATH:
-		if(type == EnemyType::WALKING) state = EnemyState::DEAD;
-		break;
-	default:
-		break;
 	}
-}
+
 
 void Enemy::OnCollisionEnd(PhysBody* physA, PhysBody* physB)
 {

@@ -119,12 +119,14 @@ bool Player::Update(float dt)
 			state = Player_State::IDLE;
 			currentAnimation = &idle;
 			pbody->body->SetType(b2_dynamicBody);
+			pbody->body->SetAwake(true);
 			damage.Reset();
 		}
 	}
 
 	//check if player is attacking and set animation
 	if (isAttacking and state != Player_State::ATTACK) {
+		pbody->body->SetType(b2_staticBody);
 		state = Player_State::ATTACK;
 		currentAnimation = &attack;
 	}
@@ -141,6 +143,8 @@ bool Player::Update(float dt)
 				state = Player_State::IDLE;
 				currentAnimation = &idle;
 			}
+			pbody->body->SetType(b2_dynamicBody);
+			pbody->body->SetAwake(true);
 			attack.Reset();
 		}
 	}
@@ -353,7 +357,7 @@ void Player::OnCollisionEnd(PhysBody* physA, PhysBody* physB)
 		break;
 	case ColliderType::ENEMY:
 		LOG("End Collision ENEMY");
-		if (physB->active == true) physB->active = false;
+		if (physB->active == true and physB->dead == false) physB->active = false;
 		break;
 	default:
 		break;
