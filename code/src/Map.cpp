@@ -56,7 +56,8 @@ bool Map::Update(float dt)
                                 //Get the screen coordinates from the tile coordinates
                                 Vector2D mapCoord = MapToWorld(i, j);
                                 //Draw the texture
-                                Engine::GetInstance().render->DrawTexture(tileSet->texture, mapCoord.getX(), mapCoord.getY(), &tileRect);
+                                int cameraX = Engine::GetInstance().render.get()->camera.x;
+                                if(mapCoord.getX() >= -cameraX/2-50 and mapCoord.getX() <= -cameraX / 2 +650) Engine::GetInstance().render->DrawTexture(tileSet->texture, mapCoord.getX(), mapCoord.getY(), &tileRect);
                             }
                         }
                     }
