@@ -5,6 +5,10 @@
 
 struct SDL_Texture;
 
+enum ItemType {
+	HEALTH, POINTS, ABILITY
+};
+
 class Item : public Entity
 {
 public:
@@ -13,6 +17,10 @@ public:
 	virtual ~Item();
 
 	bool Awake();
+
+	void SetType(ItemType t) {
+		type = t;
+	}
 
 	bool Start();
 
@@ -29,6 +37,8 @@ private:
 	SDL_Texture* texture;
 	const char* texturePath;
 	int texW, texH;
+
+	ItemType type;
 
 	//L08 TODO 4: Add a physics to an item
 	PhysBody* pbody;

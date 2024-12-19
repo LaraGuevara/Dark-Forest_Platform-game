@@ -22,14 +22,33 @@ bool Item::Awake() {
 bool Item::Start() {
 
 	//initilize textures
-	texture = Engine::GetInstance().textures.get()->Load("Assets/Textures/goldCoin.png");
+	switch (type){
+	case ItemType::ABILITY:
+		texture = Engine::GetInstance().textures.get()->Load("Assets/Textures/goldCoin.png");
+		break;
+	case ItemType::HEALTH:
+		texture = Engine::GetInstance().textures.get()->Load("Assets/Textures/goldCoin.png");
+		break;
+	case ItemType::POINTS:
+		texture = Engine::GetInstance().textures.get()->Load("Assets/Textures/goldCoin.png");
+		break;
+	}
 	
 	// L08 TODO 4: Add a physics to an item - initialize the physics body
 	Engine::GetInstance().textures.get()->GetSize(texture, texW, texH);
 	pbody = Engine::GetInstance().physics.get()->CreateCircle((int)position.getX() + texH / 2, (int)position.getY() + texH / 2, texH / 2, bodyType::DYNAMIC);
 
-	// L08 TODO 7: Assign collider type
-	pbody->ctype = ColliderType::ITEM;
+	switch (type) {
+	case ItemType::ABILITY:
+		pbody->ctype = ColliderType::ITEM_ABILITY;
+		break;
+	case ItemType::HEALTH:
+		pbody->ctype = ColliderType::ITEM_HEALTH;
+		break;
+	case ItemType::POINTS:
+		pbody->ctype = ColliderType::ITEM_POINTS;
+		break;
+	}
 
 	return true;
 }

@@ -108,18 +108,22 @@ bool Player::Update(float dt)
 	}
 
 	if (isDamaged and state != Player_State::DAMAGE and playerDeath != true){
-		pbody->body->SetType(b2_staticBody);
+		//pbody->body->SetType(b2_kinematicBody);
+		if(damageRight) pbody->body->ApplyLinearImpulseToCenter(b2Vec2(-10, -0.01), true);
+		else pbody->body->ApplyLinearImpulseToCenter(b2Vec2(10, -0.01), true);
+		velocity = pbody->body->GetLinearVelocity();
 		state = Player_State::DAMAGE;
 		currentAnimation = &damage;
 	}
 
 	if (state == Player_State::DAMAGE) {
+		velocity = b2Vec2(0, -GRAVITY_Y);
 		if (damage.HasFinished()) {
 			isDamaged = false;
 			state = Player_State::IDLE;
 			currentAnimation = &idle;
-			pbody->body->SetType(b2_dynamicBody);
-			pbody->body->SetAwake(true);
+			/*pbody->body->SetType(b2_dynamicBody);
+			pbody->body->SetAwake(true);*/
 			damage.Reset();
 		}
 	}
@@ -149,7 +153,7 @@ bool Player::Update(float dt)
 		}
 	}
 
-	if (state != Player_State::DIE and state != Player_State::ATTACK and state != Player_State::DAMAGE) velocity = PlayerMovement(dt, velocity);
+	if (state != Player_State::DIE and state != Player_State::ATTACK) velocity = PlayerMovement(dt, velocity);
 
 	//reset death
 	if (state == Player_State::DIE) {
@@ -186,51 +190,54 @@ bool Player::Update(float dt)
 }
 
 b2Vec2 Player::PlayerMovement(float dt, b2Vec2 velocity) {
-	// Move left
-	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_A) == KEY_REPEAT) {
-		velocity.x = -0.2 * 16;
-		isMoving = true;
-		look = Player_Look::LEFT;
-	}
 
-	// Move right
-	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) {
-		velocity.x = 0.2 * 16;
-		isMoving = true;
-		look = Player_Look::RIGHT;
-	}
-
-	//Jump
-	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN && isJumping == false && godMode == false) {
-		// Apply an initial upward force
-		Mix_PlayChannel(1, jumpStartFX, 0);
-		pbody->body->ApplyLinearImpulseToCenter(b2Vec2(0, -jumpForce), true);
-		isJumping = true;
-	}
-
-	//god mode movement
-	if (godMode) {
-		bool moving = false;
-		//move up
-		if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_W) == KEY_REPEAT) {
-			velocity.y = -0.2 * 16;
-			moving = true;
+	if (state != Player_State::DAMAGE) {
+		// Move left
+		if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_A) == KEY_REPEAT) {
+			velocity.x = -0.2 * 16;
+			isMoving = true;
+			look = Player_Look::LEFT;
 		}
 
-		//move down
-		if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_S) == KEY_REPEAT) {
-			velocity.y = 0.2 * 16;
-			moving = true;
+		// Move right
+		if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) {
+			velocity.x = 0.2 * 16;
+			isMoving = true;
+			look = Player_Look::RIGHT;
 		}
 
-		if (!moving) {
-			velocity.y = 0;
+		//Jump
+		if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN && isJumping == false && godMode == false) {
+			// Apply an initial upward force
+			Mix_PlayChannel(1, jumpStartFX, 0);
+			pbody->body->ApplyLinearImpulseToCenter(b2Vec2(0, -jumpForce), true);
+			isJumping = true;
+		}
+
+		//god mode movement
+		if (godMode) {
+			bool moving = false;
+			//move up
+			if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_W) == KEY_REPEAT) {
+				velocity.y = -0.2 * 16;
+				moving = true;
+			}
+
+			//move down
+			if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_S) == KEY_REPEAT) {
+				velocity.y = 0.2 * 16;
+				moving = true;
+			}
+
+			if (!moving) {
+				velocity.y = 0;
+			}
 		}
 	}
 
 	// If the player is jumpling, we don't want to apply gravity, we use the current velocity prduced by the jump
 	if (isJumping == true) velocity = pbody->body->GetLinearVelocity();
-
+	//if (isDamaged == true and state != Player_State::DAMAGE) velocity = pbody->body->GetLinearVelocity();
 
 	//change animation and state
 	if (isMoving and state != Player_State::DIE and state != Player_State::ATTACK) {
@@ -310,9 +317,6 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 		}
 		//if(state == Player_State::FALL) isJumping = false;
 		break;
-	case ColliderType::ITEM:
-		LOG("Collision ITEM");
-		break;
 	case ColliderType::ENEMY:
 		LOG("Collision ENEMY");
 		if(!godMode and physB->active == false) {
@@ -345,9 +349,6 @@ void Player::OnCollisionEnd(PhysBody* physA, PhysBody* physB)
 	{
 	case ColliderType::PLATFORM:
 		LOG("End Collision PLATFORM");
-		break;
-	case ColliderType::ITEM:
-		LOG("End Collision ITEM");
 		break;
 	case ColliderType::UNKNOWN:
 		LOG("End Collision UNKNOWN");
