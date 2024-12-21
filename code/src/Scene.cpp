@@ -12,6 +12,9 @@
 #include "Map.h"
 #include "Item.h"
 #include "Enemy.h"
+#include "GuiControl.h"
+#include "GuiManager.h"
+
 
 Scene::Scene() : Module()
 {
@@ -29,17 +32,43 @@ bool Scene::Awake()
 	LOG("Loading Scene");
 	bool ret = true;
 
-	player = (Player*)Engine::GetInstance().entityManager->CreateEntity(EntityType::PLAYER);
-	player->SetParameters(configParameters.child("entities").child("player"));
-	
-	/*Item* item = (Item*) Engine::GetInstance().entityManager->CreateEntity(EntityType::ITEM);
-	item->position = Vector2D(100, 0);*/
+	switch (state) {
+	case SceneState::INTRO:
+		break;
+	case SceneState::MENU:
+		startBT = (GuiControlButton*)Engine::GetInstance().guiManager->CreateGuiControl(GuiControlType::BUTTON, GUI_ID::ID_PLAY, "Play", { 40, 230, 200,70 }, this);
+		continueBT = (GuiControlButton*)Engine::GetInstance().guiManager->CreateGuiControl(GuiControlType::BUTTON, GUI_ID::ID_CONTINUE, "Continue", { 40, 310, 200,70 }, this);
+		settingBT = (GuiControlButton*)Engine::GetInstance().guiManager->CreateGuiControl(GuiControlType::BUTTON, GUI_ID::ID_SETTINGS, "Settings", { 40, 390, 200,70 }, this);
+		creditsBT = (GuiControlButton*)Engine::GetInstance().guiManager->CreateGuiControl(GuiControlType::BUTTON, GUI_ID::ID_CREDITS, "Credits", { 40, 470, 200,70 }, this);
+		exitBT = (GuiControlButton*)Engine::GetInstance().guiManager->CreateGuiControl(GuiControlType::BUTTON, GUI_ID::ID_EXIT, "Exit", { 40, 550, 200,70 }, this);
+		break;
+	case SceneState::GAME:
+		player = (Player*)Engine::GetInstance().entityManager->CreateEntity(EntityType::PLAYER);
+		player->SetParameters(configParameters.child("entities").child("player"));
 
-	for (pugi::xml_node enemyNode = configParameters.child("entities").child("enemies").child("enemy"); enemyNode; enemyNode = enemyNode.next_sibling("enemy"))
-	{
-		Enemy* enemy = (Enemy*)Engine::GetInstance().entityManager->CreateEntity(EntityType::ENEMY);
-		enemy->SetParameters(enemyNode);
-		enemyList.push_back(enemy);
+		/*Item* item = (Item*) Engine::GetInstance().entityManager->CreateEntity(EntityType::ITEM);
+		item->position = Vector2D(100, 0);*/
+
+		for (pugi::xml_node enemyNode = configParameters.child("entities").child("enemies").child("enemy"); enemyNode; enemyNode = enemyNode.next_sibling("enemy"))
+		{
+			Enemy* enemy = (Enemy*)Engine::GetInstance().entityManager->CreateEntity(EntityType::ENEMY);
+			enemy->SetParameters(enemyNode);
+			enemyList.push_back(enemy);
+		}
+		break;
+	case SceneState::SETTINGS:
+		break;
+	case SceneState::CREDITS:
+		break;
+	case SceneState::PAUSE:
+		break;
+	case SceneState::DIE:
+		break;
+	case SceneState::LEVELCOMPLETE:
+		break;
+	default:
+		return false;
+		break;
 	}
 	return ret;
 }
@@ -47,20 +76,50 @@ bool Scene::Awake()
 // Called before the first frame
 bool Scene::Start()
 {
-	Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 1024);
-	Engine::GetInstance().map->Load("Assets/Maps/", "newnocandymap.tmx");
-	helptex = Engine::GetInstance().textures.get()->Load("Assets/Textures/menu.png");
-	healthbar = Engine::GetInstance().textures.get()->Load("Assets/Textures/healthbar.png");
+	switch (state) {
+	case SceneState::INTRO:
+		//Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 1024);
+		introImg = Engine::GetInstance().textures.get()->Load("Assets/Textures/screens/intro.png");
+		break;
+	case SceneState::MENU:
+		menuBackground = Engine::GetInstance().textures.get()->Load("Assets/Textures/screens/mainmenu.png");
+		startBT->state = GuiControlState::NORMAL;
+		continueBT->state = GuiControlState::NORMAL;
+		settingBT->state = GuiControlState::NORMAL;
+		creditsBT->state = GuiControlState::NORMAL;
+		exitBT->state = GuiControlState::NORMAL;
+		break;
+	case SceneState::GAME:
+		Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 1024);
+		Engine::GetInstance().map->Load("Assets/Maps/", "newnocandymap.tmx");
+		helptex = Engine::GetInstance().textures.get()->Load("Assets/Textures/menu.png");
+		healthbar = Engine::GetInstance().textures.get()->Load("Assets/Textures/healthbar.png");
 
-	//create checkpoints
-	checkpointList = Engine::GetInstance().map->LoadCheckpoints();
+		//create checkpoints
+		checkpointList = Engine::GetInstance().map->LoadCheckpoints();
 
-	Mix_VolumeMusic(60);
-	saveFX = Mix_LoadWAV("Assets/Audio/Fx/Fantasy_UI (30).wav");
-	loadFX = Mix_LoadWAV("Assets/Audio/Fx/Success 1 (subtle).wav");
-	attackFX = Mix_LoadWAV("Assets/Audio/Fx/Fireball 2.wav");
-	backgroundMusic = Mix_LoadMUS("Assets/Audio/Fx/Ambient Music.wav");
-	Mix_PlayMusic(backgroundMusic, -1);
+		Mix_VolumeMusic(60);
+		saveFX = Mix_LoadWAV("Assets/Audio/Fx/Fantasy_UI (30).wav");
+		loadFX = Mix_LoadWAV("Assets/Audio/Fx/Success 1 (subtle).wav");
+		attackFX = Mix_LoadWAV("Assets/Audio/Fx/Fireball 2.wav");
+		backgroundMusic = Mix_LoadMUS("Assets/Audio/Fx/Ambient Music.wav");
+		Mix_PlayMusic(backgroundMusic, -1);
+		break;
+	case SceneState::SETTINGS:
+		break;
+	case SceneState::CREDITS:
+		break;
+	case SceneState::PAUSE:
+		break;
+	case SceneState::DIE:
+		break;
+	case SceneState::LEVELCOMPLETE:
+		break;
+	default:
+		return false;
+		break;
+	}
+	return true;
 	
 	return true;
 }
@@ -71,8 +130,42 @@ bool Scene::PreUpdate()
 	return true;
 }
 
+bool Scene::Update(float dt) {
+	switch (state) {
+	case SceneState::INTRO:
+		introTime++;
+		if (introTime >= 180 / timeVar) {
+			CleanUp();
+			state = SceneState::MENU;
+			Awake();
+			Start();
+		} else Engine::GetInstance().render.get()->DrawTexture(introImg, 0, 0, NULL, SDL_FLIP_NONE, false);
+		break;
+	case SceneState::MENU:
+		Engine::GetInstance().render.get()->DrawTexture(menuBackground, 0, 0, NULL, SDL_FLIP_NONE, false);
+		break;
+	case SceneState::GAME:
+		GameUpdate(dt);
+		break;
+	case SceneState::SETTINGS:
+		break;
+	case SceneState::CREDITS:
+		break;
+	case SceneState::PAUSE:
+		break;
+	case SceneState::DIE:
+		break;
+	case SceneState::LEVELCOMPLETE:
+		break;
+	default:
+		return false;
+		break;
+	}
+	return true;
+}
+
 // Called each loop iteration
-bool Scene::Update(float dt)
+bool Scene::GameUpdate(float dt)
 {
 	//draw healthbar
 	Engine::GetInstance().render.get()->DrawTexture(healthbar, 10, 20, &healthRect, SDL_FLIP_NONE, false);
@@ -180,6 +273,8 @@ bool Scene::PostUpdate()
 	if(Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_ESCAPE) == KEY_DOWN)
 		ret = false;
 
+	if (toExit) ret = false;
+
 	return ret;
 }
 
@@ -188,11 +283,39 @@ bool Scene::CleanUp()
 {
 	LOG("Freeing scene");
 
-	SDL_DestroyTexture(img);
-	SDL_DestroyTexture(helptex);
-	SDL_DestroyTexture(healthbar);
-
+	switch (state) {
+	case SceneState::INTRO:
+		SDL_DestroyTexture(introImg);
+		break;
+	case SceneState::MENU:
+		SDL_DestroyTexture(menuBackground);
+		startBT->state = GuiControlState::DISABLED;
+		continueBT->state = GuiControlState::DISABLED;
+		settingBT->state = GuiControlState::DISABLED;
+		creditsBT->state = GuiControlState::DISABLED;
+		exitBT->state = GuiControlState::DISABLED;
+		break;
+	case SceneState::GAME:
+		SDL_DestroyTexture(img);
+		SDL_DestroyTexture(helptex);
+		SDL_DestroyTexture(healthbar);
+		break;
+	case SceneState::SETTINGS:
+		break;
+	case SceneState::CREDITS:
+		break;
+	case SceneState::PAUSE:
+		break;
+	case SceneState::DIE:
+		break;
+	case SceneState::LEVELCOMPLETE:
+		break;
+	default:
+		return false;
+		break;
+	}
 	return true;
+
 }
 
 Vector2D Scene::GetPlayerPosition()
@@ -267,12 +390,14 @@ void Scene::SaveState() {
 
 void Scene::ChangeTimerVar(bool sixty) {
 	if (sixty) {
+		timeVar = 1;
 		player->timerVar = 1;
 		for (auto e : enemyList) {
 			e->timerVar = 1;
 		}
 	}
 	else {
+		timeVar = 2;
 		player->timerVar = 2;
 		for (auto e : enemyList) {
 			e->timerVar = 2;
@@ -280,4 +405,32 @@ void Scene::ChangeTimerVar(bool sixty) {
 	}
 }
 
+bool Scene::OnGuiMouseClickEvent(GuiControl* control)
+{
+	// L15: DONE 5: Implement the OnGuiMouseClickEvent method
+	LOG("Press Gui Control: %d", control->id);
+	switch (control->id) {
+	case GUI_ID::ID_PLAY:
+		CleanUp();
+		state = SceneState::GAME;
+		Awake();
+		Engine::GetInstance().entityManager->Awake();
+		Start();
+		Engine::GetInstance().entityManager->Start();
+		break;
+	case GUI_ID::ID_CONTINUE:
+		CleanUp();
+		state = SceneState::GAME;
+		Awake();
+		Engine::GetInstance().entityManager->Awake();
+		Start();
+		Engine::GetInstance().entityManager->Start();
+		LoadState();
+		break;
+	case GUI_ID::ID_EXIT:
+		toExit = true;
+	}
+
+	return true;
+}
 
