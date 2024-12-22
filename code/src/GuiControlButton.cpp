@@ -10,6 +10,9 @@ GuiControlButton::GuiControlButton(int id, SDL_Rect bounds, const char* text) : 
 
 	canClick = true;
 	drawBasic = false;
+
+	hoverFX = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/UI/Fantasy_UI (3).wav");
+	selectFX = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/UI/Fantasy_UI (18).wav");
 }
 
 GuiControlButton::~GuiControlButton()
@@ -27,13 +30,17 @@ bool GuiControlButton::Update(float dt)
 		//If the position of the mouse if inside the bounds of the button 
 		if (mousePos.getX()*2 > bounds.x && mousePos.getX()*2 < bounds.x + bounds.w && mousePos.getY()*2 > bounds.y && mousePos.getY()*2 < bounds.y + bounds.h) {
 		
-			state = GuiControlState::FOCUSED;
+			if (state != GuiControlState::FOCUSED) {
+				state = GuiControlState::FOCUSED;
+				Engine::GetInstance().audio->PlayFx(hoverFX);
+			}
 
 			if (Engine::GetInstance().input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KEY_REPEAT) {
 				state = GuiControlState::PRESSED;
 			}
 			
 			if (Engine::GetInstance().input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KEY_UP) {
+				Engine::GetInstance().audio->PlayFx(selectFX);
 				NotifyObserver();
 			}
 		}

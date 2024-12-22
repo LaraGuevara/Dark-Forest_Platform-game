@@ -122,6 +122,6 @@ private:
 	EnemyLook look = EnemyLook::LEFT;
 	SDL_RendererFlip flip;
 
-	Mix_Chunk* AttackFX;
-	Mix_Chunk* DamageFX;
+	int AttackFX;
+	int DamageFX;
 };

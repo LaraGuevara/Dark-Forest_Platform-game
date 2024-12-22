@@ -90,7 +90,7 @@ bool Scene::Start()
 		exitBT->state = GuiControlState::NORMAL;
 		break;
 	case SceneState::GAME:
-		Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 1024);
+		//Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 1024);
 		Engine::GetInstance().map->Load("Assets/Maps/", "newnocandymap.tmx");
 		helptex = Engine::GetInstance().textures.get()->Load("Assets/Textures/menu.png");
 		healthbar = Engine::GetInstance().textures.get()->Load("Assets/Textures/healthbar.png");
@@ -99,11 +99,10 @@ bool Scene::Start()
 		checkpointList = Engine::GetInstance().map->LoadCheckpoints();
 
 		Mix_VolumeMusic(60);
-		saveFX = Mix_LoadWAV("Assets/Audio/Fx/Fantasy_UI (30).wav");
-		loadFX = Mix_LoadWAV("Assets/Audio/Fx/Success 1 (subtle).wav");
-		attackFX = Mix_LoadWAV("Assets/Audio/Fx/Fireball 2.wav");
-		backgroundMusic = Mix_LoadMUS("Assets/Audio/Fx/Ambient Music.wav");
-		Mix_PlayMusic(backgroundMusic, -1);
+		saveFX = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/Fantasy_UI (30).wav");
+		loadFX = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/Success 1 (subtle).wav");
+		attackFX = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/Fireball 2.wav");
+		Engine::GetInstance().audio->PlayMusic("Assets/Audio/Fx/Ambient Music.wav", 0);
 		break;
 	case SceneState::SETTINGS:
 		break;
@@ -183,11 +182,11 @@ bool Scene::GameUpdate(float dt)
 	//load and save
 	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_F5) == KEY_DOWN) {
 		SaveState();
-		Mix_PlayChannel(2, saveFX, 0);
+		Engine::GetInstance().audio->PlayFx(saveFX);
 	}
 	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_F6) == KEY_DOWN) {
 		LoadState();
-		Mix_PlayChannel(2, loadFX, 0);
+		Engine::GetInstance().audio->PlayFx(loadFX);
 	}
 
 	//checkpoint
@@ -195,7 +194,7 @@ bool Scene::GameUpdate(float dt)
 		if (!c->deactivate and c->isActive == true and player->state != Player_State::DIE) {
 			Vector2D playerPos = player->GetPosition();
 			Vector2D playerPosTile = Engine::GetInstance().map.get()->WorldToMap((int)playerPos.getX(), (int)playerPos.getY());
-			Mix_PlayChannel(2, saveFX, 0);
+			Engine::GetInstance().audio->PlayFx(saveFX);
 			player->SetCheckpoint(playerPos);
 			SaveState();
 			c->deactivate = true;
@@ -206,7 +205,7 @@ bool Scene::GameUpdate(float dt)
 	//attack creation
 	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_Q) == KEY_DOWN and player->state != Player_State::DIE) {
 		if (GetPlayerPower() >= 2) {
-			Mix_PlayChannel(2, attackFX, 0);
+			Engine::GetInstance().audio->PlayFx(attackFX);
 			player->isAttacking = true;
 			Attack* attack = (Attack*)Engine::GetInstance().entityManager->CreateEntity(EntityType::ATTACK);
 			Vector2D playerPos = GetPlayerPosition();

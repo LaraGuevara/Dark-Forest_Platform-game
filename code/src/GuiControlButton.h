@@ -18,6 +18,7 @@ private:
 
 	bool canClick = true;
 	bool drawBasic = false;
+	int selectFX, hoverFX;
 };
 
 #pragma once

@@ -62,10 +62,10 @@ bool Player::Start() {
 	sensor->ctype = ColliderType::SENSOR;
 
 	Mix_Volume(1, 90);
-	runFX = Mix_LoadWAV("Assets/Audio/Fx/GRASS - Run 1.wav");
-	jumpStartFX = Mix_LoadWAV("Assets/Audio/Fx/GRASS - Pre Jump 1.wav");
-	jumpEndFX = Mix_LoadWAV("Assets/Audio/Fx/GRASS - Post Jump 1.wav");
-	gameOverFX = Mix_LoadWAV("Assets/Audio/Fx/Game Over.wav");
+	runFX = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/GRASS - Run 1.wav");
+	jumpStartFX = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/GRASS - Pre Jump 1.wav");
+	jumpEndFX = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/GRASS - Post Jump 1.wav");
+	gameOverFX = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/Game Over.wav");
 
 	return true;
 }
@@ -173,7 +173,7 @@ bool Player::Update(float dt)
 	}
 
 	//run soundfx
-	if (state == Player_State::WALK and Mix_Playing(1) == 0) Mix_PlayChannel(1, runFX, 0);
+	if (state == Player_State::WALK and Mix_Playing(1) == 0 and !godMode) Engine::GetInstance().audio->PlayFx(runFX, 1);
 
 	//render
 	if(state == Player_State::ATTACK) Engine::GetInstance().render.get()->DrawTexture(texture, (int)position.getX() + texW / 10, (int)position.getY() - texH / 6, &currentAnimation->GetCurrentFrame(), flip);
@@ -203,7 +203,7 @@ b2Vec2 Player::PlayerMovement(float dt, b2Vec2 velocity) {
 	//Jump
 	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN && isJumping == false && godMode == false) {
 		// Apply an initial upward force
-		Mix_PlayChannel(1, jumpStartFX, 0);
+		Engine::GetInstance().audio->PlayFx(jumpStartFX, 1);
 		pbody->body->ApplyLinearImpulseToCenter(b2Vec2(0, -jumpForce), true);
 		isJumping = true;
 	}
@@ -274,7 +274,7 @@ b2Vec2 Player::PlayerMovement(float dt, b2Vec2 velocity) {
 	//check if player has died
 	if (!godMode) {
 		if (playerDeath == true) {
-			Mix_PlayChannel(2, gameOverFX, 0);
+			Engine::GetInstance().audio->PlayFx(gameOverFX);
 			pbody->body->SetType(b2_kinematicBody);
 			isJumping = false;
 			state = Player_State::DIE;
@@ -305,10 +305,9 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 		//reset the jump flag when touching the ground
 		if (isJumping) {
 			isJumping = false;
-			Mix_PlayChannel(1, jumpEndFX, 0);
+			Engine::GetInstance().audio->PlayFx(jumpEndFX, 1);
 			jumping.Reset();
 		}
-		//if(state == Player_State::FALL) isJumping = false;
 		break;
 	case ColliderType::ITEM:
 		LOG("Collision ITEM");

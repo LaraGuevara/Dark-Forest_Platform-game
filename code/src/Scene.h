@@ -106,10 +106,10 @@ private:
 	bool respawn = false;
 
 	//sounds
-	Mix_Chunk* loadFX;
-	Mix_Chunk* saveFX;
-	Mix_Chunk* attackFX;
-	Mix_Music* backgroundMusic;
+	int loadFX;
+	int saveFX;
+	int attackFX;
+	int backgroundMusic;
 
 	//lists
 	std::vector<Enemy*> enemyList;

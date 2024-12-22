@@ -30,7 +30,7 @@ public:
 	int LoadFx(const char* path);
 
 	// Play a previously loaded WAV
-	bool PlayFx(int fx, int repeat = 0);
+	bool PlayFx(int fx, int channel = -1, int repeat = 0);
 
 private:
 

@@ -105,8 +105,8 @@ public:
 	bool checkpointDone = false;
 	bool damageRight = false;
 
-	Mix_Chunk* runFX;
-	Mix_Chunk* jumpStartFX;
-	Mix_Chunk* jumpEndFX;
-	Mix_Chunk* gameOverFX;
+	int runFX;
+	int jumpStartFX;
+	int jumpEndFX;
+	int gameOverFX;
 };

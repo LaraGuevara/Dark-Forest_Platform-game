@@ -40,11 +40,11 @@ bool Enemy::Start() {
 
 	//load damage soundfx
 	Mix_Volume(4, 90);
-	DamageFX = Mix_LoadWAV("Assets/Audio/Fx/Spell Impact 1.wav");
+	DamageFX = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/Spell Impact 1.wav");
 
 	// Set the enemy type
 	if (parameters.attribute("Flyingtype").as_bool() == true) {
-		AttackFX = Mix_LoadWAV("Assets/Audio/Fx/Spell Impact 3.wav");
+		AttackFX = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/Spell Impact 3.wav");
 		type = EnemyType::FLYING;
 		AnimState = EnemyAnimationState::SLEEP;
 		//load flying animations
@@ -56,7 +56,7 @@ bool Enemy::Start() {
 		currentAnimation = &sleep;
 	}
 	else {
-		AttackFX = Mix_LoadWAV("Assets/Audio/Fx/Rock Meteor Throw 2.wav");
+		AttackFX = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/Rock Meteor Throw 2.wav");
 		type = EnemyType::WALKING;
 		AnimState = EnemyAnimationState::IDLE;
 		look = EnemyLook::RIGHT;
@@ -487,14 +487,14 @@ void Enemy::OnCollision(PhysBody* physA, PhysBody* physB) {
 				else {
 					playerFound = true;
 					isAttacking = true;
-					Mix_PlayChannel(4, AttackFX, 0);
+					Engine::GetInstance().audio->PlayFx(AttackFX, 4);
 				}
 			}
 			break;
 		case ColliderType::ATTACK:
 			if (!isDead) {
 				if (physA->ctype == ColliderType::ENEMY) {
-					Mix_PlayChannel(4, DamageFX, 0);
+					Engine::GetInstance().audio->PlayFx(DamageFX, 4);
 					life = life - physB->damageDone;
 					isDamaged = true;
 					if (isSleeping) {
