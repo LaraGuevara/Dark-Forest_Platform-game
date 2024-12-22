@@ -54,6 +54,13 @@ bool Sensor::Update(float dt)
 	return true;
 }
 
+bool Sensor::RenderUpdate() {
+	if (type == SensorType::CHECKPOINT) {
+		Engine::GetInstance().render.get()->DrawTexture(texture, (int)position.getX() - texW / 4, (int)position.getY() - texH / 2, &currentAnimation->GetCurrentFrame());
+	}
+	return true;
+}
+
 bool Sensor::CleanUp()
 {
 	Engine::GetInstance().textures.get()->UnLoad(texture);

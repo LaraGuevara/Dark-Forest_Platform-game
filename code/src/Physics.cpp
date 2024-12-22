@@ -30,6 +30,7 @@ bool Physics::Start()
 
 	// Create a new World
 	world = new b2World(b2Vec2(GRAVITY_X, -GRAVITY_Y));
+	isWorld = true;
 
 	// Set this module as a listener for contacts
 	world->SetContactListener(this);

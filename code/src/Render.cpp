@@ -243,7 +243,7 @@ bool Render::DrawCircle(int x, int y, int radius, Uint8 r, Uint8 g, Uint8 b, Uin
 bool Render::DrawText(const char* text, int posx, int posy, int w, int h) const
 {
 
-	SDL_Color color = { 255, 255, 255 };
+	SDL_Color color = { 0, 0, 20 };
 	SDL_Surface* surface = TTF_RenderText_Solid(font, text, color);
 	SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
 

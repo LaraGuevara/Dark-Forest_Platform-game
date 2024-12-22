@@ -18,6 +18,8 @@ public:
 
 	bool Update(float dt);
 
+	bool RenderUpdate();
+
 	bool CleanUp();
 
 public:

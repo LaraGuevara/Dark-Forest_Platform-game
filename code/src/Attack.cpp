@@ -66,6 +66,17 @@ bool Attack::Update(float dt)
 	return true;
 }
 
+bool Attack::RenderUpdate() {
+	if (!collision) {
+		b2Transform pbodyPos = pbody->body->GetTransform();
+		position.setX(METERS_TO_PIXELS(pbodyPos.p.x) - texH / 2);
+		position.setY(METERS_TO_PIXELS(pbodyPos.p.y) - texH / 2);
+		Engine::GetInstance().render.get()->DrawTexture(texture, (int)position.getX() + texW / 4, (int)position.getY() - texH / 6, &currentAnimation->GetCurrentFrame(), flip);
+	}
+
+	return true;
+}
+
 bool Attack::CleanUp()
 {
 	Engine::GetInstance().textures.get()->UnLoad(texture);

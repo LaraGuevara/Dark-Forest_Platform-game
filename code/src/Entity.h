@@ -36,6 +36,11 @@ public:
 		return true;
 	}
 
+	virtual bool RenderUpdate() 
+	{
+		return true;
+	}
+
 	virtual bool CleanUp()
 	{
 		return true;

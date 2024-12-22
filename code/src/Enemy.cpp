@@ -127,6 +127,14 @@ bool Enemy::Update(float dt)
 	return true;
 }
 
+bool Enemy::RenderUpdate() {
+
+	if (type == EnemyType::WALKING) Engine::GetInstance().render.get()->DrawTexture(texture, (int)position.getX() + texW / 10, (int)position.getY() - texH / 6, &currentAnimation->GetCurrentFrame(), flip);
+	else Engine::GetInstance().render.get()->DrawTexture(texture, (int)position.getX(), (int)position.getY() - texH / 10, &currentAnimation->GetCurrentFrame(), flip);
+
+	return true;
+}
+
 void Enemy::UpdateChecks() {
 	//check life to check if enemy should be dead
 	if (life <= 0) isDead = true;

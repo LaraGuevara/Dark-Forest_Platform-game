@@ -47,6 +47,16 @@ bool Item::Update(float dt)
 	return true;
 }
 
+bool Item::RenderUpdate() {
+	b2Transform pbodyPos = pbody->body->GetTransform();
+	position.setX(METERS_TO_PIXELS(pbodyPos.p.x) - texH / 2);
+	position.setY(METERS_TO_PIXELS(pbodyPos.p.y) - texH / 2);
+
+	Engine::GetInstance().render.get()->DrawTexture(texture, (int)position.getX(), (int)position.getY());
+
+	return true;
+}
+
 bool Item::CleanUp()
 {
 	return true;

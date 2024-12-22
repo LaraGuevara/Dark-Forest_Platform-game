@@ -43,6 +43,23 @@ bool Scene::Awake()
 		exitBT = (GuiControlButton*)Engine::GetInstance().guiManager->CreateGuiControl(GuiControlType::BUTTON, GUI_ID::ID_EXIT, "Exit", { 40, 550, 200,70 }, this);
 		break;
 	case SceneState::GAME:
+		if (!gameAwake) {
+			resumeBT = (GuiControlButton*)Engine::GetInstance().guiManager->CreateGuiControl(GuiControlType::BUTTON, GUI_ID::ID_RESUME, "Resume", { 520, 100, 200,70 }, this);
+			PAUSEDsettingsBT = (GuiControlButton*)Engine::GetInstance().guiManager->CreateGuiControl(GuiControlType::BUTTON, GUI_ID::ID_PAUSED_SETTINGS, "Settings", { 520, 180, 200,70 }, this);
+			titleBT = (GuiControlButton*)Engine::GetInstance().guiManager->CreateGuiControl(GuiControlType::BUTTON, GUI_ID::ID_TITLE, "Back to Title", { 520, 260, 200,70 }, this);
+			PAUSEDexitBT = (GuiControlButton*)Engine::GetInstance().guiManager->CreateGuiControl(GuiControlType::BUTTON, GUI_ID::ID_PAUSED_EXIT, "Exit", { 520, 340, 200,70 }, this);
+
+			resumeBT->state = GuiControlState::DISABLED;
+			PAUSEDsettingsBT->state = GuiControlState::DISABLED;
+			titleBT->state = GuiControlState::DISABLED;
+			PAUSEDexitBT->state = GuiControlState::DISABLED;
+		}
+
+		if (Engine::GetInstance().physics.get()->isWorld) {
+			Engine::GetInstance().physics.get()->CleanUp();
+			Engine::GetInstance().physics.get()->Start();
+		}
+
 		player = (Player*)Engine::GetInstance().entityManager->CreateEntity(EntityType::PLAYER);
 		player->SetParameters(configParameters.child("entities").child("player"));
 
@@ -59,8 +76,6 @@ bool Scene::Awake()
 	case SceneState::SETTINGS:
 		break;
 	case SceneState::CREDITS:
-		break;
-	case SceneState::PAUSE:
 		break;
 	case SceneState::DIE:
 		break;
@@ -92,7 +107,6 @@ bool Scene::Start()
 	case SceneState::GAME:
 		//Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 1024);
 		Engine::GetInstance().map->Load("Assets/Maps/", "newnocandymap.tmx");
-		helptex = Engine::GetInstance().textures.get()->Load("Assets/Textures/menu.png");
 		healthbar = Engine::GetInstance().textures.get()->Load("Assets/Textures/healthbar.png");
 
 		//create checkpoints
@@ -107,8 +121,6 @@ bool Scene::Start()
 	case SceneState::SETTINGS:
 		break;
 	case SceneState::CREDITS:
-		break;
-	case SceneState::PAUSE:
 		break;
 	case SceneState::DIE:
 		break;
@@ -149,8 +161,7 @@ bool Scene::Update(float dt) {
 	case SceneState::SETTINGS:
 		break;
 	case SceneState::CREDITS:
-		break;
-	case SceneState::PAUSE:
+		Engine::GetInstance().render.get()->DrawTexture(menuBackground, 0, 0, NULL, SDL_FLIP_NONE, false);
 		break;
 	case SceneState::DIE:
 		break;
@@ -166,6 +177,23 @@ bool Scene::Update(float dt) {
 // Called each loop iteration
 bool Scene::GameUpdate(float dt)
 {
+	if (pausedGame) {
+		resumeBT->state = GuiControlState::NORMAL;
+		PAUSEDsettingsBT->state = GuiControlState::NORMAL;
+		titleBT->state = GuiControlState::NORMAL;
+		PAUSEDexitBT->state = GuiControlState::NORMAL;
+		disabledButtons = false;
+	}
+	else {
+		if (!disabledButtons) {
+			resumeBT->state = GuiControlState::DISABLED;
+			PAUSEDsettingsBT->state = GuiControlState::DISABLED;
+			titleBT->state = GuiControlState::DISABLED;
+			PAUSEDexitBT->state = GuiControlState::DISABLED;
+			disabledButtons = true;
+		}
+	}
+	
 	//draw healthbar
 	Engine::GetInstance().render.get()->DrawTexture(healthbar, 10, 20, &healthRect, SDL_FLIP_NONE, false);
 	SDL_Rect pointsRect = { 0,32,32 + (GetPlayerLife()*4), 3};
@@ -174,7 +202,7 @@ bool Scene::GameUpdate(float dt)
 	Engine::GetInstance().render.get()->DrawTexture(healthbar, 10, 56, &pointsRect, SDL_FLIP_NONE, false);
 
 	//help menu
-	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_H) == KEY_DOWN) {
+	if (!pausedGame and Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_H) == KEY_DOWN) {
 		if (help) help = false;
 		else help = true;
 	}
@@ -238,9 +266,6 @@ bool Scene::GameUpdate(float dt)
 			i--;
 		}
 	}
-
-	//draw help menu
-	if (help) Engine::GetInstance().render.get()->DrawTexture(helptex, 750, 0, NULL, SDL_FLIP_NONE, false);
 	
 	Engine::GetInstance().render.get()->camera.x = ((player->GetXPos() * -1) + 200) *2;
 
@@ -269,8 +294,28 @@ bool Scene::PostUpdate()
 {
 	bool ret = true;
 
-	if(Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_ESCAPE) == KEY_DOWN)
-		ret = false;
+	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_ESCAPE) == KEY_DOWN) {
+		switch (state) {
+		case SceneState::MENU:
+			ret = false;
+			break;
+		case SceneState::CREDITS:
+			startBT->state = GuiControlState::NORMAL;
+			continueBT->state = GuiControlState::NORMAL;
+			settingBT->state = GuiControlState::NORMAL;
+			creditsBT->state = GuiControlState::NORMAL;
+			exitBT->state = GuiControlState::NORMAL;
+			state = SceneState::MENU;
+			break;
+		case SceneState::SETTINGS:
+			state = SceneState::MENU;
+			break;
+		case SceneState::GAME:
+			if (pausedGame) pausedGame = false;
+			else pausedGame = true;
+			break;
+		}
+	}
 
 	if (toExit) ret = false;
 
@@ -296,14 +341,11 @@ bool Scene::CleanUp()
 		break;
 	case SceneState::GAME:
 		SDL_DestroyTexture(img);
-		SDL_DestroyTexture(helptex);
 		SDL_DestroyTexture(healthbar);
 		break;
 	case SceneState::SETTINGS:
 		break;
 	case SceneState::CREDITS:
-		break;
-	case SceneState::PAUSE:
 		break;
 	case SceneState::DIE:
 		break;
@@ -349,8 +391,7 @@ void Scene::LoadState() {
 				}
 			}
 			if (!alive) {
-				Engine::GetInstance().physics.get()->DeleteBody(enemyList[i]->pbody->body);
-				Engine::GetInstance().entityManager->DestroyEntity(enemyList[i]);
+				//Engine::GetInstance().physics.get()->DeleteBody(enemyList[i]->pbody->body);
 				Engine::GetInstance().entityManager->DestroyEntity(enemyList[i]);
 				enemyList.erase(enemyList.begin() + i);
 				i--;
@@ -428,6 +469,33 @@ bool Scene::OnGuiMouseClickEvent(GuiControl* control)
 		break;
 	case GUI_ID::ID_EXIT:
 		toExit = true;
+		break;
+	case GUI_ID::ID_CREDITS:
+		startBT->state = GuiControlState::VISIBLE;
+		continueBT->state = GuiControlState::VISIBLE;
+		settingBT->state = GuiControlState::VISIBLE;
+		creditsBT->state = GuiControlState::VISIBLE;
+		exitBT->state = GuiControlState::VISIBLE;
+		state = SceneState::CREDITS;
+		break;
+	case GUI_ID::ID_PAUSED_EXIT:
+		toExit = true;
+		break;
+	case GUI_ID::ID_RESUME:
+		pausedGame = false;
+		break;
+	case GUI_ID::ID_TITLE:
+		Mix_PauseMusic();
+		pausedGame = false;
+		CleanUp();
+		resumeBT->state = GuiControlState::DISABLED;
+		PAUSEDsettingsBT->state = GuiControlState::DISABLED;
+		titleBT->state = GuiControlState::DISABLED;
+		PAUSEDexitBT->state = GuiControlState::DISABLED;
+		Engine::GetInstance().entityManager->CleanUp();
+		state = SceneState::MENU;
+		Start();
+		break;
 	}
 
 	return true;

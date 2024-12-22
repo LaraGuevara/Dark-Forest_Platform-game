@@ -185,6 +185,13 @@ bool Player::Update(float dt)
 	return true;
 }
 
+bool Player::RenderUpdate() {
+	if (state == Player_State::ATTACK) Engine::GetInstance().render.get()->DrawTexture(texture, (int)position.getX() + texW / 10, (int)position.getY() - texH / 6, &currentAnimation->GetCurrentFrame(), flip);
+	else Engine::GetInstance().render.get()->DrawTexture(texture, (int)position.getX() + texW / 4, (int)position.getY() - texH / 6, &currentAnimation->GetCurrentFrame(), flip);
+	
+	return true;
+}
+
 b2Vec2 Player::PlayerMovement(float dt, b2Vec2 velocity) {
 	// Move left
 	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_A) == KEY_REPEAT) {

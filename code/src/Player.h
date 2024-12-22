@@ -32,6 +32,8 @@ public:
 
 	bool Update(float dt);
 
+	bool RenderUpdate();
+
 	b2Vec2 PlayerMovement(float dt, b2Vec2 velocity);
 
 	bool CleanUp();

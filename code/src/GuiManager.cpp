@@ -4,6 +4,8 @@
 
 #include "GuiControlButton.h"
 #include "Audio.h"
+#include "Scene.h"
+#include "Window.h"
 
 GuiManager::GuiManager() :Module()
 {
@@ -14,6 +16,9 @@ GuiManager::~GuiManager() {}
 
 bool GuiManager::Start()
 {
+	credits = Engine::GetInstance().textures.get()->Load("Assets/Textures/screens/bookBase.png");
+	helptex = Engine::GetInstance().textures.get()->Load("Assets/Textures/menu.png");
+	pausedMenu = Engine::GetInstance().textures.get()->Load("Assets/Textures/screens/halfBookBase.png");
 	return true;
 }
 
@@ -41,9 +46,24 @@ GuiControl* GuiManager::CreateGuiControl(GuiControlType type, int id, const char
 
 bool GuiManager::Update(float dt)
 {	
-	for (const auto& control : guiControlsList)
-	{
-		control->Update(dt);
+	if (Engine::GetInstance().scene.get()->pausedGame) {
+		Engine::GetInstance().render.get()->DrawTexture(pausedMenu, 400, 50, NULL, SDL_FLIP_NONE, false);
+
+		for (const auto& control : guiControlsList)
+		{
+			control->Update(dt);
+		}
+	}
+	else {
+		for (const auto& control : guiControlsList)
+		{
+			control->Update(dt);
+		}
+
+		if (Engine::GetInstance().scene.get()->state == SceneState::CREDITS) {
+			Engine::GetInstance().render.get()->DrawTexture(credits, 90, 50, NULL, SDL_FLIP_NONE, false);
+		}
+		if (Engine::GetInstance().scene.get()->help) Engine::GetInstance().render.get()->DrawTexture(helptex, 750, 0, NULL, SDL_FLIP_NONE, false);
 	}
 
 	return true;
@@ -55,6 +75,10 @@ bool GuiManager::CleanUp()
 	{
 		delete control;
 	}
+
+	SDL_DestroyTexture(credits);
+	SDL_DestroyTexture(helptex);
+	SDL_DestroyTexture(pausedMenu);
 
 	return true;
 }

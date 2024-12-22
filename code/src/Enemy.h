@@ -47,6 +47,8 @@ public:
 
 	bool Update(float dt);
 
+	bool RenderUpdate();
+
 	void UpdateChecks();
 
 	void WalkingEnemyUpdate(float dt);

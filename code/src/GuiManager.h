@@ -32,5 +32,10 @@ public:
 	std::list<GuiControl*> guiControlsList;
 	SDL_Texture* texture;
 
+	//on screen GUI menus
+	SDL_Texture* credits;
+	SDL_Texture* helptex;
+	SDL_Texture* pausedMenu;
+
 };
 

@@ -16,7 +16,11 @@ enum GUI_ID {
 	ID_CONTINUE,
 	ID_SETTINGS,
 	ID_CREDITS,
-	ID_EXIT
+	ID_EXIT,
+	ID_RESUME,
+	ID_PAUSED_SETTINGS,
+	ID_TITLE,
+	ID_PAUSED_EXIT
 };
 
 enum SceneState {
@@ -24,7 +28,6 @@ enum SceneState {
 	MENU,
 	SETTINGS,
 	GAME,
-	PAUSE,
 	CREDITS,
 	DIE,
 	LEVELCOMPLETE
@@ -82,6 +85,15 @@ public:
 
 	SceneState state = SceneState::INTRO;
 
+	//trigger help menu
+	bool help = false;
+
+	//trigger pause menu
+	bool pausedGame = false;
+	bool disabledButtons = true;
+
+	bool gameAwake = false;
+
 private:
 	int timeVar = 1;
 	int introTime = 0;
@@ -98,14 +110,11 @@ private:
 	SDL_Texture* healthbar;
 	SDL_Rect healthRect = { 0,0,80,32 };
 
-	//trigger help menu
-	bool help = false;
-
 	//player
 	Player* player;
 	bool respawn = false;
 
-	//sounds
+	//sounds (ids)
 	int loadFX;
 	int saveFX;
 	int attackFX;
@@ -123,4 +132,9 @@ private:
 	GuiControlButton* settingBT;
 	GuiControlButton* creditsBT;
 	GuiControlButton* exitBT;
+	//paused menu
+	GuiControlButton* resumeBT;
+	GuiControlButton* PAUSEDsettingsBT;
+	GuiControlButton* titleBT;
+	GuiControlButton* PAUSEDexitBT;
 };
