@@ -93,6 +93,7 @@ public:
 	bool disabledButtons = true;
 
 	bool gameAwake = false;
+	bool continueGame = false;
 
 private:
 	int timeVar = 1;

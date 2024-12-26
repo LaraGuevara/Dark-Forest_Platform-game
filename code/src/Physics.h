@@ -81,6 +81,7 @@ public:
 	bool PreUpdate();
 	bool PostUpdate();
 	bool CleanUp();
+	void DeleteBodies();
 	bool getDebug() {
 		return debug;
 	}

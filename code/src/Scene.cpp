@@ -55,10 +55,8 @@ bool Scene::Awake()
 			PAUSEDexitBT->state = GuiControlState::DISABLED;
 		}
 
-		if (Engine::GetInstance().physics.get()->isWorld) {
-			Engine::GetInstance().physics.get()->CleanUp();
-			Engine::GetInstance().physics.get()->Start();
-		}
+		Engine::GetInstance().physics.get()->CleanUp();
+		Engine::GetInstance().physics.get()->Start();
 
 		player = (Player*)Engine::GetInstance().entityManager->CreateEntity(EntityType::PLAYER);
 		player->SetParameters(configParameters.child("entities").child("player"));
@@ -117,6 +115,7 @@ bool Scene::Start()
 		loadFX = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/Success 1 (subtle).wav");
 		attackFX = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/Fireball 2.wav");
 		Engine::GetInstance().audio->PlayMusic("Assets/Audio/Fx/Ambient Music.wav", 0);
+
 		break;
 	case SceneState::SETTINGS:
 		break;
@@ -157,6 +156,10 @@ bool Scene::Update(float dt) {
 		break;
 	case SceneState::GAME:
 		GameUpdate(dt);
+		if (continueGame) {
+			LoadState();
+			continueGame = false;
+		}
 		break;
 	case SceneState::SETTINGS:
 		break;
@@ -177,6 +180,7 @@ bool Scene::Update(float dt) {
 // Called each loop iteration
 bool Scene::GameUpdate(float dt)
 {
+
 	if (pausedGame) {
 		resumeBT->state = GuiControlState::NORMAL;
 		PAUSEDsettingsBT->state = GuiControlState::NORMAL;
@@ -377,7 +381,7 @@ void Scene::LoadState() {
 	playerPos.setY(loadFile.child("config").child("save").child("player").attribute("y").as_int());
 	player->SetPosition(playerPos);
 
-	//load alive enemies (deleting alive ones)
+	//load alive enemies (deleting dead ones)
 	for (int i = 0; i < enemyList.size(); i++) {
 		bool alive = false;
 		std::string enemyName = enemyList[i]->name;
@@ -385,8 +389,8 @@ void Scene::LoadState() {
 			for (pugi::xml_node saveNode = loadFile.child("config").child("save").child("enemies").child("enemy"); saveNode; saveNode = saveNode.next_sibling("enemy")) {
 				std::string saveName = saveNode.attribute("name").as_string();
 				if (saveName == enemyName) {
-					enemyList[i]->SetPosition(Vector2D(saveNode.attribute("x").as_int(), saveNode.attribute("y").as_int()));
-					enemyList[i]->SetWake();
+					/*enemyList[i]->SetPosition(Vector2D(saveNode.attribute("x").as_int(), saveNode.attribute("y").as_int()));
+					enemyList[i]->SetWake();*/
 					alive = true;
 				}
 			}
@@ -461,11 +465,11 @@ bool Scene::OnGuiMouseClickEvent(GuiControl* control)
 	case GUI_ID::ID_CONTINUE:
 		CleanUp();
 		state = SceneState::GAME;
+		continueGame = true;
 		Awake();
 		Engine::GetInstance().entityManager->Awake();
 		Start();
 		Engine::GetInstance().entityManager->Start();
-		LoadState();
 		break;
 	case GUI_ID::ID_EXIT:
 		toExit = true;
