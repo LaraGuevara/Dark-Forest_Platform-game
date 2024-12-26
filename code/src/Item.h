@@ -5,6 +5,12 @@
 
 struct SDL_Texture;
 
+enum ItemType {
+	ITEM_HEALTH,
+	ITEM_POINTS,
+	ITEM_ABILITY
+};
+
 class Item : public Entity
 {
 public:
@@ -16,15 +22,24 @@ public:
 
 	bool Start();
 
+	void SetType(ItemType t) {
+		type = t;
+	}
+
 	bool Update(float dt);
 
 	bool RenderUpdate();
 
 	bool CleanUp();
 
+	void OnCollision(PhysBody* physA, PhysBody* physB);
+
+	void OnCollisionEnd(PhysBody* physA, PhysBody* physB);
+
 public:
 
 	bool isPicked = false;
+	ItemType type;
 
 private:
 

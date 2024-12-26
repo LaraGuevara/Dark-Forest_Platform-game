@@ -22,21 +22,40 @@ bool Item::Awake() {
 bool Item::Start() {
 
 	//initilize textures
-	texture = Engine::GetInstance().textures.get()->Load("Assets/Textures/goldCoin.png");
+	switch (type) {
+	case ItemType::ITEM_ABILITY:
+		texture = Engine::GetInstance().textures.get()->Load("Assets/Textures/items/abilityItem.png");
+		break;
+	case ItemType::ITEM_HEALTH:
+		texture = Engine::GetInstance().textures.get()->Load("Assets/Textures/items/healthItem.png");
+		break;
+	case ItemType::ITEM_POINTS:
+		texture = Engine::GetInstance().textures.get()->Load("Assets/Textures/items/pointItem.png");
+		break;
+	}
 	
 	// L08 TODO 4: Add a physics to an item - initialize the physics body
 	Engine::GetInstance().textures.get()->GetSize(texture, texW, texH);
 	pbody = Engine::GetInstance().physics.get()->CreateCircle((int)position.getX() + texH / 2, (int)position.getY() + texH / 2, texH / 2, bodyType::DYNAMIC);
 
 	// L08 TODO 7: Assign collider type
-	pbody->ctype = ColliderType::ITEM;
+	switch (type) {
+	case ItemType::ITEM_ABILITY:
+		pbody->ctype = ColliderType::ITEM_ABILITY;
+		break;
+	case ItemType::ITEM_HEALTH:
+		pbody->ctype = ColliderType::ITEM_HEALTH;
+		break;
+	case ItemType::ITEM_POINTS:
+		pbody->ctype = ColliderType::ITEM_POINTS;
+		break;
+	}
 
 	return true;
 }
 
 bool Item::Update(float dt)
 {
-	// L08 TODO 4: Add a physics to an item - update the position of the object from the physics.  
 
 	b2Transform pbodyPos = pbody->body->GetTransform();
 	position.setX(METERS_TO_PIXELS(pbodyPos.p.x) - texH / 2);
@@ -59,5 +78,26 @@ bool Item::RenderUpdate() {
 
 bool Item::CleanUp()
 {
+	SDL_DestroyTexture(texture);
 	return true;
+}
+
+void Item::OnCollision(PhysBody* physA, PhysBody* physB) {
+
+	switch (physB->ctype)
+	{
+	case ColliderType::PLAYER:
+		isPicked = true;
+		break;
+	case ColliderType::DEATH:
+		isPicked = true;
+		break;
+	default:
+		break;
+	}
+}
+
+void Item::OnCollisionEnd(PhysBody* physA, PhysBody* physB)
+{
+	
 }
