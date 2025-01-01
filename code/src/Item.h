@@ -26,6 +26,10 @@ public:
 		type = t;
 	}
 
+	void SetParameters(pugi::xml_node parameters) {
+		this->parameters = parameters;
+	}
+
 	bool Update(float dt);
 
 	bool RenderUpdate();
@@ -38,15 +42,15 @@ public:
 
 public:
 
+	int id;
 	bool isPicked = false;
 	ItemType type;
+	PhysBody* pbody;
 
 private:
 
+	pugi::xml_node parameters;
 	SDL_Texture* texture;
 	const char* texturePath;
 	int texW, texH;
-
-	//L08 TODO 4: Add a physics to an item
-	PhysBody* pbody;
 };

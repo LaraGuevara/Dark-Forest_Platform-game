@@ -8,6 +8,7 @@
 #include "Attack.h"
 
 #define ATTACKCOOLDOWN 600
+#define POWERUPTIMER 900
 
 enum class Player_State{
 IDLE, WALK, JUMP, FALL, ATTACK, DAMAGE, DIE};
@@ -61,10 +62,13 @@ public:
 	void SetPosition(Vector2D pos);
 
 public:
+	int GemPoints = 0;
+	bool PowerUpActive = false;
 
 	int lifeValue;
 	int power;
 	int attackCooldown = ATTACKCOOLDOWN;
+	int powerupTime = 0;
 	int timerVar = 1;
 
 	bool isAttacking = false;

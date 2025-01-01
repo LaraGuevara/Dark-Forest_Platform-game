@@ -83,6 +83,15 @@ bool Player::Update(float dt)
 	else {
 		if(attackCooldown != (ATTACKCOOLDOWN / timerVar)) attackCooldown = (ATTACKCOOLDOWN / timerVar);
 	}
+
+	//turn off power up when timer runs out
+	if (PowerUpActive) {
+		++powerupTime;
+		if (powerupTime >= POWERUPTIMER/timerVar) {
+			PowerUpActive = false;
+			powerupTime = 0;
+		}
+	}
 	
 	respawn = false;
 	b2Vec2 velocity = b2Vec2(0, -GRAVITY_Y);
@@ -316,8 +325,18 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 			jumping.Reset();
 		}
 		break;
-	case ColliderType::ITEM:
-		LOG("Collision ITEM");
+	case ColliderType::ITEM_ABILITY:
+		LOG("Collision ITEM ABILITY");
+		PowerUpActive = true;
+		break;
+	case ColliderType::ITEM_HEALTH:
+		LOG("Collision ITEM HEALTH");
+		life += 2;
+		if (life > lifeValue) life = lifeValue;
+		break;
+	case ColliderType::ITEM_POINTS:
+		LOG("Collision ITEM POINTS");
+		GemPoints += 1;
 		break;
 	case ColliderType::ENEMY:
 		LOG("Collision ENEMY");

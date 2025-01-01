@@ -21,6 +21,13 @@ bool Item::Awake() {
 
 bool Item::Start() {
 
+	//set position
+	position.setX(parameters.attribute("x").as_int());
+	position.setY(parameters.attribute("y").as_int());
+
+	//set id
+	id = parameters.attribute("id").as_int();
+
 	//initilize textures
 	switch (type) {
 	case ItemType::ITEM_ABILITY:
@@ -50,6 +57,8 @@ bool Item::Start() {
 		pbody->ctype = ColliderType::ITEM_POINTS;
 		break;
 	}
+
+	pbody->listener = this;
 
 	return true;
 }

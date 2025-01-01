@@ -14,6 +14,10 @@ public:
 	Attack();
 	virtual ~Attack();
 
+	void SetToPowerUp() {
+		isPowerUp = true;
+	}
+
 	bool Awake();
 
 	bool Start();
@@ -38,6 +42,8 @@ public:
 	PhysBody* pbody;
 
 private:
+
+	bool isPowerUp = false;
 
 	SDL_Texture* texture;
 	int texH = 32;

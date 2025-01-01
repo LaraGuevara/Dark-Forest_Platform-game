@@ -70,6 +70,23 @@ bool Scene::Awake()
 			enemy->SetParameters(enemyNode);
 			enemyList.push_back(enemy);
 		}
+
+		for (pugi::xml_node itemNode = configParameters.child("entities").child("items").child("item"); itemNode; itemNode = itemNode.next_sibling("item")) {
+			Item* item = (Item*)Engine::GetInstance().entityManager->CreateEntity(EntityType::ITEM);
+			item->SetParameters(itemNode);
+			switch (itemNode.attribute("type").as_int()) {
+			case (int)ItemType::ITEM_ABILITY:
+				item->SetType(ItemType::ITEM_ABILITY);
+				break;
+			case (int)ItemType::ITEM_HEALTH:
+				item->SetType(ItemType::ITEM_HEALTH);
+				break;
+			case (int)ItemType::ITEM_POINTS:
+				item->SetType(ItemType::ITEM_POINTS);
+				break;
+			}
+			itemList.push_back(item);
+		}
 		break;
 	case SceneState::SETTINGS:
 		break;
@@ -106,6 +123,7 @@ bool Scene::Start()
 		//Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 1024);
 		Engine::GetInstance().map->Load("Assets/Maps/", "newnocandymap.tmx");
 		healthbar = Engine::GetInstance().textures.get()->Load("Assets/Textures/healthbar.png");
+		gemIcon = Engine::GetInstance().textures.get()->Load("Assets/Textures/gemIcon.png");
 
 		//create checkpoints
 		checkpointList = Engine::GetInstance().map->LoadCheckpoints();
@@ -205,6 +223,11 @@ bool Scene::GameUpdate(float dt)
 	pointsRect = { 0,35,32 + (GetPlayerPower() * 4), 3 };
 	Engine::GetInstance().render.get()->DrawTexture(healthbar, 10, 56, &pointsRect, SDL_FLIP_NONE, false);
 
+	//draw gem/point counter
+	Engine::GetInstance().render.get()->DrawTexture(gemIcon, 155, 35, &gemRect, SDL_FLIP_NONE, false);
+	std::string points = std::to_string(player->GemPoints);
+	Engine::GetInstance().render.get()->DrawText(points.c_str(), 190, 35, 16, 32);
+
 	//help menu
 	if (!pausedGame and Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_H) == KEY_DOWN) {
 		if (help) help = false;
@@ -240,11 +263,15 @@ bool Scene::GameUpdate(float dt)
 			Engine::GetInstance().audio->PlayFx(attackFX);
 			player->isAttacking = true;
 			Attack* attack = (Attack*)Engine::GetInstance().entityManager->CreateEntity(EntityType::ATTACK);
+
 			Vector2D playerPos = GetPlayerPosition();
 			if (player->look == Player_Look::RIGHT) attack->position = Vector2D(playerPos.getX() + 30, playerPos.getY() - 10);
 			else attack->position = Vector2D(playerPos.getX() - 30, playerPos.getY() - 10);
+
 			attack->SetFlip(player->flip);
+			if (player->PowerUpActive) attack->SetToPowerUp();
 			attack->Start();
+
 			attackList.push_back(attack);
 			player->power = player->power - 2;
 		}
@@ -267,6 +294,16 @@ bool Scene::GameUpdate(float dt)
 			Engine::GetInstance().physics.get()->DeleteBody(enemyList[i]->sensor->body);
 			Engine::GetInstance().entityManager->DestroyEntity(enemyList[i]);
 			enemyList.erase(enemyList.begin() + i);
+			i--;
+		}
+	}
+
+	//check and delete collected items
+	for (int i = 0; i < itemList.size(); i++) {
+		if (itemList[i]->isPicked) {
+			Engine::GetInstance().physics.get()->DeleteBody(itemList[i]->pbody->body);
+			Engine::GetInstance().entityManager->DestroyEntity(itemList[i]);
+			itemList.erase(itemList.begin() + i);
 			i--;
 		}
 	}

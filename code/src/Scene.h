@@ -4,6 +4,7 @@
 #include "Player.h"
 #include "Enemy.h"
 #include "Attack.h"
+#include "Item.h"
 #include "Sensor.h"
 #include <SDL2/SDL_mixer.h>
 #include "GuiControlButton.h"
@@ -109,6 +110,8 @@ private:
 	SDL_Texture* img;
 	SDL_Texture* helptex;
 	SDL_Texture* healthbar;
+	SDL_Texture* gemIcon;
+	SDL_Rect gemRect = { 0,0,16,16 };
 	SDL_Rect healthRect = { 0,0,80,32 };
 
 	//player
@@ -123,6 +126,7 @@ private:
 
 	//lists
 	std::vector<Enemy*> enemyList;
+	std::vector<Item*> itemList;
 	std::vector<Attack*> attackList;
 	std::vector<Sensor*> checkpointList;
 

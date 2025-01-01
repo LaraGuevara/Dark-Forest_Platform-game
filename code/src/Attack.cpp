@@ -26,12 +26,18 @@ bool Attack::Start() {
 	//initilize textures
 	texture = Engine::GetInstance().textures.get()->Load("Assets/Textures/attack.png");
 
+	if (isPowerUp) {
+		texH = 48;
+		texW = 48;
+	}
+
 	pugi::xml_document loadFile;
 	pugi::xml_parse_result result = loadFile.load_file("config.xml");
 
 	if (result == NULL) LOG("Error loading config.xml: %s", result.description());
 	
-	animation.LoadAnimations(loadFile.child("config").child("scene").child("entities").child("attack").child("animation").child("idle"));
+	if(isPowerUp) animation.LoadAnimations(loadFile.child("config").child("scene").child("entities").child("powerup").child("animation").child("idle"));
+	else animation.LoadAnimations(loadFile.child("config").child("scene").child("entities").child("attack").child("animation").child("idle"));
 	currentAnimation = &animation;
 	
 	// L08 TODO 4: Add a physics to an item - initialize the physics body
@@ -41,7 +47,8 @@ bool Attack::Start() {
 
 	// L08 TODO 7: Assign collider type
 	pbody->ctype = ColliderType::ATTACK;
-	pbody->damageDone = loadFile.child("config").child("scene").child("entities").child("attack").attribute("damage").as_int();
+	if(isPowerUp) pbody->damageDone = loadFile.child("config").child("scene").child("entities").child("powerup").attribute("damage").as_int();
+	else pbody->damageDone = loadFile.child("config").child("scene").child("entities").child("attack").attribute("damage").as_int();
 
 	pbody->listener = this;
 
