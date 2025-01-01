@@ -55,23 +55,109 @@ bool Scene::Awake()
 			PAUSEDexitBT->state = GuiControlState::DISABLED;
 		}
 
-		Engine::GetInstance().physics.get()->CleanUp();
-		Engine::GetInstance().physics.get()->Start();
+		if (continueGame) ContinueGameAwake();
+		else NewGameAwake();
 
-		player = (Player*)Engine::GetInstance().entityManager->CreateEntity(EntityType::PLAYER);
-		player->SetParameters(configParameters.child("entities").child("player"));
+		break;
+	case SceneState::SETTINGS:
+		break;
+	case SceneState::CREDITS:
+		break;
+	case SceneState::DIE:
+		break;
+	case SceneState::LEVELCOMPLETE:
+		break;
+	default:
+		return false;
+		break;
+	}
+	return ret;
+}
 
-		/*Item* item = (Item*) Engine::GetInstance().entityManager->CreateEntity(EntityType::ITEM);
-		item->position = Vector2D(100, 0);*/
+void Scene::NewGameAwake() {
+	Engine::GetInstance().physics.get()->CleanUp();
+	Engine::GetInstance().physics.get()->Start();
 
-		for (pugi::xml_node enemyNode = configParameters.child("entities").child("enemies").child("enemy"); enemyNode; enemyNode = enemyNode.next_sibling("enemy"))
-		{
+	player = (Player*)Engine::GetInstance().entityManager->CreateEntity(EntityType::PLAYER);
+	player->SetParameters(configParameters.child("entities").child("player"));
+
+	for (pugi::xml_node enemyNode = configParameters.child("entities").child("enemies").child("enemy"); enemyNode; enemyNode = enemyNode.next_sibling("enemy"))
+	{
+		Enemy* enemy = (Enemy*)Engine::GetInstance().entityManager->CreateEntity(EntityType::ENEMY);
+		enemy->SetParameters(enemyNode);
+		enemyList.push_back(enemy);
+	}
+
+	for (pugi::xml_node itemNode = configParameters.child("entities").child("items").child("item"); itemNode; itemNode = itemNode.next_sibling("item")) {
+		Item* item = (Item*)Engine::GetInstance().entityManager->CreateEntity(EntityType::ITEM);
+		item->SetParameters(itemNode);
+		switch (itemNode.attribute("type").as_int()) {
+		case (int)ItemType::ITEM_ABILITY:
+			item->SetType(ItemType::ITEM_ABILITY);
+			break;
+		case (int)ItemType::ITEM_HEALTH:
+			item->SetType(ItemType::ITEM_HEALTH);
+			break;
+		case (int)ItemType::ITEM_POINTS:
+			item->SetType(ItemType::ITEM_POINTS);
+			break;
+		}
+		itemList.push_back(item);
+	}
+}
+
+void Scene::ContinueGameAwake() {
+	Engine::GetInstance().physics.get()->CleanUp();
+	Engine::GetInstance().physics.get()->Start();
+
+	pugi::xml_document loadFile;
+	pugi::xml_parse_result result = loadFile.load_file("config.xml");
+
+	player = (Player*)Engine::GetInstance().entityManager->CreateEntity(EntityType::PLAYER);
+	player->SetParameters(configParameters.child("entities").child("player"));
+
+	//load player position and points
+	Vector2D playerPos;
+	playerPos.setX(loadFile.child("config").child("save").child("player").attribute("x").as_int());
+	playerPos.setY(loadFile.child("config").child("save").child("player").attribute("y").as_int());
+	player->SaveStartingPos(playerPos);
+	player->SetPoints(loadFile.child("config").child("save").child("player").attribute("points").as_int());
+
+
+	//load alive enemies
+	Vector2D enemyPos;
+	for (pugi::xml_node enemyNode = configParameters.child("entities").child("enemies").child("enemy"); enemyNode; enemyNode = enemyNode.next_sibling("enemy"))
+	{
+		bool alive = false;
+		std::string enemyName = enemyNode.attribute("name").as_string();
+		
+		for (pugi::xml_node saveNode = loadFile.child("config").child("save").child("enemies").child("enemy"); saveNode; saveNode = saveNode.next_sibling("enemy")) {
+			std::string saveName = saveNode.attribute("name").as_string();
+			if (saveName == enemyName) {
+				enemyPos.setX(saveNode.attribute("x").as_int());
+				enemyPos.setY(saveNode.attribute("y").as_int());
+				alive = true;
+			}
+		}
+		
+		if (alive) {
 			Enemy* enemy = (Enemy*)Engine::GetInstance().entityManager->CreateEntity(EntityType::ENEMY);
 			enemy->SetParameters(enemyNode);
+			enemy->SaveStartingPos(enemyPos);
+			enemy->SetWake();
 			enemyList.push_back(enemy);
 		}
+	}
 
-		for (pugi::xml_node itemNode = configParameters.child("entities").child("items").child("item"); itemNode; itemNode = itemNode.next_sibling("item")) {
+	for (pugi::xml_node itemNode = configParameters.child("entities").child("items").child("item"); itemNode; itemNode = itemNode.next_sibling("item")) {
+		bool collected = true;
+		int itemID = itemNode.attribute("id").as_int();
+		for (pugi::xml_node saveNode = loadFile.child("config").child("save").child("items").child("item"); saveNode; saveNode = saveNode.next_sibling("item")) {
+			int saveID = saveNode.attribute("id").as_int();
+			if (saveID == itemID) collected = false;
+		}
+		
+		if (!collected) {
 			Item* item = (Item*)Engine::GetInstance().entityManager->CreateEntity(EntityType::ITEM);
 			item->SetParameters(itemNode);
 			switch (itemNode.attribute("type").as_int()) {
@@ -87,20 +173,7 @@ bool Scene::Awake()
 			}
 			itemList.push_back(item);
 		}
-		break;
-	case SceneState::SETTINGS:
-		break;
-	case SceneState::CREDITS:
-		break;
-	case SceneState::DIE:
-		break;
-	case SceneState::LEVELCOMPLETE:
-		break;
-	default:
-		return false;
-		break;
 	}
-	return ret;
 }
 
 // Called before the first frame
@@ -127,6 +200,22 @@ bool Scene::Start()
 
 		//create checkpoints
 		checkpointList = Engine::GetInstance().map->LoadCheckpoints();
+		
+		if (continueGame) {
+			pugi::xml_document loadFile;
+			pugi::xml_parse_result result = loadFile.load_file("config.xml");
+
+			for (int i = 0; i < checkpointList.size(); i++) {
+				int checkpointID = checkpointList[i]->id;
+
+				for (pugi::xml_node saveNode = loadFile.child("config").child("save").child("checkpoints").child("checkpoint"); saveNode; saveNode = saveNode.next_sibling("checkpoint")) {
+					int saveID = saveNode.attribute("id").as_int();
+					if (saveID == checkpointID) checkpointList[i]->isActive = true;
+				}
+			}
+		}
+
+		continueGame = false;
 
 		Mix_VolumeMusic(60);
 		saveFX = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/Fantasy_UI (30).wav");
@@ -174,10 +263,6 @@ bool Scene::Update(float dt) {
 		break;
 	case SceneState::GAME:
 		GameUpdate(dt);
-		if (continueGame) {
-			LoadState();
-			continueGame = false;
-		}
 		break;
 	case SceneState::SETTINGS:
 		break;
@@ -423,42 +508,36 @@ void Scene::LoadState() {
 	for (int i = 0; i < enemyList.size(); i++) {
 		bool alive = false;
 		std::string enemyName = enemyList[i]->name;
-		while (!alive) {
-			for (pugi::xml_node saveNode = loadFile.child("config").child("save").child("enemies").child("enemy"); saveNode; saveNode = saveNode.next_sibling("enemy")) {
-				std::string saveName = saveNode.attribute("name").as_string();
-				if (saveName == enemyName) {
-					/*enemyList[i]->SetPosition(Vector2D(saveNode.attribute("x").as_int(), saveNode.attribute("y").as_int()));
-					enemyList[i]->SetWake();*/
-					alive = true;
-				}
-			}
-			if (!alive) {
-				//Engine::GetInstance().physics.get()->DeleteBody(enemyList[i]->pbody->body);
-				Engine::GetInstance().entityManager->DestroyEntity(enemyList[i]);
-				enemyList.erase(enemyList.begin() + i);
-				i--;
+		for (pugi::xml_node saveNode = loadFile.child("config").child("save").child("enemies").child("enemy"); saveNode; saveNode = saveNode.next_sibling("enemy")) {
+			std::string saveName = saveNode.attribute("name").as_string();
+			if (saveName == enemyName) {
+				enemyList[i]->SetPosition(Vector2D(saveNode.attribute("x").as_int(), saveNode.attribute("y").as_int()));
+				enemyList[i]->SetWake();
 				alive = true;
 			}
 		}
+		if (!alive) enemyList[i]->state = EnemyState::DEAD;
 	}
 
 	//delete items that have been collected in save
 	for (int i = 0; i < itemList.size(); i++) {
 		bool collected = true;
 		int itemID = itemList[i]->id;
-		while (collected) {
-			for (pugi::xml_node saveNode = loadFile.child("config").child("save").child("items").child("item"); saveNode; saveNode = saveNode.next_sibling("item")) {
-				int saveID = saveNode.attribute("id").as_int();
-				if (saveID == itemID) collected = false;
-			}
+		for (pugi::xml_node saveNode = loadFile.child("config").child("save").child("items").child("item"); saveNode; saveNode = saveNode.next_sibling("item")) {
+			int saveID = saveNode.attribute("id").as_int();
+			if (saveID == itemID) collected = false;
+		}
 
-			if (collected) {
-				Engine::GetInstance().physics.get()->DeleteBody(itemList[i]->pbody->body);
-				Engine::GetInstance().entityManager->DestroyEntity(itemList[i]);
-				itemList.erase(itemList.begin() + i);
-				i--;
-				collected = false;
-			}
+		if (collected) itemList[i]->isPicked = true;
+	}
+
+	//set activated checkpoints to active
+	for (int i = 0; i < checkpointList.size(); i++) {
+		int checkpointID = checkpointList[i]->id;
+
+		for (pugi::xml_node saveNode = loadFile.child("config").child("save").child("checkpoints").child("checkpoint"); saveNode; saveNode = saveNode.next_sibling("checkpoint")) {
+			int saveID = saveNode.attribute("id").as_int();
+			if (saveID == checkpointID) checkpointList[i]->isActive = true;
 		}
 	}
 }
@@ -495,6 +574,17 @@ void Scene::SaveState() {
 	for (auto i : itemList) {
 		pugi::xml_node nodeItem = itemsNode.append_child("item");
 		nodeItem.append_attribute("id") = i->id;
+	}
+
+	//save checkpoints that are active
+	pugi::xml_node checkpointsNode = saveFile.child("config").child("save").child("checkpoints");
+	checkpointsNode.remove_children();
+
+	for (auto c : checkpointList) {
+		if (c->isActive) {
+			pugi::xml_node nodeCheckpoint = checkpointsNode.append_child("checkpoint");
+			nodeCheckpoint.append_attribute("id") = c->id;
+		}
 	}
 
 	saveFile.save_file("config.xml");

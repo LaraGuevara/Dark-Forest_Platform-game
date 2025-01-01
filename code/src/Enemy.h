@@ -41,6 +41,11 @@ public:
 	Enemy();
 	virtual ~Enemy();
 
+	void SaveStartingPos(Vector2D pos) {
+		isStartingPos = true;
+		startingPos = pos;
+	}
+
 	bool Awake();
 
 	bool Start();
@@ -86,6 +91,8 @@ public:
 	PhysBody* sensor;
 
 private:
+	bool isStartingPos = false;
+	Vector2D startingPos;
 
 	EnemyAnimationState AnimState;
 

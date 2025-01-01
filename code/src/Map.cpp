@@ -288,6 +288,7 @@ std::vector<Sensor*> Map::LoadCheckpoints() {
     MapLayer* checkLayer = GetCheckpointLayer();
     std::vector<Sensor*> checkpoints;
 
+    int makeID = 1;
     for (int i = 0; i < checkLayer->width; i++) {
         for (int j = 0; j < checkLayer->height; j++) {
             //Get the gid from tile
@@ -295,6 +296,8 @@ std::vector<Sensor*> Map::LoadCheckpoints() {
             //Check if the gid is a checkpoint
             if (gid == checkpointGid) {
                 Sensor* cp = (Sensor*)Engine::GetInstance().entityManager->CreateEntity(EntityType::SENSOR);
+                cp->id = makeID;
+                makeID++;
                 cp->type = SensorType::CHECKPOINT;
                 Vector2D pos;
                 pos.setX(i);

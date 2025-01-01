@@ -34,7 +34,7 @@ public:
 	bool CleanUp();
 
 public:
-
+	int id;
 	bool isActive = false;
 	bool deactivate = false;
 	SensorType type = SensorType::DEFAULT;

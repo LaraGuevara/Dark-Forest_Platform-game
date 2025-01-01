@@ -15,18 +15,16 @@
 		<fullscreen_window value="false" />
 	</window>
 	<save>
-		<player x="868" y="191" points="2" />
+		<player x="1679" y="64" points="3" />
 		<enemies>
 			<enemy name="walkingEnemy2" x="-2.14748365e+09" y="-2.14748365e+09" />
 			<enemy name="flyingEnemy1" x="-2.14748365e+09" y="-2.14748365e+09" />
-			<enemy name="flyingEnemy2" x="-2.14748365e+09" y="-2.14748365e+09" />
-			<enemy name="walkingEnemy1" x="1274" y="71" />
-			<enemy name="walkingEnemy2" x="2234" y="34" />
-			<enemy name="flyingEnemy1" x="2579" y="208" />
-			<enemy name="flyingEnemy2" x="574" y="216" />
+			<enemy name="flyingEnemy2" x="0" y="-2.14748365e+09" />
+			<enemy name="walkingEnemy2" x="2258" y="58" />
+			<enemy name="flyingEnemy1" x="2603" y="232" />
+			<enemy name="flyingEnemy2" x="598" y="239" />
 		</enemies>
 		<items>
-			<item id="3" />
 			<item id="4" />
 			<item id="5" />
 			<item id="6" />
@@ -37,7 +35,6 @@
 			<item id="11" />
 			<item id="12" />
 			<item id="13" />
-			<item id="3" />
 			<item id="4" />
 			<item id="5" />
 			<item id="6" />
@@ -49,6 +46,10 @@
 			<item id="12" />
 			<item id="13" />
 		</items>
+		<checkpoints>
+			<checkpoint id="1" />
+			<checkpoint id="2" />
+		</checkpoints>
 	</save>
 	<scene>
 		<map path="Assets/Maps/" name="newnocandymap.tmx" />

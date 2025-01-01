@@ -46,6 +46,9 @@ public:
 	// Called before render is available
 	bool Awake();
 
+	void NewGameAwake();
+	void ContinueGameAwake();
+
 	// Called before the first frame
 	bool Start();
 

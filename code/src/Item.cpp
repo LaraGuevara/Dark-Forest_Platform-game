@@ -89,7 +89,7 @@ bool Item::RenderUpdate() {
 
 bool Item::CleanUp()
 {
-	SDL_DestroyTexture(texture);
+	//if(texture) SDL_DestroyTexture(texture);
 	return true;
 }
 

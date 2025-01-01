@@ -32,7 +32,8 @@ bool Sensor::Start() {
 
 		idle.LoadAnimations(loadFile.child("config").child("scene").child("entities").child("checkpoint").child("animations").child("idle"));
 		active.LoadAnimations(loadFile.child("config").child("scene").child("entities").child("checkpoint").child("animations").child("active"));
-		currentAnimation = &idle;
+		if(isActive) currentAnimation = &active;
+		else currentAnimation = &idle;
 
 		pbody = Engine::GetInstance().physics.get()->CreateCircleSensor((int)position.getX() + texH / 2, (int)position.getY() + texH / 2, texH / 2, bodyType::STATIC);
 		pbody->body->SetGravityScale(0);

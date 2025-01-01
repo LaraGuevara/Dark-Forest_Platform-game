@@ -48,6 +48,11 @@ public:
 		this->parameters = parameters;
 	}
 
+	void SaveStartingPos(Vector2D pos) {
+		isStartingPos = true;
+		startingPos = pos;
+	}
+
 	void SetPoints(int p) {
 		GemPoints = p;
 	}
@@ -66,6 +71,9 @@ public:
 	void SetPosition(Vector2D pos);
 
 public:
+	bool isStartingPos = false;
+	Vector2D startingPos;
+
 	int GemPoints = 0;
 	bool PowerUpActive = false;
 

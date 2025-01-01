@@ -26,8 +26,14 @@ bool Enemy::Start() {
 
 	//initilize textures
 	texture = Engine::GetInstance().textures.get()->Load(parameters.attribute("texture").as_string());
-	position.setX(parameters.attribute("x").as_int());
-	position.setY(parameters.attribute("y").as_int());
+	if (isStartingPos) {
+		position.setX(startingPos.getX());
+		position.setY(startingPos.getY());
+	}
+	else {
+		position.setX(parameters.attribute("x").as_int());
+		position.setY(parameters.attribute("y").as_int());
+	}
 	texW = parameters.attribute("w").as_int();
 	texH = parameters.attribute("h").as_int();
 
