@@ -15,45 +15,40 @@
 		<fullscreen_window value="false" />
 	</window>
 	<save>
-		<player x="875" y="206" />
+		<player x="868" y="191" points="2" />
 		<enemies>
-			<enemy name="walkingEnemy1" x="0" y="0" />
-			<enemy name="walkingEnemy2" x="0" y="0" />
-			<enemy name="flyingEnemy1" x="0" y="0" />
-			<enemy name="flyingEnemy2" x="0" y="0" />
-			<enemy name="walkingEnemy1" x="0" y="0" />
-			<enemy name="walkingEnemy2" x="0" y="0" />
-			<enemy name="flyingEnemy1" x="0" y="0" />
-			<enemy name="flyingEnemy2" x="0" y="0" />
-			<enemy name="walkingEnemy1" x="0" y="0" />
-			<enemy name="walkingEnemy2" x="0" y="0" />
+			<enemy name="walkingEnemy2" x="-2.14748365e+09" y="-2.14748365e+09" />
 			<enemy name="flyingEnemy1" x="-2.14748365e+09" y="-2.14748365e+09" />
 			<enemy name="flyingEnemy2" x="-2.14748365e+09" y="-2.14748365e+09" />
-			<enemy name="walkingEnemy1" x="0" y="0" />
-			<enemy name="walkingEnemy2" x="0" y="0" />
-			<enemy name="flyingEnemy1" x="-2.14748365e+09" y="-2.14748365e+09" />
-			<enemy name="flyingEnemy2" x="-2.14748365e+09" y="-2.14748365e+09" />
-			<enemy name="walkingEnemy1" x="1274" y="193" />
-			<enemy name="walkingEnemy2" x="2234" y="34" />
-			<enemy name="flyingEnemy1" x="2579" y="208" />
-			<enemy name="flyingEnemy2" x="574" y="216" />
-			<enemy name="walkingEnemy2" x="0" y="0" />
-			<enemy name="flyingEnemy1" x="0" y="-2.14748365e+09" />
-			<enemy name="flyingEnemy2" x="0" y="-2.14748365e+09" />
-			<enemy name="walkingEnemy2" x="0" y="0" />
-			<enemy name="flyingEnemy1" x="0" y="-2.14748365e+09" />
-			<enemy name="flyingEnemy2" x="0" y="-2.14748365e+09" />
-			<enemy name="walkingEnemy2" x="0" y="-2.14748365e+09" />
-			<enemy name="flyingEnemy1" x="0" y="-2.14748365e+09" />
-			<enemy name="flyingEnemy2" x="0" y="-2.14748365e+09" />
-			<enemy name="walkingEnemy2" x="2234" y="34" />
-			<enemy name="flyingEnemy1" x="2579" y="208" />
-			<enemy name="flyingEnemy2" x="574" y="216" />
-			<enemy name="walkingEnemy1" x="1274" y="193" />
+			<enemy name="walkingEnemy1" x="1274" y="71" />
 			<enemy name="walkingEnemy2" x="2234" y="34" />
 			<enemy name="flyingEnemy1" x="2579" y="208" />
 			<enemy name="flyingEnemy2" x="574" y="216" />
 		</enemies>
+		<items>
+			<item id="3" />
+			<item id="4" />
+			<item id="5" />
+			<item id="6" />
+			<item id="7" />
+			<item id="8" />
+			<item id="9" />
+			<item id="10" />
+			<item id="11" />
+			<item id="12" />
+			<item id="13" />
+			<item id="3" />
+			<item id="4" />
+			<item id="5" />
+			<item id="6" />
+			<item id="7" />
+			<item id="8" />
+			<item id="9" />
+			<item id="10" />
+			<item id="11" />
+			<item id="12" />
+			<item id="13" />
+		</items>
 	</save>
 	<scene>
 		<map path="Assets/Maps/" name="newnocandymap.tmx" />
@@ -396,19 +391,19 @@
 				</enemy>
 			</enemies>
 			<items>
-				<item id="1" gravity ="true" type="1" x="220" y="250" w="16" h="16" texture="Assets/Textures/items/pointItem.png"/>
-				<item id="2" gravity ="true" type="1" x="320" y="250" w="16" h="16" texture="Assets/Textures/items/pointItem.png"/>
-				<item id="3" gravity ="true" type="1" x="420" y="250" w="16" h="16" texture="Assets/Textures/items/pointItem.png"/>
-				<item id="4" gravity ="true" type="1" x="1008" y="100" w="16" h="16" texture="Assets/Textures/items/pointItem.png"/>
-				<item id="5" gravity ="true" type="1" x="1088" y="100" w="16" h="16" texture="Assets/Textures/items/pointItem.png"/>
-				<item id="6" gravity ="true" type="1" x="1152" y="100" w="16" h="16" texture="Assets/Textures/items/pointItem.png"/>
-				<item id="7" gravity ="true" type="1" x="1536" y="80" w="16" h="16" texture="Assets/Textures/items/pointItem.png"/>
-				<item id="8" gravity ="true" type="1" x="1584" y="60" w="16" h="16" texture="Assets/Textures/items/pointItem.png"/>
-				<item id="9" gravity ="true" type="0" x="1712" y="20" w="16" h="16" texture="Assets/Textures/items/healthItem.png"/>
-				<item id="10" gravity ="true" type="1" x="1920" y="100" w="16" h="16" texture="Assets/Textures/items/pointItem.png"/>
-				<item id="11" gravity ="true" type="2" x="2000" y="100" w="16" h="16" texture="Assets/Textures/items/abilityItem.png"/>
-				<item id="12" gravity ="true" type="1" x="2656" y="20" w="16" h="16" texture="Assets/Textures/items/pointItem.png"/>
-				<item id="13" gravity ="true" type="0" x="2720" y="20" w="16" h="16" texture="Assets/Textures/items/healthItem.png"/>
+				<item id="1" gravity="true" type="1" x="220" y="250" w="16" h="16" texture="Assets/Textures/items/pointItem.png" />
+				<item id="2" gravity="true" type="1" x="320" y="250" w="16" h="16" texture="Assets/Textures/items/pointItem.png" />
+				<item id="3" gravity="true" type="1" x="420" y="250" w="16" h="16" texture="Assets/Textures/items/pointItem.png" />
+				<item id="4" gravity="true" type="1" x="1008" y="100" w="16" h="16" texture="Assets/Textures/items/pointItem.png" />
+				<item id="5" gravity="true" type="1" x="1088" y="100" w="16" h="16" texture="Assets/Textures/items/pointItem.png" />
+				<item id="6" gravity="true" type="1" x="1152" y="100" w="16" h="16" texture="Assets/Textures/items/pointItem.png" />
+				<item id="7" gravity="true" type="1" x="1536" y="80" w="16" h="16" texture="Assets/Textures/items/pointItem.png" />
+				<item id="8" gravity="true" type="1" x="1584" y="60" w="16" h="16" texture="Assets/Textures/items/pointItem.png" />
+				<item id="9" gravity="true" type="0" x="1712" y="20" w="16" h="16" texture="Assets/Textures/items/healthItem.png" />
+				<item id="10" gravity="true" type="1" x="1920" y="100" w="16" h="16" texture="Assets/Textures/items/pointItem.png" />
+				<item id="11" gravity="true" type="2" x="2000" y="100" w="16" h="16" texture="Assets/Textures/items/abilityItem.png" />
+				<item id="12" gravity="true" type="1" x="2656" y="20" w="16" h="16" texture="Assets/Textures/items/pointItem.png" />
+				<item id="13" gravity="true" type="0" x="2720" y="20" w="16" h="16" texture="Assets/Textures/items/healthItem.png" />
 			</items>
 			<attack gravity="false" w="32" h="32" damage="1" texture="Assets/Textures/attack.png">
 				<animation>
@@ -423,23 +418,23 @@
 			</attack>
 			<powerup gravity="false" w="48" h="48" damage="3" texture="Assets/Textures/attack.png">
 				<animation>
-					<idle loop ="true" speed="0.2">
-						<frame x="0" y="32" w="48" h="48"/>
-						<frame x="48" y="32" w="48" h="48"/>
-						<frame x="96" y="32" w="48" h="48"/>
-						<frame x="144" y="32" w="48" h="48"/>
-						<frame x="192" y="32" w="48" h="48"/>
-						<frame x="240" y="32" w="48" h="48"/>
-						<frame x="288" y="32" w="48" h="48"/>
-						<frame x="336" y="32" w="48" h="48"/>
-						<frame x="384" y="32" w="48" h="48"/>
-						<frame x="432" y="32" w="48" h="48"/>
-						<frame x="480" y="32" w="48" h="48"/>
-						<frame x="528" y="32" w="48" h="48"/>
-						<frame x="576" y="32" w="48" h="48"/>
-						<frame x="624" y="32" w="48" h="48"/>
-						<frame x="672" y="32" w="48" h="48"/>
-						<frame x="720" y="32" w="48" h="48"/>
+					<idle loop="true" speed="0.2">
+						<frame x="0" y="32" w="48" h="48" />
+						<frame x="48" y="32" w="48" h="48" />
+						<frame x="96" y="32" w="48" h="48" />
+						<frame x="144" y="32" w="48" h="48" />
+						<frame x="192" y="32" w="48" h="48" />
+						<frame x="240" y="32" w="48" h="48" />
+						<frame x="288" y="32" w="48" h="48" />
+						<frame x="336" y="32" w="48" h="48" />
+						<frame x="384" y="32" w="48" h="48" />
+						<frame x="432" y="32" w="48" h="48" />
+						<frame x="480" y="32" w="48" h="48" />
+						<frame x="528" y="32" w="48" h="48" />
+						<frame x="576" y="32" w="48" h="48" />
+						<frame x="624" y="32" w="48" h="48" />
+						<frame x="672" y="32" w="48" h="48" />
+						<frame x="720" y="32" w="48" h="48" />
 					</idle>
 				</animation>
 			</powerup>

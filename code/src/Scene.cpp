@@ -412,11 +412,12 @@ void Scene::LoadState() {
 
 	if (result == NULL) LOG("Error loading config.xml: %s", result.description());
 
-	//load player position
+	//load player position and points
 	Vector2D playerPos;
 	playerPos.setX(loadFile.child("config").child("save").child("player").attribute("x").as_int());
 	playerPos.setY(loadFile.child("config").child("save").child("player").attribute("y").as_int());
 	player->SetPosition(playerPos);
+	player->SetPoints(loadFile.child("config").child("save").child("player").attribute("points").as_int());
 
 	//load alive enemies (deleting dead ones)
 	for (int i = 0; i < enemyList.size(); i++) {
@@ -440,6 +441,26 @@ void Scene::LoadState() {
 			}
 		}
 	}
+
+	//delete items that have been collected in save
+	for (int i = 0; i < itemList.size(); i++) {
+		bool collected = true;
+		int itemID = itemList[i]->id;
+		while (collected) {
+			for (pugi::xml_node saveNode = loadFile.child("config").child("save").child("items").child("item"); saveNode; saveNode = saveNode.next_sibling("item")) {
+				int saveID = saveNode.attribute("id").as_int();
+				if (saveID == itemID) collected = false;
+			}
+
+			if (collected) {
+				Engine::GetInstance().physics.get()->DeleteBody(itemList[i]->pbody->body);
+				Engine::GetInstance().entityManager->DestroyEntity(itemList[i]);
+				itemList.erase(itemList.begin() + i);
+				i--;
+				collected = false;
+			}
+		}
+	}
 }
 
 void Scene::SaveState() {
@@ -448,21 +469,32 @@ void Scene::SaveState() {
 
 	if (result == NULL) LOG("Error loading config.xml: %s", result.description());
 	
-	//save player postion
+	//save player postion and points
 	Vector2D playerPos = player->GetPosition();
 	saveFile.child("config").child("save").child("player").attribute("x").set_value(playerPos.getX());
 	saveFile.child("config").child("save").child("player").attribute("y").set_value(playerPos.getY());
+	saveFile.child("config").child("save").child("player").attribute("points").set_value(player->GemPoints);
 
 	//save alive enemies and their postions
 	pugi::xml_node enemiesNode = saveFile.child("config").child("save").child("enemies");
+	enemiesNode.remove_children();
 	Vector2D enemyPos;
-	while (enemiesNode.remove_child("enemy"));
+
 	for (auto e : enemyList) {
 		pugi::xml_node nodeEnemy = enemiesNode.append_child("enemy");
 		nodeEnemy.append_attribute("name") = e->name.c_str();
 		enemyPos = e->GetPosition();
 		nodeEnemy.append_attribute("x") = enemyPos.getX();
 		nodeEnemy.append_attribute("y") = enemyPos.getY();
+	}
+
+	//save items that haven't been collected yet
+	pugi::xml_node itemsNode = saveFile.child("config").child("save").child("items");
+	itemsNode.remove_children();
+
+	for (auto i : itemList) {
+		pugi::xml_node nodeItem = itemsNode.append_child("item");
+		nodeItem.append_attribute("id") = i->id;
 	}
 
 	saveFile.save_file("config.xml");

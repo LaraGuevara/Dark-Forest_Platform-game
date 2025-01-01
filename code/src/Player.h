@@ -48,6 +48,10 @@ public:
 		this->parameters = parameters;
 	}
 
+	void SetPoints(int p) {
+		GemPoints = p;
+	}
+
 	int GetXPos() {
 		return position.getX();
 	}
