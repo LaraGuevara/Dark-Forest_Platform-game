@@ -58,6 +58,8 @@ bool Item::Start() {
 		break;
 	}
 
+	//pbody->body->SetGravityScale(0);
+
 	pbody->listener = this;
 
 	return true;

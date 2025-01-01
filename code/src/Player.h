@@ -81,7 +81,12 @@ public:
 	int texW, texH;
 
 	//Audio fx
+	int runFX;
+	int jumpStartFX;
+	int jumpEndFX;
+	int gameOverFX;
 	int pickCoinFxId;
+	int healthItemFxId, abilityItemFxId, pointsItemFxId;
 
 	// L08 TODO 5: Add physics to the player - declare a Physics body
 	PhysBody* pbody;
@@ -110,9 +115,4 @@ public:
 	bool playerDeath = false;
 	bool checkpointDone = false;
 	bool damageRight = false;
-
-	int runFX;
-	int jumpStartFX;
-	int jumpEndFX;
-	int gameOverFX;
 };

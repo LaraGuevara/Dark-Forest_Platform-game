@@ -66,6 +66,9 @@ bool Player::Start() {
 	jumpStartFX = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/GRASS - Pre Jump 1.wav");
 	jumpEndFX = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/GRASS - Post Jump 1.wav");
 	gameOverFX = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/Game Over.wav");
+	healthItemFxId = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/items/healthFX.wav");
+	abilityItemFxId = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/items/abilityFX.wav");
+	pointsItemFxId = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/items/pointsFX.wav");
 
 	return true;
 }
@@ -327,15 +330,18 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 		break;
 	case ColliderType::ITEM_ABILITY:
 		LOG("Collision ITEM ABILITY");
+		Engine::GetInstance().audio->PlayFx(abilityItemFxId);
 		PowerUpActive = true;
 		break;
 	case ColliderType::ITEM_HEALTH:
 		LOG("Collision ITEM HEALTH");
+		Engine::GetInstance().audio->PlayFx(healthItemFxId);
 		life += 2;
 		if (life > lifeValue) life = lifeValue;
 		break;
 	case ColliderType::ITEM_POINTS:
 		LOG("Collision ITEM POINTS");
+		Engine::GetInstance().audio->PlayFx(pointsItemFxId);
 		GemPoints += 1;
 		break;
 	case ColliderType::ENEMY:
