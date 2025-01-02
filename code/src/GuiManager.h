@@ -36,6 +36,7 @@ public:
 	SDL_Texture* credits;
 	SDL_Texture* helptex;
 	SDL_Texture* pausedMenu;
+	SDL_Texture* deathScreen;
 
 };
 

@@ -71,6 +71,9 @@ public:
 	void SetPosition(Vector2D pos);
 
 public:
+	bool doRespawn = false;
+	bool finishedDeathAnim = false;
+
 	bool isStartingPos = false;
 	Vector2D startingPos;
 

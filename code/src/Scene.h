@@ -21,7 +21,8 @@ enum GUI_ID {
 	ID_RESUME,
 	ID_PAUSED_SETTINGS,
 	ID_TITLE,
-	ID_PAUSED_EXIT
+	ID_PAUSED_EXIT,
+	ID_RESPAWN
 };
 
 enum SceneState {
@@ -29,9 +30,7 @@ enum SceneState {
 	MENU,
 	SETTINGS,
 	GAME,
-	CREDITS,
-	DIE,
-	LEVELCOMPLETE
+	CREDITS
 };
 
 class Scene : public Module
@@ -96,6 +95,9 @@ public:
 	bool pausedGame = false;
 	bool disabledButtons = true;
 
+	//trigger death screen
+	bool deathScreen = false;
+
 	bool gameAwake = false;
 	bool continueGame = false;
 
@@ -145,4 +147,6 @@ private:
 	GuiControlButton* PAUSEDsettingsBT;
 	GuiControlButton* titleBT;
 	GuiControlButton* PAUSEDexitBT;
+	//death screen 
+	GuiControlButton* respawnBT;
 };

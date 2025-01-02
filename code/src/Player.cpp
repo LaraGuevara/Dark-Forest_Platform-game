@@ -174,18 +174,24 @@ bool Player::Update(float dt)
 		pbody->body->SetLinearVelocity(velocity);
 		if (isDying) {
 			if (death.HasFinished()) {
-				pbody->body->SetType(b2_dynamicBody);
-				pbody->body->SetAwake(true);
-				b2Transform pbodyPos = pbody->body->GetTransform();
-				SetPosition(checkpoint);
-				respawn = true;
-				life = lifeValue;
-				isDying = false;
-				playerDeath = false;
-				state = Player_State::IDLE;
-				look = Player_Look::RIGHT;
-				currentAnimation = &idle;
-				death.Reset();
+				if (!finishedDeathAnim) finishedDeathAnim = true;
+
+				if (doRespawn) {
+					pbody->body->SetType(b2_dynamicBody);
+					pbody->body->SetAwake(true);
+					b2Transform pbodyPos = pbody->body->GetTransform();
+					SetPosition(checkpoint);
+					respawn = true;
+					doRespawn = false;
+					finishedDeathAnim = false;
+					life = lifeValue;
+					isDying = false;
+					playerDeath = false;
+					state = Player_State::IDLE;
+					look = Player_Look::RIGHT;
+					currentAnimation = &idle;
+					death.Reset();
+				}
 			}
 		}
 	}

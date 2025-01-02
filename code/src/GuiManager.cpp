@@ -19,6 +19,7 @@ bool GuiManager::Start()
 	credits = Engine::GetInstance().textures.get()->Load("Assets/Textures/screens/bookBase.png");
 	helptex = Engine::GetInstance().textures.get()->Load("Assets/Textures/menu.png");
 	pausedMenu = Engine::GetInstance().textures.get()->Load("Assets/Textures/screens/halfBookBase.png");
+	deathScreen = Engine::GetInstance().textures.get()->Load("Assets/Textures/screens/deathScreen.png");
 	return true;
 }
 
@@ -54,6 +55,14 @@ bool GuiManager::Update(float dt)
 			control->Update(dt);
 		}
 	}
+	else if (Engine::GetInstance().scene.get()->deathScreen) {
+		Engine::GetInstance().render.get()->DrawTexture(deathScreen, 0, 0, NULL, SDL_FLIP_NONE, false);
+
+		for (const auto& control : guiControlsList)
+		{
+			control->Update(dt);
+		}
+	}
 	else {
 		for (const auto& control : guiControlsList)
 		{
@@ -79,6 +88,7 @@ bool GuiManager::CleanUp()
 	SDL_DestroyTexture(credits);
 	SDL_DestroyTexture(helptex);
 	SDL_DestroyTexture(pausedMenu);
+	SDL_DestroyTexture(deathScreen);
 
 	return true;
 }

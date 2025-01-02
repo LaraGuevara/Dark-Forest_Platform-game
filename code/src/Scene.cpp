@@ -53,6 +53,9 @@ bool Scene::Awake()
 			PAUSEDsettingsBT->state = GuiControlState::DISABLED;
 			titleBT->state = GuiControlState::DISABLED;
 			PAUSEDexitBT->state = GuiControlState::DISABLED;
+
+			respawnBT = (GuiControlButton*)Engine::GetInstance().guiManager->CreateGuiControl(GuiControlType::BUTTON, GUI_ID::ID_RESPAWN, "Respawn", { 540, 525, 200,70 }, this);
+			respawnBT->state = GuiControlState::DISABLED;
 		}
 
 		if (continueGame) ContinueGameAwake();
@@ -62,10 +65,6 @@ bool Scene::Awake()
 	case SceneState::SETTINGS:
 		break;
 	case SceneState::CREDITS:
-		break;
-	case SceneState::DIE:
-		break;
-	case SceneState::LEVELCOMPLETE:
 		break;
 	default:
 		return false;
@@ -228,10 +227,6 @@ bool Scene::Start()
 		break;
 	case SceneState::CREDITS:
 		break;
-	case SceneState::DIE:
-		break;
-	case SceneState::LEVELCOMPLETE:
-		break;
 	default:
 		return false;
 		break;
@@ -268,10 +263,6 @@ bool Scene::Update(float dt) {
 		break;
 	case SceneState::CREDITS:
 		Engine::GetInstance().render.get()->DrawTexture(menuBackground, 0, 0, NULL, SDL_FLIP_NONE, false);
-		break;
-	case SceneState::DIE:
-		break;
-	case SceneState::LEVELCOMPLETE:
 		break;
 	default:
 		return false;
@@ -407,7 +398,15 @@ bool Scene::GameUpdate(float dt)
 		respawn = true;
 	}
 
+	if (respawn and player->finishedDeathAnim) {
+		deathScreen = true;
+		respawnBT->state = GuiControlState::NORMAL;
+		player->finishedDeathAnim = false;
+	}
+
 	if (respawn and player->state != Player_State::DIE) {
+		deathScreen = false;
+		respawnBT->state = GuiControlState::DISABLED;
 		respawn = false;
 		Mix_ResumeMusic();
 	}
@@ -472,10 +471,6 @@ bool Scene::CleanUp()
 	case SceneState::SETTINGS:
 		break;
 	case SceneState::CREDITS:
-		break;
-	case SceneState::DIE:
-		break;
-	case SceneState::LEVELCOMPLETE:
 		break;
 	default:
 		return false;
@@ -658,6 +653,10 @@ bool Scene::OnGuiMouseClickEvent(GuiControl* control)
 		Engine::GetInstance().entityManager->CleanUp();
 		state = SceneState::MENU;
 		Start();
+		break;
+	case GUI_ID::ID_RESPAWN:
+		deathScreen = false;
+		player->doRespawn = true;
 		break;
 	}
 
