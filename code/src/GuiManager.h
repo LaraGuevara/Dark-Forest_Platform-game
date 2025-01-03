@@ -21,6 +21,9 @@ public:
 	 // Called each loop iteration
 	 bool Update(float dt);
 
+	 //delete control
+	 void DeleteGUIControl(int id);
+
 	// Called before quitting
 	bool CleanUp();
 

@@ -105,6 +105,12 @@ bool Map::CleanUp()
 // Load new map
 bool Map::Load(std::string path, std::string fileName)
 {
+    /*for (const auto& layer : rectangles) {
+        Engine::GetInstance().physics->DeleteBody(layer->body);
+    }*/
+
+    mapData.layers.clear();
+    
     bool ret = false;
 
     // Assigns the name of the map file and the path

@@ -45,6 +45,22 @@ GuiControl* GuiManager::CreateGuiControl(GuiControlType type, int id, const char
 	return guiControl;
 }
 
+void GuiManager::DeleteGUIControl(int id) {
+
+	GuiControl* target = nullptr;
+	for (const auto& control : guiControlsList) {
+		if (control->id == id) target = control;
+	}
+
+	if (target != nullptr) {
+		std::list<GuiControl*>::iterator i = guiControlsList.begin();
+		while (i != guiControlsList.end()) {
+			if (*i == target) i = guiControlsList.erase(i);
+			else i++;
+		}
+	}
+}
+
 bool GuiManager::Update(float dt)
 {	
 	if (Engine::GetInstance().scene.get()->pausedGame) {

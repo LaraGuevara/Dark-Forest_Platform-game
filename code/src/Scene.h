@@ -9,6 +9,8 @@
 #include <SDL2/SDL_mixer.h>
 #include "GuiControlButton.h"
 
+#define LEVELS 1
+
 
 struct SDL_Texture;
 
@@ -22,7 +24,8 @@ enum GUI_ID {
 	ID_PAUSED_SETTINGS,
 	ID_TITLE,
 	ID_PAUSED_EXIT,
-	ID_RESPAWN
+	ID_RESPAWN,
+	ID_TELEPORT
 };
 
 enum SceneState {
@@ -31,6 +34,13 @@ enum SceneState {
 	SETTINGS,
 	GAME,
 	CREDITS
+};
+
+struct Teleport {
+	int level;
+	int id;
+	int UI_ID;
+	Vector2D playerPos;
 };
 
 class Scene : public Module
@@ -51,12 +61,15 @@ public:
 	// Called before the first frame
 	bool Start();
 
+	//load level
+	void LoadLevel(int lvl);
+
 	// Called before all Updates
 	bool PreUpdate();
 
 	// Called each loop iteration
 	bool Update(float dt);
-	//Updates for each screen
+	
 	bool GameUpdate(float dt);
 
 	// Called before all Updates
@@ -64,6 +77,10 @@ public:
 
 	// Called before quitting
 	bool CleanUp();
+
+	// Make the buttons for teleporting between checkpoints
+	void TeleportUI();
+	void EndTeleportUI();
 
 	// Return the player position
 	Vector2D GetPlayerPosition();
@@ -101,6 +118,12 @@ public:
 	bool gameAwake = false;
 	bool continueGame = false;
 
+	//trigger checkpoint teleport
+	bool checkpointTeleportView = false;
+
+	//what level player is in
+	int level = 1;
+
 private:
 	int timeVar = 1;
 	int introTime = 0;
@@ -134,6 +157,8 @@ private:
 	std::vector<Item*> itemList;
 	std::vector<Attack*> attackList;
 	std::vector<Sensor*> checkpointList;
+	std::vector<Teleport> checkpointTPList;
+	std::vector<GuiControlButton*> teleportBTs;
 
 	//GUI
 	//main menu

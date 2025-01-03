@@ -122,6 +122,14 @@ void Scene::ContinueGameAwake() {
 	player->SaveStartingPos(playerPos);
 	player->SetPoints(loadFile.child("config").child("save").child("player").attribute("points").as_int());
 
+	//load current level
+	level = loadFile.child("config").child("save").child("player").attribute("level").as_int();
+
+	//find the proper level to load
+	pugi::xml_node levelSaveNode;
+	for (pugi::xml_node saveNode = loadFile.child("config").child("save").child("levels").child("level"); saveNode; saveNode = saveNode.next_sibling("level")) {
+		if (saveNode.attribute("level").as_int() == level) levelSaveNode = saveNode;
+	}
 
 	//load alive enemies
 	Vector2D enemyPos;
@@ -130,7 +138,7 @@ void Scene::ContinueGameAwake() {
 		bool alive = false;
 		std::string enemyName = enemyNode.attribute("name").as_string();
 		
-		for (pugi::xml_node saveNode = loadFile.child("config").child("save").child("enemies").child("enemy"); saveNode; saveNode = saveNode.next_sibling("enemy")) {
+		for (pugi::xml_node saveNode = levelSaveNode.child("enemies").child("enemy"); saveNode; saveNode = saveNode.next_sibling("enemy")) {
 			std::string saveName = saveNode.attribute("name").as_string();
 			if (saveName == enemyName) {
 				enemyPos.setX(saveNode.attribute("x").as_int());
@@ -151,7 +159,7 @@ void Scene::ContinueGameAwake() {
 	for (pugi::xml_node itemNode = configParameters.child("entities").child("items").child("item"); itemNode; itemNode = itemNode.next_sibling("item")) {
 		bool collected = true;
 		int itemID = itemNode.attribute("id").as_int();
-		for (pugi::xml_node saveNode = loadFile.child("config").child("save").child("items").child("item"); saveNode; saveNode = saveNode.next_sibling("item")) {
+		for (pugi::xml_node saveNode = levelSaveNode.child("items").child("item"); saveNode; saveNode = saveNode.next_sibling("item")) {
 			int saveID = saveNode.attribute("id").as_int();
 			if (saveID == itemID) collected = false;
 		}
@@ -175,6 +183,15 @@ void Scene::ContinueGameAwake() {
 	}
 }
 
+void Scene::LoadLevel(int lvl) {
+	Engine::GetInstance().map.get()->CleanUp();
+	switch (lvl) {
+	case 1:
+		Engine::GetInstance().map->Load("Assets/Maps/", "newnocandymap.tmx");
+		break;
+	}
+}
+
 // Called before the first frame
 bool Scene::Start()
 {
@@ -193,23 +210,45 @@ bool Scene::Start()
 		break;
 	case SceneState::GAME:
 		//Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 1024);
-		Engine::GetInstance().map->Load("Assets/Maps/", "newnocandymap.tmx");
+		//Engine::GetInstance().map->Load("Assets/Maps/", "newnocandymap.tmx");
+
+		LoadLevel(level);
 		healthbar = Engine::GetInstance().textures.get()->Load("Assets/Textures/healthbar.png");
 		gemIcon = Engine::GetInstance().textures.get()->Load("Assets/Textures/gemIcon.png");
 
 		//create checkpoints
 		checkpointList = Engine::GetInstance().map->LoadCheckpoints();
+		checkpointTPList.clear();
 		
 		if (continueGame) {
 			pugi::xml_document loadFile;
 			pugi::xml_parse_result result = loadFile.load_file("config.xml");
 
+			//find the proper level to load
+			pugi::xml_node levelSaveNode;
+			for (pugi::xml_node saveNode = loadFile.child("config").child("save").child("levels").child("level"); saveNode; saveNode = saveNode.next_sibling("level")) {
+				for (pugi::xml_node cpNode = saveNode.child("checkpoints").child("checkpoint"); cpNode; cpNode = cpNode.next_sibling("checkpoint")) {
+					Teleport tp;
+					tp.id = cpNode.attribute("id").as_int();
+					tp.level = saveNode.attribute("level").as_int();
+					tp.UI_ID = checkpointTPList.size() + 1 + GUI_ID::ID_TELEPORT;
+					tp.playerPos = { cpNode.attribute("x").as_float(), cpNode.attribute("y").as_float() };
+					checkpointTPList.push_back(tp);
+				}
+
+				if (saveNode.attribute("level").as_int() == level) levelSaveNode = saveNode;
+			}
+
 			for (int i = 0; i < checkpointList.size(); i++) {
 				int checkpointID = checkpointList[i]->id;
 
-				for (pugi::xml_node saveNode = loadFile.child("config").child("save").child("checkpoints").child("checkpoint"); saveNode; saveNode = saveNode.next_sibling("checkpoint")) {
-					int saveID = saveNode.attribute("id").as_int();
-					if (saveID == checkpointID) checkpointList[i]->isActive = true;
+				for (pugi::xml_node cpNode = levelSaveNode.child("checkpoints").child("checkpoint"); cpNode; cpNode = cpNode.next_sibling("checkpoint")) {
+					int saveID = cpNode.attribute("id").as_int();
+					if (saveID == checkpointID) {
+						checkpointList[i]->isActive = true;
+						checkpointList[i]->isAdded = true;
+						checkpointList[i]->playerPos = { cpNode.attribute("x").as_float(), cpNode.attribute("y").as_float() };
+					}
 				}
 			}
 		}
@@ -234,6 +273,32 @@ bool Scene::Start()
 	return true;
 	
 	return true;
+}
+
+void Scene::TeleportUI() {
+
+	for (auto b : teleportBTs) Engine::GetInstance().guiManager->DeleteGUIControl(b->id);
+	teleportBTs.clear();
+
+	Vector2D playerPos = GetPlayerPosition();
+	int y = 100;
+	for (int i = 0; i < checkpointTPList.size(); ++i) {
+		std::string text1 = std::to_string(checkpointTPList[i].id);
+		std::string text2 = " / lvl: ";
+		std::string text3 = std::to_string(checkpointTPList[i].level);
+		std::string fullText = text1 + text2 + text3;
+
+		GuiControlButton* button = (GuiControlButton*)Engine::GetInstance().guiManager->CreateGuiControl(GuiControlType::BUTTON, checkpointTPList[i].UI_ID, fullText.c_str(), { 50, y, 150,30}, this);
+		teleportBTs.push_back(button);
+		y += 40;
+	}
+}
+
+void Scene::EndTeleportUI() {
+	checkpointTeleportView = false;
+	for (auto b : teleportBTs) {
+		b->state = GuiControlState::DISABLED;
+	}
 }
 
 // Called each loop iteration
@@ -291,6 +356,18 @@ bool Scene::GameUpdate(float dt)
 			disabledButtons = true;
 		}
 	}
+
+	//trigger/hide checkpoint teleport
+	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_F7) == KEY_DOWN) {
+		if (checkpointTeleportView) {
+			EndTeleportUI();
+			checkpointTeleportView = false;
+		}
+		else if (!checkpointTeleportView) {
+			TeleportUI();
+			checkpointTeleportView = true;
+		}
+	}
 	
 	//draw healthbar
 	Engine::GetInstance().render.get()->DrawTexture(healthbar, 10, 20, &healthRect, SDL_FLIP_NONE, false);
@@ -329,6 +406,18 @@ bool Scene::GameUpdate(float dt)
 			player->SetCheckpoint(playerPos);
 			SaveState();
 			c->deactivate = true;
+
+			//add to teleport list
+			if (!c->isAdded) {
+				Teleport tp;
+				tp.id = c->id;
+				tp.level = level;
+				tp.UI_ID = checkpointTPList.size() + 1 + GUI_ID::ID_TELEPORT;
+				tp.playerPos = c->playerPos;
+				checkpointTPList.push_back(tp);
+				c->isAdded = true;
+			}
+
 			LOG("CHECKPOINT (%d, %d)", (int)playerPos.getX(), (int)playerPos.getY() - 2);
 		}
 	}
@@ -465,8 +554,8 @@ bool Scene::CleanUp()
 		exitBT->state = GuiControlState::DISABLED;
 		break;
 	case SceneState::GAME:
-		SDL_DestroyTexture(img);
-		SDL_DestroyTexture(healthbar);
+		if(img) SDL_DestroyTexture(img);
+		if(healthbar) SDL_DestroyTexture(healthbar);
 		break;
 	case SceneState::SETTINGS:
 		break;
@@ -499,11 +588,30 @@ void Scene::LoadState() {
 	player->SetPosition(playerPos);
 	player->SetPoints(loadFile.child("config").child("save").child("player").attribute("points").as_int());
 
+	//load current level
+	level = loadFile.child("config").child("save").child("player").attribute("level").as_int();
+
+	//find the proper level to load
+	pugi::xml_node levelSaveNode;
+	checkpointTPList.clear();
+	for (pugi::xml_node saveNode = loadFile.child("config").child("save").child("levels").child("level"); saveNode; saveNode = saveNode.next_sibling("level")) {
+		for (pugi::xml_node cpNode = saveNode.child("checkpoints").child("checkpoint"); cpNode; cpNode = cpNode.next_sibling("checkpoint")) {
+			Teleport tp;
+			tp.id = cpNode.attribute("id").as_int();
+			tp.level = saveNode.attribute("level").as_int();
+			tp.UI_ID = checkpointTPList.size() + 1 + GUI_ID::ID_TELEPORT;
+			tp.playerPos = { cpNode.attribute("x").as_float(), cpNode.attribute("y").as_float() };
+			checkpointTPList.push_back(tp);
+		}
+
+		if (saveNode.attribute("level").as_int() == level) levelSaveNode = saveNode;
+	}
+
 	//load alive enemies (deleting dead ones)
 	for (int i = 0; i < enemyList.size(); i++) {
 		bool alive = false;
 		std::string enemyName = enemyList[i]->name;
-		for (pugi::xml_node saveNode = loadFile.child("config").child("save").child("enemies").child("enemy"); saveNode; saveNode = saveNode.next_sibling("enemy")) {
+		for (pugi::xml_node saveNode = levelSaveNode.child("enemies").child("enemy"); saveNode; saveNode = saveNode.next_sibling("enemy")) {
 			std::string saveName = saveNode.attribute("name").as_string();
 			if (saveName == enemyName) {
 				enemyList[i]->SetPosition(Vector2D(saveNode.attribute("x").as_int(), saveNode.attribute("y").as_int()));
@@ -518,7 +626,7 @@ void Scene::LoadState() {
 	for (int i = 0; i < itemList.size(); i++) {
 		bool collected = true;
 		int itemID = itemList[i]->id;
-		for (pugi::xml_node saveNode = loadFile.child("config").child("save").child("items").child("item"); saveNode; saveNode = saveNode.next_sibling("item")) {
+		for (pugi::xml_node saveNode = levelSaveNode.child("items").child("item"); saveNode; saveNode = saveNode.next_sibling("item")) {
 			int saveID = saveNode.attribute("id").as_int();
 			if (saveID == itemID) collected = false;
 		}
@@ -530,9 +638,13 @@ void Scene::LoadState() {
 	for (int i = 0; i < checkpointList.size(); i++) {
 		int checkpointID = checkpointList[i]->id;
 
-		for (pugi::xml_node saveNode = loadFile.child("config").child("save").child("checkpoints").child("checkpoint"); saveNode; saveNode = saveNode.next_sibling("checkpoint")) {
+		for (pugi::xml_node saveNode = levelSaveNode.child("checkpoints").child("checkpoint"); saveNode; saveNode = saveNode.next_sibling("checkpoint")) {
 			int saveID = saveNode.attribute("id").as_int();
-			if (saveID == checkpointID) checkpointList[i]->isActive = true;
+			if (saveID == checkpointID) {
+				checkpointList[i]->isActive = true;
+				checkpointList[i]->isAdded = true;
+				checkpointList[i]->playerPos = { saveNode.attribute("x").as_float(), saveNode.attribute("y").as_float() };
+			}
 		}
 	}
 }
@@ -548,9 +660,16 @@ void Scene::SaveState() {
 	saveFile.child("config").child("save").child("player").attribute("x").set_value(playerPos.getX());
 	saveFile.child("config").child("save").child("player").attribute("y").set_value(playerPos.getY());
 	saveFile.child("config").child("save").child("player").attribute("points").set_value(player->GemPoints);
+	saveFile.child("config").child("save").child("player").attribute("level").set_value(level);
+
+	//find the proper level to save to
+	pugi::xml_node levelSaveNode;
+	for (pugi::xml_node saveNode = saveFile.child("config").child("save").child("levels").child("level"); saveNode; saveNode = saveNode.next_sibling("level")) {
+		if (saveNode.attribute("level").as_int() == level) levelSaveNode = saveNode;
+	}
 
 	//save alive enemies and their postions
-	pugi::xml_node enemiesNode = saveFile.child("config").child("save").child("enemies");
+	pugi::xml_node enemiesNode = levelSaveNode.child("enemies");
 	enemiesNode.remove_children();
 	Vector2D enemyPos;
 
@@ -563,7 +682,7 @@ void Scene::SaveState() {
 	}
 
 	//save items that haven't been collected yet
-	pugi::xml_node itemsNode = saveFile.child("config").child("save").child("items");
+	pugi::xml_node itemsNode = levelSaveNode.child("items");
 	itemsNode.remove_children();
 
 	for (auto i : itemList) {
@@ -572,13 +691,15 @@ void Scene::SaveState() {
 	}
 
 	//save checkpoints that are active
-	pugi::xml_node checkpointsNode = saveFile.child("config").child("save").child("checkpoints");
+	pugi::xml_node checkpointsNode = levelSaveNode.child("checkpoints");
 	checkpointsNode.remove_children();
 
 	for (auto c : checkpointList) {
 		if (c->isActive) {
 			pugi::xml_node nodeCheckpoint = checkpointsNode.append_child("checkpoint");
 			nodeCheckpoint.append_attribute("id") = c->id;
+			nodeCheckpoint.append_attribute("x") = c->playerPos.getX();
+			nodeCheckpoint.append_attribute("y") = c->playerPos.getY();
 		}
 	}
 
@@ -607,57 +728,75 @@ bool Scene::OnGuiMouseClickEvent(GuiControl* control)
 {
 	// L15: DONE 5: Implement the OnGuiMouseClickEvent method
 	LOG("Press Gui Control: %d", control->id);
-	switch (control->id) {
-	case GUI_ID::ID_PLAY:
-		CleanUp();
-		state = SceneState::GAME;
-		Awake();
-		Engine::GetInstance().entityManager->Awake();
-		Start();
-		Engine::GetInstance().entityManager->Start();
-		break;
-	case GUI_ID::ID_CONTINUE:
-		CleanUp();
-		state = SceneState::GAME;
-		continueGame = true;
-		Awake();
-		Engine::GetInstance().entityManager->Awake();
-		Start();
-		Engine::GetInstance().entityManager->Start();
-		break;
-	case GUI_ID::ID_EXIT:
-		toExit = true;
-		break;
-	case GUI_ID::ID_CREDITS:
-		startBT->state = GuiControlState::VISIBLE;
-		continueBT->state = GuiControlState::VISIBLE;
-		settingBT->state = GuiControlState::VISIBLE;
-		creditsBT->state = GuiControlState::VISIBLE;
-		exitBT->state = GuiControlState::VISIBLE;
-		state = SceneState::CREDITS;
-		break;
-	case GUI_ID::ID_PAUSED_EXIT:
-		toExit = true;
-		break;
-	case GUI_ID::ID_RESUME:
-		pausedGame = false;
-		break;
-	case GUI_ID::ID_TITLE:
-		Mix_PauseMusic();
-		pausedGame = false;
-		CleanUp();
-		resumeBT->state = GuiControlState::DISABLED;
-		PAUSEDsettingsBT->state = GuiControlState::DISABLED;
-		titleBT->state = GuiControlState::DISABLED;
-		PAUSEDexitBT->state = GuiControlState::DISABLED;
-		Engine::GetInstance().entityManager->CleanUp();
-		state = SceneState::MENU;
-		Start();
-		break;
-	case GUI_ID::ID_RESPAWN:
-		deathScreen = false;
-		player->doRespawn = true;
-		break;
+	if (control->id < GUI_ID::ID_TELEPORT) {
+		switch (control->id) {
+		case GUI_ID::ID_PLAY:
+			CleanUp();
+			state = SceneState::GAME;
+			Awake();
+			Engine::GetInstance().entityManager->Awake();
+			Start();
+			Engine::GetInstance().entityManager->Start();
+			break;
+		case GUI_ID::ID_CONTINUE:
+			CleanUp();
+			state = SceneState::GAME;
+			continueGame = true;
+			Awake();
+			Engine::GetInstance().entityManager->Awake();
+			Start();
+			Engine::GetInstance().entityManager->Start();
+			break;
+		case GUI_ID::ID_EXIT:
+			toExit = true;
+			break;
+		case GUI_ID::ID_CREDITS:
+			startBT->state = GuiControlState::VISIBLE;
+			continueBT->state = GuiControlState::VISIBLE;
+			settingBT->state = GuiControlState::VISIBLE;
+			creditsBT->state = GuiControlState::VISIBLE;
+			exitBT->state = GuiControlState::VISIBLE;
+			state = SceneState::CREDITS;
+			break;
+		case GUI_ID::ID_PAUSED_EXIT:
+			toExit = true;
+			break;
+		case GUI_ID::ID_RESUME:
+			pausedGame = false;
+			break;
+		case GUI_ID::ID_TITLE:
+			Mix_PauseMusic();
+			pausedGame = false;
+			CleanUp();
+			resumeBT->state = GuiControlState::DISABLED;
+			PAUSEDsettingsBT->state = GuiControlState::DISABLED;
+			titleBT->state = GuiControlState::DISABLED;
+			PAUSEDexitBT->state = GuiControlState::DISABLED;
+			Engine::GetInstance().entityManager->CleanUp();
+			state = SceneState::MENU;
+			Start();
+			break;
+		case GUI_ID::ID_RESPAWN:
+			deathScreen = false;
+			player->doRespawn = true;
+			break;
+		}
+	}
+	else {
+		bool IDfound = false;
+		Vector2D teleportPos = GetPlayerPosition();
+
+		for (auto t : checkpointTPList) {
+			if (!IDfound) {
+				if (t.UI_ID == control->id) {
+					IDfound = true;
+					teleportPos = t.playerPos;
+				}
+			}
+		}
+		checkpointTeleportView = false;
+		player->SetPosition(teleportPos);
+		EndTeleportUI();
 	}
 
 	return true;

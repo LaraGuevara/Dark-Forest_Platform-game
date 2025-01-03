@@ -72,7 +72,12 @@ void Sensor::OnCollision(PhysBody* physA, PhysBody* physB) {
 	switch (physB->ctype)
 	{
 	case ColliderType::PLAYER:
-		if(type == SensorType::CHECKPOINT) isActive = true;
+		if (type == SensorType::CHECKPOINT) {
+			int x, y;
+			physB->GetPosition(x, y);
+			playerPos = { (float)x, (float)y };
+			isActive = true;
+		}
 		break;
 	default:
 		break;

@@ -35,10 +35,12 @@ public:
 
 public:
 	int id;
+	bool isAdded = false;
 	bool isActive = false;
 	bool deactivate = false;
 	SensorType type = SensorType::DEFAULT;
 	PhysBody* pbody;
+	Vector2D playerPos;
 
 private:
 
