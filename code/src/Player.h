@@ -98,6 +98,7 @@ public:
 	int texW, texH;
 
 	//Audio fx
+	int lvlCompleteFX;
 	int runFX;
 	int jumpStartFX;
 	int jumpEndFX;

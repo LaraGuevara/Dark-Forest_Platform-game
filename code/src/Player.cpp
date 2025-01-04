@@ -68,6 +68,7 @@ bool Player::Start() {
 	sensor->ctype = ColliderType::SENSOR;
 
 	Mix_Volume(1, 90);
+	lvlCompleteFX = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/Success 3.wav");
 	runFX = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/GRASS - Run 1.wav");
 	jumpStartFX = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/GRASS - Pre Jump 1.wav");
 	jumpEndFX = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/GRASS - Post Jump 1.wav");
@@ -368,6 +369,7 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 		}
 		break;
 	case ColliderType::LEVELEND:
+		Engine::GetInstance().audio->PlayFx(lvlCompleteFX);
 		finishedLevel = true;
 		break;
 	case ColliderType::UNKNOWN:

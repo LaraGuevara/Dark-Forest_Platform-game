@@ -419,7 +419,7 @@ bool Scene::GameUpdate(float dt)
 			Vector2D playerPosTile = Engine::GetInstance().map.get()->WorldToMap((int)playerPos.getX(), (int)playerPos.getY());
 			Engine::GetInstance().audio->PlayFx(saveFX);
 			player->SetCheckpoint(playerPos);
-			SaveState();
+			//SaveState();
 			c->deactivate = true;
 
 			//add to teleport list
@@ -754,6 +754,7 @@ bool Scene::OnGuiMouseClickEvent(GuiControl* control)
 	if (control->id < GUI_ID::ID_TELEPORT) {
 		switch (control->id) {
 		case GUI_ID::ID_PLAY:
+			level = 1;
 			CleanUp();
 			state = SceneState::GAME;
 			Awake();
