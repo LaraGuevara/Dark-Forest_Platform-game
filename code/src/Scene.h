@@ -25,6 +25,7 @@ enum GUI_ID {
 	ID_TITLE,
 	ID_PAUSED_EXIT,
 	ID_RESPAWN,
+	ID_NEXT,
 	ID_TELEPORT
 };
 
@@ -105,6 +106,9 @@ public:
 
 	SceneState state = SceneState::INTRO;
 
+	//trigger level finished screen
+	bool levelFinishedScreen = false;
+
 	//trigger help menu
 	bool help = false;
 
@@ -174,4 +178,6 @@ private:
 	GuiControlButton* PAUSEDexitBT;
 	//death screen 
 	GuiControlButton* respawnBT;
+	//finished level
+	GuiControlButton* nextBT;
 };

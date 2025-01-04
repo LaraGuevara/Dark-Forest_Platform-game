@@ -105,9 +105,6 @@ bool Map::CleanUp()
 // Load new map
 bool Map::Load(std::string path, std::string fileName)
 {
-    /*for (const auto& layer : rectangles) {
-        Engine::GetInstance().physics->DeleteBody(layer->body);
-    }*/
 
     mapData.layers.clear();
     
@@ -174,15 +171,28 @@ bool Map::Load(std::string path, std::string fileName)
         }
 
         for (pugi::xml_node objectNode = mapFileXML.child("map").child("objectgroup"); objectNode != NULL; objectNode = objectNode.next_sibling("objectgroup")) {
+            std::string objectGroupName = objectNode.attribute("name").as_string();
+
             for (pugi::xml_node tileNode = objectNode.child("object"); tileNode != NULL; tileNode = tileNode.next_sibling("object")) {
-                LOG("%d, %d", tileNode.attribute("x").as_int(), tileNode.attribute("y").as_int());
-                int width = tileNode.attribute("width").as_int();
-                int height = tileNode.attribute("height").as_int();
-                PhysBody* c1 = Engine::GetInstance().physics.get()->CreateRectangle(tileNode.attribute("x").as_int() + width/2, tileNode.attribute("y").as_int() + height/2, width, height, STATIC);
-                if (tileNode.child("properties") != NULL and tileNode.child("properties").child("property").attribute("value").as_bool() == true) {
-                    c1->ctype = ColliderType::DEATH;
-                } else c1->ctype = ColliderType::PLATFORM;
-                rectangles.push_back(c1);
+                if (objectGroupName == "Finish Level") {
+                    LOG("%d, %d", tileNode.attribute("x").as_int(), tileNode.attribute("y").as_int());
+                    int width = tileNode.attribute("width").as_int();
+                    int height = tileNode.attribute("height").as_int();
+                    PhysBody* c1 = Engine::GetInstance().physics.get()->CreateRectangleSensor(tileNode.attribute("x").as_int() + width / 2, tileNode.attribute("y").as_int() + height / 2, width, height, STATIC);
+                    c1->ctype = ColliderType::LEVELEND;
+                    rectangles.push_back(c1);
+                }
+                else {
+                    LOG("%d, %d", tileNode.attribute("x").as_int(), tileNode.attribute("y").as_int());
+                    int width = tileNode.attribute("width").as_int();
+                    int height = tileNode.attribute("height").as_int();
+                    PhysBody* c1 = Engine::GetInstance().physics.get()->CreateRectangle(tileNode.attribute("x").as_int() + width / 2, tileNode.attribute("y").as_int() + height / 2, width, height, STATIC);
+                    if (tileNode.child("properties") != NULL and tileNode.child("properties").child("property").attribute("value").as_bool() == true) {
+                        c1->ctype = ColliderType::DEATH;
+                    }
+                    else c1->ctype = ColliderType::PLATFORM;
+                    rectangles.push_back(c1);
+                }
             }
         }
 

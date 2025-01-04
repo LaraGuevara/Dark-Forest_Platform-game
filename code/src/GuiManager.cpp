@@ -20,6 +20,7 @@ bool GuiManager::Start()
 	helptex = Engine::GetInstance().textures.get()->Load("Assets/Textures/menu.png");
 	pausedMenu = Engine::GetInstance().textures.get()->Load("Assets/Textures/screens/halfBookBase.png");
 	deathScreen = Engine::GetInstance().textures.get()->Load("Assets/Textures/screens/deathScreen.png");
+	finishedLevel = Engine::GetInstance().textures.get()->Load("Assets/Textures/screens/finishedLevel.png");
 	return true;
 }
 
@@ -65,31 +66,21 @@ bool GuiManager::Update(float dt)
 {	
 	if (Engine::GetInstance().scene.get()->pausedGame) {
 		Engine::GetInstance().render.get()->DrawTexture(pausedMenu, 400, 50, NULL, SDL_FLIP_NONE, false);
-
-		for (const auto& control : guiControlsList)
-		{
-			control->Update(dt);
-		}
 	}
 	else if (Engine::GetInstance().scene.get()->deathScreen) {
 		Engine::GetInstance().render.get()->DrawTexture(deathScreen, 0, 0, NULL, SDL_FLIP_NONE, false);
-
-		for (const auto& control : guiControlsList)
-		{
-			control->Update(dt);
-		}
 	}
-	else {
-		for (const auto& control : guiControlsList)
-		{
-			control->Update(dt);
-		}
-
-		if (Engine::GetInstance().scene.get()->state == SceneState::CREDITS) {
-			Engine::GetInstance().render.get()->DrawTexture(credits, 90, 50, NULL, SDL_FLIP_NONE, false);
-		}
-		if (Engine::GetInstance().scene.get()->help) Engine::GetInstance().render.get()->DrawTexture(helptex, 750, 0, NULL, SDL_FLIP_NONE, false);
+	else if (Engine::GetInstance().scene.get()->levelFinishedScreen) {
+		Engine::GetInstance().render.get()->DrawTexture(finishedLevel, 400, 70, NULL, SDL_FLIP_NONE, false);
 	}
+	
+	for (const auto& control : guiControlsList)
+	{
+		control->Update(dt);
+	}
+
+	if (Engine::GetInstance().scene.get()->state == SceneState::CREDITS) Engine::GetInstance().render.get()->DrawTexture(credits, 90, 50, NULL, SDL_FLIP_NONE, false);
+	if (Engine::GetInstance().scene.get()->help) Engine::GetInstance().render.get()->DrawTexture(helptex, 750, 0, NULL, SDL_FLIP_NONE, false);
 
 	return true;
 }

@@ -40,6 +40,7 @@ public:
 	SDL_Texture* helptex;
 	SDL_Texture* pausedMenu;
 	SDL_Texture* deathScreen;
+	SDL_Texture* finishedLevel;
 
 };
 

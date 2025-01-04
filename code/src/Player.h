@@ -71,6 +71,8 @@ public:
 	void SetPosition(Vector2D pos);
 
 public:
+	bool finishedLevel = false;
+
 	bool doRespawn = false;
 	bool finishedDeathAnim = false;
 

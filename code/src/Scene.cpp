@@ -56,6 +56,9 @@ bool Scene::Awake()
 
 			respawnBT = (GuiControlButton*)Engine::GetInstance().guiManager->CreateGuiControl(GuiControlType::BUTTON, GUI_ID::ID_RESPAWN, "Respawn", { 540, 525, 200,70 }, this);
 			respawnBT->state = GuiControlState::DISABLED;
+
+			nextBT = (GuiControlButton*)Engine::GetInstance().guiManager->CreateGuiControl(GuiControlType::BUTTON, GUI_ID::ID_NEXT, "Next", { 555, 445, 200,70 }, this);
+			nextBT->state = GuiControlState::DISABLED;
 		}
 
 		if (continueGame) ContinueGameAwake();
@@ -184,11 +187,21 @@ void Scene::ContinueGameAwake() {
 }
 
 void Scene::LoadLevel(int lvl) {
-	Engine::GetInstance().map.get()->CleanUp();
-	switch (lvl) {
-	case 1:
-		Engine::GetInstance().map->Load("Assets/Maps/", "newnocandymap.tmx");
-		break;
+	if (lvl > LEVELS) {
+		Mix_PauseMusic();
+		pausedGame = false;
+		CleanUp();
+		Engine::GetInstance().entityManager->CleanUp();
+		state = SceneState::MENU;
+		Start();
+	}
+	else {
+		Engine::GetInstance().map.get()->CleanUp();
+		switch (lvl) {
+		case 1:
+			Engine::GetInstance().map->Load("Assets/Maps/", "newnocandymap.tmx");
+			break;
+		}
 	}
 }
 
@@ -213,53 +226,55 @@ bool Scene::Start()
 		//Engine::GetInstance().map->Load("Assets/Maps/", "newnocandymap.tmx");
 
 		LoadLevel(level);
-		healthbar = Engine::GetInstance().textures.get()->Load("Assets/Textures/healthbar.png");
-		gemIcon = Engine::GetInstance().textures.get()->Load("Assets/Textures/gemIcon.png");
+		if (state != SceneState::MENU) {
+			healthbar = Engine::GetInstance().textures.get()->Load("Assets/Textures/healthbar.png");
+			gemIcon = Engine::GetInstance().textures.get()->Load("Assets/Textures/gemIcon.png");
 
-		//create checkpoints
-		checkpointList = Engine::GetInstance().map->LoadCheckpoints();
-		checkpointTPList.clear();
-		
-		if (continueGame) {
-			pugi::xml_document loadFile;
-			pugi::xml_parse_result result = loadFile.load_file("config.xml");
+			//create checkpoints
+			checkpointList = Engine::GetInstance().map->LoadCheckpoints();
+			checkpointTPList.clear();
 
-			//find the proper level to load
-			pugi::xml_node levelSaveNode;
-			for (pugi::xml_node saveNode = loadFile.child("config").child("save").child("levels").child("level"); saveNode; saveNode = saveNode.next_sibling("level")) {
-				for (pugi::xml_node cpNode = saveNode.child("checkpoints").child("checkpoint"); cpNode; cpNode = cpNode.next_sibling("checkpoint")) {
-					Teleport tp;
-					tp.id = cpNode.attribute("id").as_int();
-					tp.level = saveNode.attribute("level").as_int();
-					tp.UI_ID = checkpointTPList.size() + 1 + GUI_ID::ID_TELEPORT;
-					tp.playerPos = { cpNode.attribute("x").as_float(), cpNode.attribute("y").as_float() };
-					checkpointTPList.push_back(tp);
+			if (continueGame) {
+				pugi::xml_document loadFile;
+				pugi::xml_parse_result result = loadFile.load_file("config.xml");
+
+				//find the proper level to load
+				pugi::xml_node levelSaveNode;
+				for (pugi::xml_node saveNode = loadFile.child("config").child("save").child("levels").child("level"); saveNode; saveNode = saveNode.next_sibling("level")) {
+					for (pugi::xml_node cpNode = saveNode.child("checkpoints").child("checkpoint"); cpNode; cpNode = cpNode.next_sibling("checkpoint")) {
+						Teleport tp;
+						tp.id = cpNode.attribute("id").as_int();
+						tp.level = saveNode.attribute("level").as_int();
+						tp.UI_ID = checkpointTPList.size() + 1 + GUI_ID::ID_TELEPORT;
+						tp.playerPos = { cpNode.attribute("x").as_float(), cpNode.attribute("y").as_float() };
+						checkpointTPList.push_back(tp);
+					}
+
+					if (saveNode.attribute("level").as_int() == level) levelSaveNode = saveNode;
 				}
 
-				if (saveNode.attribute("level").as_int() == level) levelSaveNode = saveNode;
-			}
+				for (int i = 0; i < checkpointList.size(); i++) {
+					int checkpointID = checkpointList[i]->id;
 
-			for (int i = 0; i < checkpointList.size(); i++) {
-				int checkpointID = checkpointList[i]->id;
-
-				for (pugi::xml_node cpNode = levelSaveNode.child("checkpoints").child("checkpoint"); cpNode; cpNode = cpNode.next_sibling("checkpoint")) {
-					int saveID = cpNode.attribute("id").as_int();
-					if (saveID == checkpointID) {
-						checkpointList[i]->isActive = true;
-						checkpointList[i]->isAdded = true;
-						checkpointList[i]->playerPos = { cpNode.attribute("x").as_float(), cpNode.attribute("y").as_float() };
+					for (pugi::xml_node cpNode = levelSaveNode.child("checkpoints").child("checkpoint"); cpNode; cpNode = cpNode.next_sibling("checkpoint")) {
+						int saveID = cpNode.attribute("id").as_int();
+						if (saveID == checkpointID) {
+							checkpointList[i]->isActive = true;
+							checkpointList[i]->isAdded = true;
+							checkpointList[i]->playerPos = { cpNode.attribute("x").as_float(), cpNode.attribute("y").as_float() };
+						}
 					}
 				}
 			}
+
+			continueGame = false;
+
+			Mix_VolumeMusic(60);
+			saveFX = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/Fantasy_UI (30).wav");
+			loadFX = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/Success 1 (subtle).wav");
+			attackFX = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/Fireball 2.wav");
+			Engine::GetInstance().audio->PlayMusic("Assets/Audio/Fx/Ambient Music.wav", 0);
 		}
-
-		continueGame = false;
-
-		Mix_VolumeMusic(60);
-		saveFX = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/Fantasy_UI (30).wav");
-		loadFX = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/Success 1 (subtle).wav");
-		attackFX = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/Fireball 2.wav");
-		Engine::GetInstance().audio->PlayMusic("Assets/Audio/Fx/Ambient Music.wav", 0);
 
 		break;
 	case SceneState::SETTINGS:
@@ -500,6 +515,15 @@ bool Scene::GameUpdate(float dt)
 		Mix_ResumeMusic();
 	}
 
+	if (player->finishedLevel or Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_I) == KEY_DOWN) {
+		if (!levelFinishedScreen) {
+			SaveState();
+			level += 1;
+			levelFinishedScreen = true;
+			nextBT->state = GuiControlState::NORMAL;
+		}
+	}
+
 	return true;
 }
 
@@ -555,7 +579,6 @@ bool Scene::CleanUp()
 		break;
 	case SceneState::GAME:
 		if(img) SDL_DestroyTexture(img);
-		if(healthbar) SDL_DestroyTexture(healthbar);
 		break;
 	case SceneState::SETTINGS:
 		break;
@@ -779,6 +802,18 @@ bool Scene::OnGuiMouseClickEvent(GuiControl* control)
 		case GUI_ID::ID_RESPAWN:
 			deathScreen = false;
 			player->doRespawn = true;
+			break;
+		case GUI_ID::ID_NEXT:
+			Mix_PauseMusic();
+			levelFinishedScreen = false;
+			nextBT->state = GuiControlState::DISABLED;
+			player->finishedLevel = false;
+			CleanUp();
+			Engine::GetInstance().entityManager->CleanUp();
+			Awake();
+			Engine::GetInstance().entityManager->Awake();
+			Start();
+			Engine::GetInstance().entityManager->Start();
 			break;
 		}
 	}

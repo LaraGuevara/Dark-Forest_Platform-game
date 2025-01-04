@@ -367,6 +367,9 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 			LOG("PLAYER DAMAGE %d", life);
 		}
 		break;
+	case ColliderType::LEVELEND:
+		finishedLevel = true;
+		break;
 	case ColliderType::UNKNOWN:
 		LOG("Collision UNKNOWN");
 		break;

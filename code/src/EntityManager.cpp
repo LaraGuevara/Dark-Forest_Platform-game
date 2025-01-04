@@ -115,7 +115,7 @@ void EntityManager::AddEntity(Entity* entity)
 bool EntityManager::Update(float dt)
 {
 	bool ret = true;
-	if (Engine::GetInstance().scene.get()->pausedGame or Engine::GetInstance().scene.get()->checkpointTeleportView) {
+	if (Engine::GetInstance().scene.get()->pausedGame or Engine::GetInstance().scene.get()->checkpointTeleportView or Engine::GetInstance().scene.get()->levelFinishedScreen) {
 		for (const auto entity : entities)
 		{
 			if (entity->active == false) continue;
