@@ -113,7 +113,7 @@
 				</animations>
 			</player>
 			<enemies>
-				<enemy name="walkingEnemy1" Flyingtype="false" x="1250" y="40" w="48" h="48" life="4" damage="2" texture="Assets/Textures/enemies/walkingEnemy.png" gravity="true">
+				<enemy name="walkingEnemy1" level="1" Flyingtype="false" x="1250" y="40" w="48" h="48" life="4" damage="2" texture="Assets/Textures/enemies/walkingEnemy.png" gravity="true">
 					<animations>
 						<idle loop="true" speed="0.075">
 							<frame x="0" y="0" w="48" h="48" />
@@ -172,7 +172,7 @@
 						</death>
 					</animations>
 				</enemy>
-				<enemy name="walkingEnemy2" Flyingtype="false" x="2210" y="10" w="48" h="48" life="4" damage="2" texture="Assets/Textures/enemies/walkingEnemy.png" gravity="false">
+				<enemy name="walkingEnemy2" level="1" Flyingtype="false" x="2210" y="10" w="48" h="48" life="4" damage="2" texture="Assets/Textures/enemies/walkingEnemy.png" gravity="false">
 					<animations>
 						<idle loop="true" speed="0.075">
 							<frame x="0" y="0" w="48" h="48" />
@@ -231,7 +231,7 @@
 						</death>
 					</animations>
 				</enemy>
-				<enemy name="flyingEnemy1" Flyingtype="true" x="2555" y="185" w="48" h="48" life="2" damage="1" texture="Assets/Textures/enemies/flyingEnemy.png" gravity="false">
+				<enemy name="flyingEnemy1" level="1" Flyingtype="true" x="2555" y="185" w="48" h="48" life="2" damage="1" texture="Assets/Textures/enemies/flyingEnemy.png" gravity="false">
 					<animations>
 						<sleep loop="true" speed="0.075">
 							<frame x="0" y="0" w="48" h="48" />
@@ -310,7 +310,7 @@
 						</death>
 					</animations>
 				</enemy>
-				<enemy name="flyingEnemy2" Flyingtype="true" x="550" y="191" w="48" h="48" life="2" damage="1" texture="Assets/Textures/enemies/flyingEnemy.png" gravity="false">
+				<enemy name="flyingEnemy2" level="1" Flyingtype="true" x="550" y="191" w="48" h="48" life="2" damage="1" texture="Assets/Textures/enemies/flyingEnemy.png" gravity="false">
 					<animations>
 						<sleep loop="true" speed="0.075">
 							<frame x="0" y="0" w="48" h="48" />
@@ -391,19 +391,19 @@
 				</enemy>
 			</enemies>
 			<items>
-				<item id="1" gravity="true" type="1" x="220" y="250" w="16" h="16" texture="Assets/Textures/items/pointItem.png" />
-				<item id="2" gravity="true" type="1" x="320" y="250" w="16" h="16" texture="Assets/Textures/items/pointItem.png" />
-				<item id="3" gravity="true" type="1" x="420" y="250" w="16" h="16" texture="Assets/Textures/items/pointItem.png" />
-				<item id="4" gravity="true" type="1" x="1008" y="100" w="16" h="16" texture="Assets/Textures/items/pointItem.png" />
-				<item id="5" gravity="true" type="1" x="1088" y="100" w="16" h="16" texture="Assets/Textures/items/pointItem.png" />
-				<item id="6" gravity="true" type="1" x="1152" y="100" w="16" h="16" texture="Assets/Textures/items/pointItem.png" />
-				<item id="7" gravity="true" type="1" x="1536" y="80" w="16" h="16" texture="Assets/Textures/items/pointItem.png" />
-				<item id="8" gravity="true" type="1" x="1584" y="60" w="16" h="16" texture="Assets/Textures/items/pointItem.png" />
-				<item id="9" gravity="true" type="0" x="1712" y="20" w="16" h="16" texture="Assets/Textures/items/healthItem.png" />
-				<item id="10" gravity="true" type="1" x="1920" y="100" w="16" h="16" texture="Assets/Textures/items/pointItem.png" />
-				<item id="11" gravity="true" type="2" x="2000" y="100" w="16" h="16" texture="Assets/Textures/items/abilityItem.png" />
-				<item id="12" gravity="true" type="1" x="2656" y="20" w="16" h="16" texture="Assets/Textures/items/pointItem.png" />
-				<item id="13" gravity="true" type="0" x="2720" y="20" w="16" h="16" texture="Assets/Textures/items/healthItem.png" />
+				<item id="1" level="1" gravity="true" type="1" x="220" y="250" w="16" h="16" texture="Assets/Textures/items/pointItem.png" />
+				<item id="2" level="1" gravity="true" type="1" x="320" y="250" w="16" h="16" texture="Assets/Textures/items/pointItem.png" />
+				<item id="3" level="1" gravity="true" type="1" x="420" y="250" w="16" h="16" texture="Assets/Textures/items/pointItem.png" />
+				<item id="4" level="1" gravity="true" type="1" x="1008" y="100" w="16" h="16" texture="Assets/Textures/items/pointItem.png" />
+				<item id="5" level="1" gravity="true" type="1" x="1088" y="100" w="16" h="16" texture="Assets/Textures/items/pointItem.png" />
+				<item id="6" level="1" gravity="true" type="1" x="1152" y="100" w="16" h="16" texture="Assets/Textures/items/pointItem.png" />
+				<item id="7" level="1" gravity="true" type="1" x="1536" y="80" w="16" h="16" texture="Assets/Textures/items/pointItem.png" />
+				<item id="8" level="1" gravity="true" type="1" x="1584" y="60" w="16" h="16" texture="Assets/Textures/items/pointItem.png" />
+				<item id="9" level="1" gravity="true" type="0" x="1712" y="20" w="16" h="16" texture="Assets/Textures/items/healthItem.png" />
+				<item id="10" level="1" gravity="true" type="1" x="1920" y="100" w="16" h="16" texture="Assets/Textures/items/pointItem.png" />
+				<item id="11" level="1" gravity="true" type="2" x="2000" y="100" w="16" h="16" texture="Assets/Textures/items/abilityItem.png" />
+				<item id="12" level="1" gravity="true" type="1" x="2656" y="20" w="16" h="16" texture="Assets/Textures/items/pointItem.png" />
+				<item id="13" level="1" gravity="true" type="0" x="2720" y="20" w="16" h="16" texture="Assets/Textures/items/healthItem.png" />
 			</items>
 			<attack gravity="false" w="32" h="32" damage="1" texture="Assets/Textures/attack.png">
 				<animation>

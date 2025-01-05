@@ -85,26 +85,30 @@ void Scene::NewGameAwake() {
 
 	for (pugi::xml_node enemyNode = configParameters.child("entities").child("enemies").child("enemy"); enemyNode; enemyNode = enemyNode.next_sibling("enemy"))
 	{
-		Enemy* enemy = (Enemy*)Engine::GetInstance().entityManager->CreateEntity(EntityType::ENEMY);
-		enemy->SetParameters(enemyNode);
-		enemyList.push_back(enemy);
+		if (enemyNode.attribute("level").as_int() == level) {
+			Enemy* enemy = (Enemy*)Engine::GetInstance().entityManager->CreateEntity(EntityType::ENEMY);
+			enemy->SetParameters(enemyNode);
+			enemyList.push_back(enemy);
+		}
 	}
 
 	for (pugi::xml_node itemNode = configParameters.child("entities").child("items").child("item"); itemNode; itemNode = itemNode.next_sibling("item")) {
-		Item* item = (Item*)Engine::GetInstance().entityManager->CreateEntity(EntityType::ITEM);
-		item->SetParameters(itemNode);
-		switch (itemNode.attribute("type").as_int()) {
-		case (int)ItemType::ITEM_ABILITY:
-			item->SetType(ItemType::ITEM_ABILITY);
-			break;
-		case (int)ItemType::ITEM_HEALTH:
-			item->SetType(ItemType::ITEM_HEALTH);
-			break;
-		case (int)ItemType::ITEM_POINTS:
-			item->SetType(ItemType::ITEM_POINTS);
-			break;
+		if (itemNode.attribute("level").as_int() == level) {
+			Item* item = (Item*)Engine::GetInstance().entityManager->CreateEntity(EntityType::ITEM);
+			item->SetParameters(itemNode);
+			switch (itemNode.attribute("type").as_int()) {
+			case (int)ItemType::ITEM_ABILITY:
+				item->SetType(ItemType::ITEM_ABILITY);
+				break;
+			case (int)ItemType::ITEM_HEALTH:
+				item->SetType(ItemType::ITEM_HEALTH);
+				break;
+			case (int)ItemType::ITEM_POINTS:
+				item->SetType(ItemType::ITEM_POINTS);
+				break;
+			}
+			itemList.push_back(item);
 		}
-		itemList.push_back(item);
 	}
 }
 
@@ -821,15 +825,28 @@ bool Scene::OnGuiMouseClickEvent(GuiControl* control)
 	else {
 		bool IDfound = false;
 		Vector2D teleportPos = GetPlayerPosition();
+		int TPlevel = level;
 
-		for (auto t : checkpointTPList) {
+		for (int i = 0; i < checkpointTPList.size(); ++i) {
 			if (!IDfound) {
-				if (t.UI_ID == control->id) {
+				if (checkpointTPList[i].UI_ID == control->id) {
 					IDfound = true;
-					teleportPos = t.playerPos;
+					teleportPos = checkpointTPList[i].playerPos;
+					TPlevel = checkpointTPList[i].level;
 				}
 			}
 		}
+
+		if (TPlevel != level) {
+			level = TPlevel;
+			CleanUp();
+			Engine::GetInstance().entityManager->CleanUp();
+			Awake();
+			Engine::GetInstance().entityManager->Awake();
+			Start();
+			Engine::GetInstance().entityManager->Start();
+		}
+
 		checkpointTeleportView = false;
 		player->SetPosition(teleportPos);
 		EndTeleportUI();
