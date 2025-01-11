@@ -201,6 +201,10 @@ void Scene::LoadLevel(int lvl) {
 		case 1:
 			Engine::GetInstance().map->Load("Assets/Maps/", "newnocandymap.tmx");
 			break;
+		
+		case 2:
+			Engine::GetInstance().map->Load("Assets/Maps/", "newnocandymap2.tmx");
+			break;
 		}
 	}
 }

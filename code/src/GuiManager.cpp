@@ -21,6 +21,7 @@ bool GuiManager::Start()
 	pausedMenu = Engine::GetInstance().textures.get()->Load("Assets/Textures/screens/halfBookBase.png");
 	deathScreen = Engine::GetInstance().textures.get()->Load("Assets/Textures/screens/deathScreen.png");
 	finishedLevel = Engine::GetInstance().textures.get()->Load("Assets/Textures/screens/finishedLevel.png");
+	emptyMenu= Engine::GetInstance().textures.get()->Load("Assets/Textures/menu_empty.png");
 	return true;
 }
 
@@ -73,6 +74,9 @@ bool GuiManager::Update(float dt)
 	else if (Engine::GetInstance().scene.get()->levelFinishedScreen) {
 		Engine::GetInstance().render.get()->DrawTexture(finishedLevel, 400, 70, NULL, SDL_FLIP_NONE, false);
 	}
+	else if (Engine::GetInstance().scene.get()->config) {
+		Engine::GetInstance().render.get()->DrawTexture(finishedLevel, 400, 70, NULL, SDL_FLIP_NONE, false);
+	}
 	
 	for (const auto& control : guiControlsList)
 	{
@@ -96,6 +100,7 @@ bool GuiManager::CleanUp()
 	SDL_DestroyTexture(helptex);
 	SDL_DestroyTexture(pausedMenu);
 	SDL_DestroyTexture(deathScreen);
+	SDL_DestroyTexture(emptyMenu);
 
 	return true;
 }

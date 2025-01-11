@@ -112,6 +112,9 @@ public:
 	//trigger help menu
 	bool help = false;
 
+	//trigger config menu
+	bool config = false;
+
 	//trigger pause menu
 	bool pausedGame = false;
 	bool disabledButtons = true;

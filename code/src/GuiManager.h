@@ -41,6 +41,7 @@ public:
 	SDL_Texture* pausedMenu;
 	SDL_Texture* deathScreen;
 	SDL_Texture* finishedLevel;
+	SDL_Texture* emptyMenu;
 
 };
 
