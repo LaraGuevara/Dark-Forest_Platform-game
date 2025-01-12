@@ -36,7 +36,14 @@ GuiControl* GuiManager::CreateGuiControl(GuiControlType type, int id, const char
 	case GuiControlType::BUTTON:
 		guiControl = new GuiControlButton(id, bounds, text);
 		break;
+	case GuiControlType::SLIDER:
+		guiControl = new GuiControlButton(id, bounds, text);
+		break;
+	case GuiControlType::SLIDERBAR:
+		guiControl = new GuiControlButton(id, bounds, text);
+		break;
 	}
+	
 
 	//Set the observer
 	guiControl->observer = observer;

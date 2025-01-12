@@ -66,6 +66,9 @@ bool Scene::Awake()
 
 		break;
 	case SceneState::SETTINGS:
+		musicSlider= (GuiControlButton*)Engine::GetInstance().guiManager->CreateGuiControl(GuiControlType::SLIDER, GUI_ID::ID_NEXT, "Next", { 555, 445, 200,70 }, this);
+		fxSlider= (GuiControlButton*)Engine::GetInstance().guiManager->CreateGuiControl(GuiControlType::SLIDER, GUI_ID::ID_NEXT, "Next", { 555, 445, 200,70 }, this);
+		fullscreenCheckBox= (GuiControlButton*)Engine::GetInstance().guiManager->CreateGuiControl(GuiControlType::SLIDER, GUI_ID::ID_NEXT, "Next", { 555, 445, 200,70 }, this);
 		break;
 	case SceneState::CREDITS:
 		break;

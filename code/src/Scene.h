@@ -183,4 +183,9 @@ private:
 	GuiControlButton* respawnBT;
 	//finished level
 	GuiControlButton* nextBT;
+
+	//config
+	GuiControlButton* musicSlider;
+	GuiControlButton* fxSlider;
+	GuiControlButton* fullscreenCheckBox;
 };
