@@ -238,8 +238,8 @@ bool Scene::Start()
 			gemIcon = Engine::GetInstance().textures.get()->Load("Assets/Textures/gemIcon.png");
 
 			//create checkpoints
-			checkpointList = Engine::GetInstance().map->LoadCheckpoints();
-			checkpointTPList.clear();
+			checkpointList = Engine::GetInstance().map->LoadCheckpoints(level);
+			if(level == 1 or continueGame) checkpointTPList.clear();
 
 			if (continueGame) {
 				pugi::xml_document loadFile;

@@ -15,21 +15,29 @@
 		<fullscreen_window value="false" />
 	</window>
 	<save>
-		<player x="3106" y="80" points="7" level="1" />
+		<player x="3106" y="80" points="3" level="1" />
 		<levels>
 			<level level="1">
 				<enemies>
-					<enemy name="flyingEnemy1" x="2451" y="203" />
-					<enemy name="flyingEnemy2" x="675" y="306" />
+					<enemy name="walkingEnemy1" x="1200" y="193" />
+					<enemy name="flyingEnemy1" x="2579" y="208" />
+					<enemy name="flyingEnemy2" x="574" y="216" />
 				</enemies>
 				<items>
+					<item id="1" />
+					<item id="2" />
+					<item id="3" />
 					<item id="4" />
+					<item id="5" />
 					<item id="6" />
+					<item id="9" />
+					<item id="10" />
+					<item id="11" />
+					<item id="13" />
 				</items>
 				<checkpoints>
-					<checkpoint id="1" x="885" y="183" />
-					<checkpoint id="2" x="1638" y="34" />
-					<checkpoint id="3" x="2345" y="109" />
+					<checkpoint id="1" x="825" y="183" />
+					<checkpoint id="2" x="1643" y="63" />
 				</checkpoints>
 			</level>
 			<level level="2">

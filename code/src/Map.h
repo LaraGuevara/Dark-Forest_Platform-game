@@ -145,7 +145,7 @@ public:
 
     MapLayer* GetJumpingLayer();
 
-    std::vector<Sensor*> LoadCheckpoints();
+    std::vector<Sensor*> LoadCheckpoints(int level);
 
     bool IsTileJumpable(int x, int y);
 

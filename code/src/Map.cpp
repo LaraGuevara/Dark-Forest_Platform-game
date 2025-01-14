@@ -300,11 +300,11 @@ MapLayer* Map::GetJumpingLayer() {
     return nullptr;
 }
 
-std::vector<Sensor*> Map::LoadCheckpoints() {
+std::vector<Sensor*> Map::LoadCheckpoints(int level) {
     MapLayer* checkLayer = GetCheckpointLayer();
     std::vector<Sensor*> checkpoints;
 
-    int makeID = 1;
+    int makeID = 1 + (10*(level-1));
     for (int i = 0; i < checkLayer->width; i++) {
         for (int j = 0; j < checkLayer->height; j++) {
             //Get the gid from tile
