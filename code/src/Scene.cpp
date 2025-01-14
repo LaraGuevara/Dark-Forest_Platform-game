@@ -85,6 +85,7 @@ void Scene::NewGameAwake() {
 
 	player = (Player*)Engine::GetInstance().entityManager->CreateEntity(EntityType::PLAYER);
 	player->SetParameters(configParameters.child("entities").child("player"));
+	if (playerPoints != 0) player->SetPoints(playerPoints);
 
 	for (pugi::xml_node enemyNode = configParameters.child("entities").child("enemies").child("enemy"); enemyNode; enemyNode = enemyNode.next_sibling("enemy"))
 	{
@@ -524,6 +525,7 @@ bool Scene::GameUpdate(float dt)
 
 	if (player->finishedLevel or Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_I) == KEY_DOWN) {
 		if (!levelFinishedScreen) {
+			playerPoints = player->GemPoints;
 			SaveState();
 			level += 1;
 			levelFinishedScreen = true;
@@ -762,6 +764,7 @@ bool Scene::OnGuiMouseClickEvent(GuiControl* control)
 		switch (control->id) {
 		case GUI_ID::ID_PLAY:
 			level = 1;
+			playerPoints = 0;
 			CleanUp();
 			state = SceneState::GAME;
 			Awake();

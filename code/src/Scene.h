@@ -152,6 +152,7 @@ private:
 	//player
 	Player* player;
 	bool respawn = false;
+	int playerPoints = 0;
 
 	//sounds (ids)
 	int loadFX;
