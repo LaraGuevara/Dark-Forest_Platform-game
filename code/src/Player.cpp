@@ -424,3 +424,10 @@ void Player::SetPosition(Vector2D pos) {
 	b2Vec2 bodyPos = b2Vec2(PIXEL_TO_METERS(pos.getX()), PIXEL_TO_METERS(pos.getY()));
 	pbody->body->SetTransform(bodyPos, 0);
 }
+
+void Player::SetPositionToStart() {
+	levelStartPos.setX(levelStartPos.getX() + texW / 2);
+	levelStartPos.setY(levelStartPos.getY() + texH / 2);
+	b2Vec2 bodyPos = b2Vec2(PIXEL_TO_METERS(levelStartPos.getX()), PIXEL_TO_METERS(levelStartPos.getY()));
+	pbody->body->SetTransform(bodyPos, 0);
+}

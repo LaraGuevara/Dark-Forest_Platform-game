@@ -410,6 +410,10 @@ bool Scene::GameUpdate(float dt)
 		else help = true;
 	}
 
+	//f1/f2 triggers
+	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_F1) == KEY_DOWN) SetAtLevelStart(1);
+	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_F2) == KEY_DOWN) SetAtLevelStart(2);
+
 	//load and save
 	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_F5) == KEY_DOWN) {
 		SaveState();
@@ -534,6 +538,23 @@ bool Scene::GameUpdate(float dt)
 	}
 
 	return true;
+}
+
+void Scene::SetAtLevelStart(int lvl) {
+	if (level != lvl) {
+		level = lvl;
+		playerPoints = player->GemPoints;
+		Mix_PauseMusic();
+		CleanUp();
+		Engine::GetInstance().entityManager->CleanUp();
+		Awake();
+		Engine::GetInstance().entityManager->Awake();
+		Start();
+		Engine::GetInstance().entityManager->Start();
+	}
+	else {
+		player->SetPositionToStart();
+	}
 }
 
 // Called each loop iteration

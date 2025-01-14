@@ -73,6 +73,9 @@ public:
 	
 	bool GameUpdate(float dt);
 
+	// Sets player at the start of the corresponding level
+	void SetAtLevelStart(int lvl);
+
 	// Called before all Updates
 	bool PostUpdate();
 
