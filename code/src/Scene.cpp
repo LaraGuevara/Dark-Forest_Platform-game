@@ -293,8 +293,6 @@ bool Scene::Start()
 				break;
 			}
 
-			timer = Timer();
-			startTime = timer.ReadMSec();
 			pausedTime = 0.f;
 			FadeInActive = true;
 		}
@@ -381,6 +379,8 @@ void Scene::FadeIn() {
 	if (fadeValue <= 0) {
 		FadeInActive = false;
 		fadeValue = 255;
+		timer = Timer();
+		startTime = timer.ReadMSec();
 	}
 }
 

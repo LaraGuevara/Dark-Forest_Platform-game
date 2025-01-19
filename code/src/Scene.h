@@ -139,7 +139,7 @@ public:
 
 	// final time used to beat level
 	float finalTime = 0;
-	float timeCount;
+	float timeCount = 0.f;
 
 private:
 	//fade in check
