@@ -228,6 +228,7 @@ bool Scene::Start()
 		settingBT->state = GuiControlState::NORMAL;
 		creditsBT->state = GuiControlState::NORMAL;
 		exitBT->state = GuiControlState::NORMAL;
+		Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/mainMenu.ogg", 0);
 		break;
 	case SceneState::GAME:
 		//Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 1024);
@@ -277,11 +278,19 @@ bool Scene::Start()
 
 			continueGame = false;
 
-			Mix_VolumeMusic(60);
+			//Mix_VolumeMusic(60);
 			saveFX = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/Fantasy_UI (30).wav");
 			loadFX = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/Success 1 (subtle).wav");
 			attackFX = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/Fireball 2.wav");
-			Engine::GetInstance().audio->PlayMusic("Assets/Audio/Fx/Ambient Music.wav", 0);
+
+			switch (level) {
+			case 1:
+				Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/level1.ogg", 0);
+				break;
+			case 2:
+				Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/level2.ogg", 0);
+				break;
+			}
 		}
 
 		break;
@@ -600,6 +609,7 @@ bool Scene::CleanUp()
 		SDL_DestroyTexture(introImg);
 		break;
 	case SceneState::MENU:
+		Mix_PauseMusic();
 		SDL_DestroyTexture(menuBackground);
 		startBT->state = GuiControlState::DISABLED;
 		continueBT->state = GuiControlState::DISABLED;
