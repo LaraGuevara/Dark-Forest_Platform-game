@@ -151,6 +151,9 @@ private:
 	int introTime = 0;
 	bool toExit = false;
 
+	bool iconFade = false;
+	int iconFadeCount = 0;
+
 	//textures
 	//intro
 	SDL_Texture* introImg;
@@ -161,6 +164,7 @@ private:
 	SDL_Texture* helptex;
 	SDL_Texture* healthbar;
 	SDL_Texture* gemIcon;
+	SDL_Texture* powerUpIcon;
 	SDL_Rect gemRect = { 0,0,16,16 };
 	SDL_Rect healthRect = { 0,0,80,32 };
 
@@ -168,6 +172,11 @@ private:
 	Player* player;
 	bool respawn = false;
 	int playerPoints = 0;
+	bool tookDamage = false;
+	bool iconFlash = false;
+	int flashCount = 0;
+	int flashDurationCount = 0;
+	int previousPlayerLife;
 
 	//sounds (ids)
 	int loadFX;

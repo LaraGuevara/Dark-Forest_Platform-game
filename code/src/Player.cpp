@@ -94,9 +94,16 @@ bool Player::Update(float dt)
 		if(attackCooldown != (ATTACKCOOLDOWN / timerVar)) attackCooldown = (ATTACKCOOLDOWN / timerVar);
 	}
 
+	//auto trigger damage for debugging
+	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_O) == KEY_DOWN) {
+		life = life - 1;
+		isDamaged = true;
+	}
+
 	//turn off power up when timer runs out
 	if (PowerUpActive) {
 		++powerupTime;
+		if (powerupTime >= 300 / timerVar) almostEndPower = true;
 		if (powerupTime >= POWERUPTIMER/timerVar) {
 			PowerUpActive = false;
 			powerupTime = 0;
@@ -345,6 +352,7 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 		LOG("Collision ITEM ABILITY");
 		Engine::GetInstance().audio->PlayFx(abilityItemFxId);
 		PowerUpActive = true;
+		almostEndPower = false;
 		break;
 	case ColliderType::ITEM_HEALTH:
 		LOG("Collision ITEM HEALTH");

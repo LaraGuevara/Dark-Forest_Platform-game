@@ -86,6 +86,7 @@ public:
 
 	int GemPoints = 0;
 	bool PowerUpActive = false;
+	bool almostEndPower = false;
 
 	int lifeValue;
 	int power;

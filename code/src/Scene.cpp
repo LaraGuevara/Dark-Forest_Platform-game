@@ -238,6 +238,7 @@ bool Scene::Start()
 		if (state != SceneState::MENU) {
 			healthbar = Engine::GetInstance().textures.get()->Load("Assets/Textures/healthbar.png");
 			gemIcon = Engine::GetInstance().textures.get()->Load("Assets/Textures/gemIcon.png");
+			powerUpIcon = Engine::GetInstance().textures.get()->Load("Assets/Textures/items/abilityItem.png");
 
 			//create checkpoints
 			checkpointList = Engine::GetInstance().map->LoadCheckpoints(level);
@@ -408,7 +409,30 @@ bool Scene::GameUpdate(float dt)
 	//draw healthbar
 	Engine::GetInstance().render.get()->DrawTexture(healthbar, 10, 20, &healthRect, SDL_FLIP_NONE, false);
 	SDL_Rect pointsRect = { 0,32,32 + (GetPlayerLife()*4), 3};
+	if (player->isDamaged and !tookDamage) {
+		tookDamage = true;
+		flashCount = 0;
+		flashDurationCount = 0;
+	} else if(!tookDamage) previousPlayerLife = GetPlayerLife();
+
+	if (tookDamage) {
+		++flashDurationCount;
+		if (flashDurationCount >= 12 / player->timerVar) {
+			flashDurationCount = 0;
+			if (iconFlash) {
+				iconFlash = false;
+				++flashCount;
+			}
+			else iconFlash = true;
+		}
+
+		if(iconFlash) pointsRect = { 0,38,32 + (previousPlayerLife * 4), 3 };
+
+		if (flashCount >= 4) tookDamage = false;
+	}
+
 	Engine::GetInstance().render.get()->DrawTexture(healthbar, 10, 42, &pointsRect, SDL_FLIP_NONE, false);
+
 	pointsRect = { 0,35,32 + (GetPlayerPower() * 4), 3 };
 	Engine::GetInstance().render.get()->DrawTexture(healthbar, 10, 56, &pointsRect, SDL_FLIP_NONE, false);
 
@@ -425,6 +449,26 @@ bool Scene::GameUpdate(float dt)
 	std::snprintf(buffer, sizeof(buffer), "%.2f", timeCount);
 	std::string time = buffer;
 	Engine::GetInstance().render.get()->DrawText(time.c_str(), 1200, 20, 50, 32);
+
+	//draw power-up icon if required
+	if (player->PowerUpActive) {
+		//disappear and appear for when power up is about to run out
+		if (player->almostEndPower) {
+			if (iconFade) Engine::GetInstance().render.get()->DrawTexture(powerUpIcon, 155, 75, &gemRect, SDL_FLIP_NONE, false);
+
+			++iconFadeCount;
+			if (iconFadeCount >= (30 / player->timerVar)) {
+				if (iconFade) iconFade = false;
+				else iconFade = true;
+
+				iconFadeCount = 0;
+			}
+		}
+		else Engine::GetInstance().render.get()->DrawTexture(powerUpIcon, 155, 75, &gemRect, SDL_FLIP_NONE, false);
+	}
+	else {
+		if(iconFadeCount != 0) iconFadeCount = 0;
+	}
 
 	//help menu
 	if (!pausedGame and Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_H) == KEY_DOWN) {
