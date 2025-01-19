@@ -80,6 +80,13 @@ bool GuiManager::Update(float dt)
 	}
 	else if (Engine::GetInstance().scene.get()->levelFinishedScreen) {
 		Engine::GetInstance().render.get()->DrawTexture(finishedLevel, 400, 70, NULL, SDL_FLIP_NONE, false);
+		float timeCount = (float)(Engine::GetInstance().scene.get()->finalTime);
+		timeCount = std::round(timeCount * 100.0f) / 100.0f;
+		std::snprintf(buffer, sizeof(buffer), "%.2f", timeCount);
+		std::string time = buffer;
+		std::string text = "Time: ";
+		std::string sec = "s";
+		Engine::GetInstance().render.get()->DrawText((text + time + sec).c_str(), 615, 335, 100, 32);
 	}
 	else if (Engine::GetInstance().scene.get()->config) {
 		Engine::GetInstance().render.get()->DrawTexture(finishedLevel, 400, 70, NULL, SDL_FLIP_NONE, false);

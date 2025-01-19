@@ -134,7 +134,19 @@ public:
 	//what level player is in
 	int level = 1;
 
+	// final time used to beat level
+	float finalTime = 0;
+	float timeCount;
+
 private:
+	// game time
+	Timer timer;
+	bool checkTime = false;
+	double startTime;
+	char buffer[10];
+	double pausedTime = 0.f;
+	double startPauseTime;
+
 	int timeVar = 1;
 	int introTime = 0;
 	bool toExit = false;

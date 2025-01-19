@@ -291,6 +291,10 @@ bool Scene::Start()
 				Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/level2.ogg", 0);
 				break;
 			}
+
+			timer = Timer();
+			startTime = timer.ReadMSec();
+			pausedTime = 0.f;
 		}
 
 		break;
@@ -413,6 +417,15 @@ bool Scene::GameUpdate(float dt)
 	std::string points = std::to_string(player->GemPoints);
 	Engine::GetInstance().render.get()->DrawText(points.c_str(), 190, 35, 16, 32);
 
+	//write time
+	if (!pausedGame and !levelFinishedScreen and player->state != Player_State::DIE) {
+		timeCount = (float)((timer.ReadMSec() - (startTime + pausedTime)) / 1000);
+		timeCount = std::round(timeCount * 100.0f) / 100.0f;
+	}
+	std::snprintf(buffer, sizeof(buffer), "%.2f", timeCount);
+	std::string time = buffer;
+	Engine::GetInstance().render.get()->DrawText(time.c_str(), 1200, 20, 50, 32);
+
 	//help menu
 	if (!pausedGame and Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_H) == KEY_DOWN) {
 		if (help) help = false;
@@ -520,6 +533,10 @@ bool Scene::GameUpdate(float dt)
 
 	if (player->state == Player_State::DIE) {
 		Mix_PauseMusic();
+		if (!checkTime) {
+			startPauseTime = timer.ReadMSec();
+			checkTime = true;
+		}
 		respawn = true;
 	}
 
@@ -533,11 +550,14 @@ bool Scene::GameUpdate(float dt)
 		deathScreen = false;
 		respawnBT->state = GuiControlState::DISABLED;
 		respawn = false;
+		pausedTime += (timer.ReadMSec() - startPauseTime);
+		checkTime = false;
 		Mix_ResumeMusic();
 	}
 
 	if (player->finishedLevel or Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_I) == KEY_DOWN) {
 		if (!levelFinishedScreen) {
+			finalTime = (float)((timer.ReadMSec() - (startTime + pausedTime)) / 1000);
 			playerPoints = player->GemPoints;
 			SaveState();
 			level += 1;
@@ -588,8 +608,14 @@ bool Scene::PostUpdate()
 			state = SceneState::MENU;
 			break;
 		case SceneState::GAME:
-			if (pausedGame) pausedGame = false;
-			else pausedGame = true;
+			if (pausedGame) {
+				pausedGame = false;
+				pausedTime += (timer.ReadMSec() - startPauseTime);
+			}
+			else {
+				pausedGame = true;
+				startPauseTime = timer.ReadMSec();
+			}
 			break;
 		}
 	}
@@ -828,6 +854,7 @@ bool Scene::OnGuiMouseClickEvent(GuiControl* control)
 			break;
 		case GUI_ID::ID_RESUME:
 			pausedGame = false;
+			pausedTime += (timer.ReadMSec() - startPauseTime);
 			break;
 		case GUI_ID::ID_TITLE:
 			Mix_PauseMusic();
