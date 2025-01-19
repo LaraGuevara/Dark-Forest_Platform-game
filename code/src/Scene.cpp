@@ -296,6 +296,7 @@ bool Scene::Start()
 			timer = Timer();
 			startTime = timer.ReadMSec();
 			pausedTime = 0.f;
+			FadeInActive = true;
 		}
 
 		break;
@@ -373,9 +374,20 @@ bool Scene::Update(float dt) {
 	return true;
 }
 
+void Scene::FadeIn() {
+	Engine::GetInstance().render.get()->DrawRectangle(SDL_Rect{ 0, 0, Engine::GetInstance().window.get()->width, Engine::GetInstance().window.get()->height }, 0, 0, 0, fadeValue);
+	fadeValue -= 5 * player->timerVar;
+
+	if (fadeValue <= 0) {
+		FadeInActive = false;
+		fadeValue = 255;
+	}
+}
+
 // Called each loop iteration
 bool Scene::GameUpdate(float dt)
 {
+	if (FadeInActive) FadeIn();
 
 	if (pausedGame) {
 		resumeBT->state = GuiControlState::NORMAL;
@@ -409,12 +421,14 @@ bool Scene::GameUpdate(float dt)
 	//draw healthbar
 	Engine::GetInstance().render.get()->DrawTexture(healthbar, 10, 20, &healthRect, SDL_FLIP_NONE, false);
 	SDL_Rect pointsRect = { 0,32,32 + (GetPlayerLife()*4), 3};
+	//trigger flash if player takes damage
 	if (player->isDamaged and !tookDamage) {
 		tookDamage = true;
 		flashCount = 0;
 		flashDurationCount = 0;
 	} else if(!tookDamage) previousPlayerLife = GetPlayerLife();
 
+	//flash effect for taking damage
 	if (tookDamage) {
 		++flashDurationCount;
 		if (flashDurationCount >= 12 / player->timerVar) {
@@ -442,7 +456,7 @@ bool Scene::GameUpdate(float dt)
 	Engine::GetInstance().render.get()->DrawText(points.c_str(), 190, 35, 16, 32);
 
 	//write time
-	if (!pausedGame and !levelFinishedScreen and player->state != Player_State::DIE) {
+	if (!pausedGame and !levelFinishedScreen and player->state != Player_State::DIE and !FadeInActive) {
 		timeCount = (float)((timer.ReadMSec() - (startTime + pausedTime)) / 1000);
 		timeCount = std::round(timeCount * 100.0f) / 100.0f;
 	}

@@ -98,6 +98,9 @@ public:
 	int GetPlayerPower() {
 		return player->power;
 	}
+	
+	//create fade in effect
+	void FadeIn();
 
 	void LoadState();
 
@@ -139,6 +142,10 @@ public:
 	float timeCount;
 
 private:
+	//fade in check
+	bool FadeInActive = true;
+	int fadeValue = 255;
+
 	// game time
 	Timer timer;
 	bool checkTime = false;
