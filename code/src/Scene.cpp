@@ -294,6 +294,7 @@ bool Scene::Start()
 			}
 
 			pausedTime = 0.f;
+			timeCount = 0.f;
 			FadeInActive = true;
 		}
 
