@@ -42,44 +42,8 @@
 				<checkpoints />
 			</level>
 			<level level="2">
-				<enemies>
-					<enemy name="walkingEnemy1" x="0" y="0" />
-					<enemy name="walkingEnemy2" x="0" y="0" />
-					<enemy name="flyingEnemy1" x="0" y="0" />
-					<enemy name="flyingEnemy2" x="0" y="0" />
-					<enemy name="walkingEnemy1" x="1274" y="175" />
-					<enemy name="walkingEnemy2" x="2234" y="34" />
-					<enemy name="flyingEnemy1" x="2579" y="208" />
-					<enemy name="flyingEnemy2" x="574" y="211" />
-				</enemies>
-				<items>
-					<item id="1" />
-					<item id="2" />
-					<item id="3" />
-					<item id="4" />
-					<item id="5" />
-					<item id="6" />
-					<item id="7" />
-					<item id="8" />
-					<item id="9" />
-					<item id="10" />
-					<item id="11" />
-					<item id="12" />
-					<item id="13" />
-					<item id="1" />
-					<item id="2" />
-					<item id="3" />
-					<item id="4" />
-					<item id="5" />
-					<item id="6" />
-					<item id="7" />
-					<item id="8" />
-					<item id="9" />
-					<item id="10" />
-					<item id="11" />
-					<item id="12" />
-					<item id="13" />
-				</items>
+				<enemies />
+				<items />
 				<checkpoints />
 			</level>
 		</levels>

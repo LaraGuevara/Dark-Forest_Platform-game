@@ -130,6 +130,7 @@ public:
 
 	bool gameAwake = false;
 	bool continueGame = false;
+	bool newGame = false;
 
 	//trigger checkpoint teleport
 	bool checkpointTeleportView = false;

@@ -246,7 +246,10 @@ bool Scene::Start()
 
 			//create checkpoints
 			checkpointList = Engine::GetInstance().map->LoadCheckpoints(level);
-			if(level == 1 or continueGame) checkpointTPList.clear();
+			if (newGame or continueGame) {
+				checkpointTPList.clear();
+				newGame = false;
+			}
 
 			if (continueGame) {
 				pugi::xml_document loadFile;
@@ -620,6 +623,7 @@ bool Scene::GameUpdate(float dt)
 
 	if (player->finishedLevel or Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_I) == KEY_DOWN) {
 		if (!levelFinishedScreen) {
+			continueGame = false;
 			finalTime = (float)((timer.ReadMSec() - (startTime + pausedTime)) / 1000);
 			playerPoints = player->GemPoints;
 			SaveState();
@@ -634,6 +638,7 @@ bool Scene::GameUpdate(float dt)
 
 void Scene::SetAtLevelStart(int lvl) {
 	if (level != lvl) {
+		SaveState();
 		level = lvl;
 		playerPoints = player->GemPoints;
 		Mix_PauseMusic();
@@ -708,6 +713,11 @@ bool Scene::CleanUp()
 		break;
 	case SceneState::GAME:
 		if(img) SDL_DestroyTexture(img);
+
+		enemyList.clear();
+		itemList.clear();
+		checkpointList.clear();
+		//checkpointTPList.clear();
 		break;
 	case SceneState::SETTINGS:
 		break;
@@ -884,6 +894,7 @@ bool Scene::OnGuiMouseClickEvent(GuiControl* control)
 		switch (control->id) {
 		case GUI_ID::ID_PLAY:
 			level = 1;
+			newGame = true;
 			playerPoints = 0;
 			CleanUp();
 			state = SceneState::GAME;
@@ -968,6 +979,7 @@ bool Scene::OnGuiMouseClickEvent(GuiControl* control)
 			level = TPlevel;
 			CleanUp();
 			Engine::GetInstance().entityManager->CleanUp();
+			continueGame = true;
 			Awake();
 			Engine::GetInstance().entityManager->Awake();
 			Start();
