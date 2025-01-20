@@ -30,7 +30,7 @@
   * [Fantasy Sound Effects](https://ivyism.itch.io/fantasy-pack) by [ivyism](https://ivyism.itch.io/)
   * [Fantasy UI Sound Effects](https://ateliermagicae.itch.io/fantasy-ui-sound-effects) by [Atelier Magicae](https://ateliermagicae.itch.io/)
   * [Free Fantasy 200 SFX Pack](https://tommusic.itch.io/free-fantasy-200-sfx-pack) by [TomMusic](https://tommusic.itch.io/)
-  * [Music Loop Bundle](https://tallbeard.itch.io/music-loop-bundle) by[Abstraction](https://abstractionmusic.com/)
+  * [Music Loop Bundle](https://tallbeard.itch.io/music-loop-bundle) by [Abstraction](https://abstractionmusic.com/)
 * Additional Credits:
   * Checkpoints: [Cauldron / cooking pot on a fire](https://kaiowoka.itch.io/cauldron-cooking-pot-on-a-fire) by [kaiowoka](https://kaiowoka.itch.io/)
   * Attacks: [Thunder Spell Effect 01](https://pimen.itch.io/thunder-spell-effect-01) by [pimen](https://pimen.itch.io/)
