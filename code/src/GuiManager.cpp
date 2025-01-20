@@ -16,7 +16,7 @@ GuiManager::~GuiManager() {}
 
 bool GuiManager::Start()
 {
-	credits = Engine::GetInstance().textures.get()->Load("Assets/Textures/screens/bookBase.png");
+	credits = Engine::GetInstance().textures.get()->Load("Assets/Textures/screens/credits.png");
 	helptex = Engine::GetInstance().textures.get()->Load("Assets/Textures/menu.png");
 	pausedMenu = Engine::GetInstance().textures.get()->Load("Assets/Textures/screens/halfBookBase.png");
 	deathScreen = Engine::GetInstance().textures.get()->Load("Assets/Textures/screens/deathScreen.png");
