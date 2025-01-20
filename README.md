@@ -20,7 +20,7 @@
   * [UI books & more](https://srtoasty.itch.io/ui-assets-pack-2) by [Sr.Toasty](https://srtoasty.itch.io/)
   * [FREE UI Icons - MoonRoar Asset Series](https://soulares.itch.io/free-ui) by [Studios SoulAres](https://soulares.itch.io/)
 * Enemies and boss sprite credit:
-  * [Dark Fantasy Enemies](https://monopixelart.itch.io/dark-fantasy-enemies-asset-pack) and [Golems Asset Pack by MonoPixelArt](https://monopixelart.itch.io/golems-pack) by [MonoPixelArt](https://monopixelart.itch.io/)
+  * [Dark Fantasy Enemies](https://monopixelart.itch.io/dark-fantasy-enemies-asset-pack) and [Golems Asset Pack](https://monopixelart.itch.io/golems-pack) by [MonoPixelArt](https://monopixelart.itch.io/)
   * [Moonstone Keeper](https://sucart.itch.io/moonstone-keeper) by [Sucart](https://sucart.itch.io/)
 * Items credit:
   * [16x16 RPG Item Pack](https://alexs-assets.itch.io/16x16-rpg-item-pack) by [Alex's Assets](https://alexs-assets.itch.io/)
