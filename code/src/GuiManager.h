@@ -41,6 +41,9 @@ public:
 	SDL_Texture* pausedMenu;
 	SDL_Texture* deathScreen;
 	SDL_Texture* finishedLevel;
+	SDL_Texture* emptyMenu;
 
+	//buffer to draw time on screen
+	char buffer[10];
 };
 

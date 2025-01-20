@@ -9,7 +9,7 @@
 #include <SDL2/SDL_mixer.h>
 #include "GuiControlButton.h"
 
-#define LEVELS 1
+#define LEVELS 2
 
 
 struct SDL_Texture;
@@ -73,6 +73,9 @@ public:
 	
 	bool GameUpdate(float dt);
 
+	// Sets player at the start of the corresponding level
+	void SetAtLevelStart(int lvl);
+
 	// Called before all Updates
 	bool PostUpdate();
 
@@ -95,6 +98,9 @@ public:
 	int GetPlayerPower() {
 		return player->power;
 	}
+	
+	//create fade in effect
+	void FadeIn();
 
 	void LoadState();
 
@@ -112,6 +118,9 @@ public:
 	//trigger help menu
 	bool help = false;
 
+	//trigger config menu
+	bool config = false;
+
 	//trigger pause menu
 	bool pausedGame = false;
 	bool disabledButtons = true;
@@ -128,10 +137,29 @@ public:
 	//what level player is in
 	int level = 1;
 
+	// final time used to beat level
+	float finalTime = 0;
+	float timeCount = 0.f;
+
 private:
+	//fade in check
+	bool FadeInActive = true;
+	int fadeValue = 255;
+
+	// game time
+	Timer timer;
+	bool checkTime = false;
+	double startTime;
+	char buffer[10];
+	double pausedTime = 0.f;
+	double startPauseTime;
+
 	int timeVar = 1;
 	int introTime = 0;
 	bool toExit = false;
+
+	bool iconFade = false;
+	int iconFadeCount = 0;
 
 	//textures
 	//intro
@@ -143,12 +171,19 @@ private:
 	SDL_Texture* helptex;
 	SDL_Texture* healthbar;
 	SDL_Texture* gemIcon;
+	SDL_Texture* powerUpIcon;
 	SDL_Rect gemRect = { 0,0,16,16 };
 	SDL_Rect healthRect = { 0,0,80,32 };
 
 	//player
 	Player* player;
 	bool respawn = false;
+	int playerPoints = 0;
+	bool tookDamage = false;
+	bool iconFlash = false;
+	int flashCount = 0;
+	int flashDurationCount = 0;
+	int previousPlayerLife;
 
 	//sounds (ids)
 	int loadFX;
@@ -180,4 +215,9 @@ private:
 	GuiControlButton* respawnBT;
 	//finished level
 	GuiControlButton* nextBT;
+
+	//config
+	GuiControlButton* musicSlider;
+	GuiControlButton* fxSlider;
+	GuiControlButton* fullscreenCheckBox;
 };

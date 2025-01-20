@@ -70,7 +70,12 @@ public:
 
 	void SetPosition(Vector2D pos);
 
+	void SetPositionToStart();
+
 public:
+	//the starting position of the levels
+	Vector2D levelStartPos = { 100,0 };
+
 	bool finishedLevel = false;
 
 	bool doRespawn = false;
@@ -81,6 +86,7 @@ public:
 
 	int GemPoints = 0;
 	bool PowerUpActive = false;
+	bool almostEndPower = false;
 
 	int lifeValue;
 	int power;

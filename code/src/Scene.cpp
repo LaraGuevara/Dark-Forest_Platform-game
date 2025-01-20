@@ -66,6 +66,9 @@ bool Scene::Awake()
 
 		break;
 	case SceneState::SETTINGS:
+		musicSlider= (GuiControlButton*)Engine::GetInstance().guiManager->CreateGuiControl(GuiControlType::SLIDER, GUI_ID::ID_NEXT, "Next", { 555, 445, 200,70 }, this);
+		fxSlider= (GuiControlButton*)Engine::GetInstance().guiManager->CreateGuiControl(GuiControlType::SLIDER, GUI_ID::ID_NEXT, "Next", { 555, 445, 200,70 }, this);
+		fullscreenCheckBox= (GuiControlButton*)Engine::GetInstance().guiManager->CreateGuiControl(GuiControlType::SLIDER, GUI_ID::ID_NEXT, "Next", { 555, 445, 200,70 }, this);
 		break;
 	case SceneState::CREDITS:
 		break;
@@ -82,6 +85,7 @@ void Scene::NewGameAwake() {
 
 	player = (Player*)Engine::GetInstance().entityManager->CreateEntity(EntityType::PLAYER);
 	player->SetParameters(configParameters.child("entities").child("player"));
+	if (playerPoints != 0) player->SetPoints(playerPoints);
 
 	for (pugi::xml_node enemyNode = configParameters.child("entities").child("enemies").child("enemy"); enemyNode; enemyNode = enemyNode.next_sibling("enemy"))
 	{
@@ -205,6 +209,10 @@ void Scene::LoadLevel(int lvl) {
 		case 1:
 			Engine::GetInstance().map->Load("Assets/Maps/", "newnocandymap.tmx");
 			break;
+		
+		case 2:
+			Engine::GetInstance().map->Load("Assets/Maps/", "newnocandymap2.tmx");
+			break;
 		}
 	}
 }
@@ -224,6 +232,7 @@ bool Scene::Start()
 		settingBT->state = GuiControlState::NORMAL;
 		creditsBT->state = GuiControlState::NORMAL;
 		exitBT->state = GuiControlState::NORMAL;
+		Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/mainMenu.ogg", 0);
 		break;
 	case SceneState::GAME:
 		//Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 1024);
@@ -233,10 +242,11 @@ bool Scene::Start()
 		if (state != SceneState::MENU) {
 			healthbar = Engine::GetInstance().textures.get()->Load("Assets/Textures/healthbar.png");
 			gemIcon = Engine::GetInstance().textures.get()->Load("Assets/Textures/gemIcon.png");
+			powerUpIcon = Engine::GetInstance().textures.get()->Load("Assets/Textures/items/abilityItem.png");
 
 			//create checkpoints
-			checkpointList = Engine::GetInstance().map->LoadCheckpoints();
-			checkpointTPList.clear();
+			checkpointList = Engine::GetInstance().map->LoadCheckpoints(level);
+			if(level == 1 or continueGame) checkpointTPList.clear();
 
 			if (continueGame) {
 				pugi::xml_document loadFile;
@@ -273,11 +283,23 @@ bool Scene::Start()
 
 			continueGame = false;
 
-			Mix_VolumeMusic(60);
+			//Mix_VolumeMusic(60);
 			saveFX = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/Fantasy_UI (30).wav");
 			loadFX = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/Success 1 (subtle).wav");
 			attackFX = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/Fireball 2.wav");
-			Engine::GetInstance().audio->PlayMusic("Assets/Audio/Fx/Ambient Music.wav", 0);
+
+			switch (level) {
+			case 1:
+				Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/level1.ogg", 0);
+				break;
+			case 2:
+				Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/level2.ogg", 0);
+				break;
+			}
+
+			pausedTime = 0.f;
+			timeCount = 0.f;
+			FadeInActive = true;
 		}
 
 		break;
@@ -355,9 +377,22 @@ bool Scene::Update(float dt) {
 	return true;
 }
 
+void Scene::FadeIn() {
+	Engine::GetInstance().render.get()->DrawRectangle(SDL_Rect{ 0, 0, Engine::GetInstance().window.get()->width, Engine::GetInstance().window.get()->height }, 0, 0, 0, fadeValue);
+	fadeValue -= 5 * player->timerVar;
+
+	if (fadeValue <= 0) {
+		FadeInActive = false;
+		fadeValue = 255;
+		timer = Timer();
+		startTime = timer.ReadMSec();
+	}
+}
+
 // Called each loop iteration
 bool Scene::GameUpdate(float dt)
 {
+	if (FadeInActive) FadeIn();
 
 	if (pausedGame) {
 		resumeBT->state = GuiControlState::NORMAL;
@@ -391,7 +426,32 @@ bool Scene::GameUpdate(float dt)
 	//draw healthbar
 	Engine::GetInstance().render.get()->DrawTexture(healthbar, 10, 20, &healthRect, SDL_FLIP_NONE, false);
 	SDL_Rect pointsRect = { 0,32,32 + (GetPlayerLife()*4), 3};
+	//trigger flash if player takes damage
+	if (player->isDamaged and !tookDamage) {
+		tookDamage = true;
+		flashCount = 0;
+		flashDurationCount = 0;
+	} else if(!tookDamage) previousPlayerLife = GetPlayerLife();
+
+	//flash effect for taking damage
+	if (tookDamage) {
+		++flashDurationCount;
+		if (flashDurationCount >= 12 / player->timerVar) {
+			flashDurationCount = 0;
+			if (iconFlash) {
+				iconFlash = false;
+				++flashCount;
+			}
+			else iconFlash = true;
+		}
+
+		if(iconFlash) pointsRect = { 0,38,32 + (previousPlayerLife * 4), 3 };
+
+		if (flashCount >= 4) tookDamage = false;
+	}
+
 	Engine::GetInstance().render.get()->DrawTexture(healthbar, 10, 42, &pointsRect, SDL_FLIP_NONE, false);
+
 	pointsRect = { 0,35,32 + (GetPlayerPower() * 4), 3 };
 	Engine::GetInstance().render.get()->DrawTexture(healthbar, 10, 56, &pointsRect, SDL_FLIP_NONE, false);
 
@@ -400,11 +460,44 @@ bool Scene::GameUpdate(float dt)
 	std::string points = std::to_string(player->GemPoints);
 	Engine::GetInstance().render.get()->DrawText(points.c_str(), 190, 35, 16, 32);
 
+	//write time
+	if (!pausedGame and !levelFinishedScreen and player->state != Player_State::DIE and !FadeInActive) {
+		timeCount = (float)((timer.ReadMSec() - (startTime + pausedTime)) / 1000);
+		timeCount = std::round(timeCount * 100.0f) / 100.0f;
+	}
+	std::snprintf(buffer, sizeof(buffer), "%.2f", timeCount);
+	std::string time = buffer;
+	Engine::GetInstance().render.get()->DrawText(time.c_str(), 1200, 20, 50, 32);
+
+	//draw power-up icon if required
+	if (player->PowerUpActive) {
+		//disappear and appear for when power up is about to run out
+		if (player->almostEndPower) {
+			if (iconFade) Engine::GetInstance().render.get()->DrawTexture(powerUpIcon, 155, 75, &gemRect, SDL_FLIP_NONE, false);
+
+			++iconFadeCount;
+			if (iconFadeCount >= (30 / player->timerVar)) {
+				if (iconFade) iconFade = false;
+				else iconFade = true;
+
+				iconFadeCount = 0;
+			}
+		}
+		else Engine::GetInstance().render.get()->DrawTexture(powerUpIcon, 155, 75, &gemRect, SDL_FLIP_NONE, false);
+	}
+	else {
+		if(iconFadeCount != 0) iconFadeCount = 0;
+	}
+
 	//help menu
 	if (!pausedGame and Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_H) == KEY_DOWN) {
 		if (help) help = false;
 		else help = true;
 	}
+
+	//f1/f2 triggers
+	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_F1) == KEY_DOWN) SetAtLevelStart(1);
+	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_F2) == KEY_DOWN) SetAtLevelStart(2);
 
 	//load and save
 	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_F5) == KEY_DOWN) {
@@ -503,6 +596,10 @@ bool Scene::GameUpdate(float dt)
 
 	if (player->state == Player_State::DIE) {
 		Mix_PauseMusic();
+		if (!checkTime) {
+			startPauseTime = timer.ReadMSec();
+			checkTime = true;
+		}
 		respawn = true;
 	}
 
@@ -516,11 +613,15 @@ bool Scene::GameUpdate(float dt)
 		deathScreen = false;
 		respawnBT->state = GuiControlState::DISABLED;
 		respawn = false;
+		pausedTime += (timer.ReadMSec() - startPauseTime);
+		checkTime = false;
 		Mix_ResumeMusic();
 	}
 
 	if (player->finishedLevel or Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_I) == KEY_DOWN) {
 		if (!levelFinishedScreen) {
+			finalTime = (float)((timer.ReadMSec() - (startTime + pausedTime)) / 1000);
+			playerPoints = player->GemPoints;
 			SaveState();
 			level += 1;
 			levelFinishedScreen = true;
@@ -529,6 +630,23 @@ bool Scene::GameUpdate(float dt)
 	}
 
 	return true;
+}
+
+void Scene::SetAtLevelStart(int lvl) {
+	if (level != lvl) {
+		level = lvl;
+		playerPoints = player->GemPoints;
+		Mix_PauseMusic();
+		CleanUp();
+		Engine::GetInstance().entityManager->CleanUp();
+		Awake();
+		Engine::GetInstance().entityManager->Awake();
+		Start();
+		Engine::GetInstance().entityManager->Start();
+	}
+	else {
+		player->SetPositionToStart();
+	}
 }
 
 // Called each loop iteration
@@ -553,8 +671,14 @@ bool Scene::PostUpdate()
 			state = SceneState::MENU;
 			break;
 		case SceneState::GAME:
-			if (pausedGame) pausedGame = false;
-			else pausedGame = true;
+			if (pausedGame) {
+				pausedGame = false;
+				pausedTime += (timer.ReadMSec() - startPauseTime);
+			}
+			else {
+				pausedGame = true;
+				startPauseTime = timer.ReadMSec();
+			}
 			break;
 		}
 	}
@@ -574,6 +698,7 @@ bool Scene::CleanUp()
 		SDL_DestroyTexture(introImg);
 		break;
 	case SceneState::MENU:
+		Mix_PauseMusic();
 		SDL_DestroyTexture(menuBackground);
 		startBT->state = GuiControlState::DISABLED;
 		continueBT->state = GuiControlState::DISABLED;
@@ -759,6 +884,7 @@ bool Scene::OnGuiMouseClickEvent(GuiControl* control)
 		switch (control->id) {
 		case GUI_ID::ID_PLAY:
 			level = 1;
+			playerPoints = 0;
 			CleanUp();
 			state = SceneState::GAME;
 			Awake();
@@ -791,6 +917,7 @@ bool Scene::OnGuiMouseClickEvent(GuiControl* control)
 			break;
 		case GUI_ID::ID_RESUME:
 			pausedGame = false;
+			pausedTime += (timer.ReadMSec() - startPauseTime);
 			break;
 		case GUI_ID::ID_TITLE:
 			Mix_PauseMusic();

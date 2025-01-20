@@ -16,11 +16,12 @@ GuiManager::~GuiManager() {}
 
 bool GuiManager::Start()
 {
-	credits = Engine::GetInstance().textures.get()->Load("Assets/Textures/screens/bookBase.png");
+	credits = Engine::GetInstance().textures.get()->Load("Assets/Textures/screens/credits.png");
 	helptex = Engine::GetInstance().textures.get()->Load("Assets/Textures/menu.png");
 	pausedMenu = Engine::GetInstance().textures.get()->Load("Assets/Textures/screens/halfBookBase.png");
 	deathScreen = Engine::GetInstance().textures.get()->Load("Assets/Textures/screens/deathScreen.png");
 	finishedLevel = Engine::GetInstance().textures.get()->Load("Assets/Textures/screens/finishedLevel.png");
+	emptyMenu= Engine::GetInstance().textures.get()->Load("Assets/Textures/menu_empty.png");
 	return true;
 }
 
@@ -35,7 +36,14 @@ GuiControl* GuiManager::CreateGuiControl(GuiControlType type, int id, const char
 	case GuiControlType::BUTTON:
 		guiControl = new GuiControlButton(id, bounds, text);
 		break;
+	case GuiControlType::SLIDER:
+		guiControl = new GuiControlButton(id, bounds, text);
+		break;
+	case GuiControlType::SLIDERBAR:
+		guiControl = new GuiControlButton(id, bounds, text);
+		break;
 	}
+	
 
 	//Set the observer
 	guiControl->observer = observer;
@@ -72,6 +80,16 @@ bool GuiManager::Update(float dt)
 	}
 	else if (Engine::GetInstance().scene.get()->levelFinishedScreen) {
 		Engine::GetInstance().render.get()->DrawTexture(finishedLevel, 400, 70, NULL, SDL_FLIP_NONE, false);
+		float timeCount = (float)(Engine::GetInstance().scene.get()->finalTime);
+		timeCount = std::round(timeCount * 100.0f) / 100.0f;
+		std::snprintf(buffer, sizeof(buffer), "%.2f", timeCount);
+		std::string time = buffer;
+		std::string text = "Time: ";
+		std::string sec = "s";
+		Engine::GetInstance().render.get()->DrawText((text + time + sec).c_str(), 615, 335, 100, 32);
+	}
+	else if (Engine::GetInstance().scene.get()->config) {
+		Engine::GetInstance().render.get()->DrawTexture(finishedLevel, 400, 70, NULL, SDL_FLIP_NONE, false);
 	}
 	
 	for (const auto& control : guiControlsList)
@@ -96,6 +114,7 @@ bool GuiManager::CleanUp()
 	SDL_DestroyTexture(helptex);
 	SDL_DestroyTexture(pausedMenu);
 	SDL_DestroyTexture(deathScreen);
+	SDL_DestroyTexture(emptyMenu);
 
 	return true;
 }
