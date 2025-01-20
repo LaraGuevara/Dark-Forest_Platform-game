@@ -26,6 +26,17 @@ Scene::Scene() : Module()
 Scene::~Scene()
 {}
 
+bool Scene::CanContinueGame() {
+	pugi::xml_document saveFile;
+	pugi::xml_parse_result result = saveFile.load_file("config.xml");
+
+	if (result == NULL) LOG("Error loading config.xml: %s", result.description());
+
+	bool canSave = saveFile.child("config").child("save").attribute("load").as_bool();
+	if (canSave) return true;
+	else return false;
+}
+
 // Called before render is available
 bool Scene::Awake()
 {
@@ -228,7 +239,8 @@ bool Scene::Start()
 	case SceneState::MENU:
 		menuBackground = Engine::GetInstance().textures.get()->Load("Assets/Textures/screens/mainmenu.png");
 		startBT->state = GuiControlState::NORMAL;
-		continueBT->state = GuiControlState::NORMAL;
+		if(CanContinueGame()) continueBT->state = GuiControlState::NORMAL;
+		else continueBT->state = GuiControlState::UNCLICKABLE;
 		settingBT->state = GuiControlState::NORMAL;
 		creditsBT->state = GuiControlState::NORMAL;
 		exitBT->state = GuiControlState::NORMAL;
@@ -504,6 +516,7 @@ bool Scene::GameUpdate(float dt)
 
 	//load and save
 	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_F5) == KEY_DOWN) {
+		canLoad = true;
 		SaveState();
 		Engine::GetInstance().audio->PlayFx(saveFX);
 	}
@@ -519,7 +532,8 @@ bool Scene::GameUpdate(float dt)
 			Vector2D playerPosTile = Engine::GetInstance().map.get()->WorldToMap((int)playerPos.getX(), (int)playerPos.getY());
 			Engine::GetInstance().audio->PlayFx(saveFX);
 			player->SetCheckpoint(playerPos);
-			//SaveState();
+			canLoad = true;
+			SaveState();
 			c->deactivate = true;
 
 			//add to teleport list
@@ -626,6 +640,7 @@ bool Scene::GameUpdate(float dt)
 			continueGame = false;
 			finalTime = (float)((timer.ReadMSec() - (startTime + pausedTime)) / 1000);
 			playerPoints = player->GemPoints;
+			canLoad = false;
 			SaveState();
 			level += 1;
 			levelFinishedScreen = true;
@@ -816,6 +831,9 @@ void Scene::SaveState() {
 	pugi::xml_parse_result result = saveFile.load_file("config.xml");
 
 	if (result == NULL) LOG("Error loading config.xml: %s", result.description());
+
+	//save whether game can be continued or not
+	saveFile.child("config").child("save").attribute("load").set_value(canLoad);
 	
 	//save player postion and points
 	Vector2D playerPos = player->GetPosition();
@@ -977,6 +995,8 @@ bool Scene::OnGuiMouseClickEvent(GuiControl* control)
 
 		if (TPlevel != level) {
 			level = TPlevel;
+			canLoad = true;
+			SaveState();
 			CleanUp();
 			Engine::GetInstance().entityManager->CleanUp();
 			continueGame = true;

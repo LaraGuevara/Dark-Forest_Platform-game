@@ -53,6 +53,9 @@ public:
 	// Destructor
 	virtual ~Scene();
 
+	//check if game can be loaded
+	bool CanContinueGame();
+
 	// Called before render is available
 	bool Awake();
 
@@ -143,6 +146,9 @@ public:
 	float timeCount = 0.f;
 
 private:
+	//check if game can be continued
+	bool canLoad = false;
+
 	//fade in check
 	bool FadeInActive = true;
 	int fadeValue = 255;

@@ -24,6 +24,7 @@ enum class GuiControlState
 {
 	DISABLED,
 	VISIBLE,
+	UNCLICKABLE,
 	NORMAL,
 	FOCUSED,
 	PRESSED,

@@ -22,7 +22,7 @@ GuiControlButton::~GuiControlButton()
 
 bool GuiControlButton::Update(float dt)
 {
-	if (state != GuiControlState::DISABLED and state != GuiControlState::VISIBLE)
+	if (state != GuiControlState::DISABLED and state != GuiControlState::VISIBLE and state != GuiControlState::UNCLICKABLE)
 	{
 		// L16: TODO 3: Update the state of the GUiButton according to the mouse position
 		Vector2D mousePos = Engine::GetInstance().input->GetMousePosition();
@@ -74,6 +74,11 @@ bool GuiControlButton::Update(float dt)
 
 	if (state == GuiControlState::VISIBLE) {
 		Engine::GetInstance().render->DrawRectangle(bounds, 246, 238, 227, 200, true, false);
+		Engine::GetInstance().render->DrawText(text.c_str(), bounds.x, bounds.y, bounds.w, bounds.h);
+	}
+
+	if (state == GuiControlState::UNCLICKABLE) {
+		Engine::GetInstance().render->DrawRectangle(bounds, 93, 93, 93, 200, true, false);
 		Engine::GetInstance().render->DrawText(text.c_str(), bounds.x, bounds.y, bounds.w, bounds.h);
 	}
 
