@@ -5,6 +5,7 @@
 #include "Render.h"
 #include "Scene.h"
 #include "Log.h"
+#include "tracy/Tracy.hpp"
 
 Pathfinding::Pathfinding() {
     
@@ -208,7 +209,7 @@ void Pathfinding::PropagateBFS() {
 
 void Pathfinding::PropagateDijkstra() {
 
-    // L12: TODO 3: Taking BFS as a reference, implement the Dijkstra algorithm
+    ZoneScoped;
 
     bool foundDestination = false;
     if (frontierDijkstra.size() > 0) {

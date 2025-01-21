@@ -6,6 +6,7 @@
 #include "Audio.h"
 #include "Scene.h"
 #include "Window.h"
+#include "tracy/Tracy.hpp"
 
 GuiManager::GuiManager() :Module()
 {
@@ -72,6 +73,8 @@ void GuiManager::DeleteGUIControl(int id) {
 
 bool GuiManager::Update(float dt)
 {	
+	ZoneScoped;
+
 	if (Engine::GetInstance().scene.get()->pausedGame) {
 		Engine::GetInstance().render.get()->DrawTexture(pausedMenu, 400, 50, NULL, SDL_FLIP_NONE, false);
 	}

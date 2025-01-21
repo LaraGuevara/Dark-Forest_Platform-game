@@ -14,6 +14,7 @@
 #include "Enemy.h"
 #include "GuiControl.h"
 #include "GuiManager.h"
+#include "tracy/Tracy.hpp"
 
 
 Scene::Scene() : Module()
@@ -376,10 +377,13 @@ void Scene::EndTeleportUI() {
 // Called each loop iteration
 bool Scene::PreUpdate()
 {
+	ZoneScoped;
 	return true;
 }
 
 bool Scene::Update(float dt) {
+	ZoneScoped;
+
 	switch (state) {
 	case SceneState::INTRO:
 		introTime++;
@@ -695,6 +699,8 @@ void Scene::SetAtLevelStart(int lvl) {
 // Called each loop iteration
 bool Scene::PostUpdate()
 {
+	ZoneScoped;
+
 	bool ret = true;
 
 	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_ESCAPE) == KEY_DOWN) {

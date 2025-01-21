@@ -8,6 +8,7 @@
 #include "Log.h"
 #include "Physics.h"
 #include "Map.h"
+#include "tracy/Tracy.hpp"
 
 Enemy::Enemy() : Entity(EntityType::ENEMY)
 {
@@ -99,6 +100,8 @@ bool Enemy::Start() {
 
 bool Enemy::Update(float dt)
 {
+	ZoneScoped;
+
 	UpdateChecks();
 
 	if (!isDying and !isDamaged) {
@@ -135,6 +138,7 @@ bool Enemy::Update(float dt)
 
 bool Enemy::RenderUpdate() {
 
+	ZoneScoped;
 	if (type == EnemyType::WALKING) Engine::GetInstance().render.get()->DrawTexture(texture, (int)position.getX() + texW / 10, (int)position.getY() - texH / 6, &currentAnimation->GetCurrentFrame(), flip);
 	else Engine::GetInstance().render.get()->DrawTexture(texture, (int)position.getX(), (int)position.getY() - texH / 10, &currentAnimation->GetCurrentFrame(), flip);
 

@@ -2,6 +2,7 @@
 #include "Input.h"
 #include "Window.h"
 #include "Log.h"
+#include "tracy/Tracy.hpp"
 
 #define MAX_KEYS 300
 
@@ -46,6 +47,7 @@ bool Input::Start()
 // Called each loop iteration
 bool Input::PreUpdate()
 {
+	ZoneScoped;
 	static SDL_Event event;
 
 	const Uint8* keys = SDL_GetKeyboardState(NULL);

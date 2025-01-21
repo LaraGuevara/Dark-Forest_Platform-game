@@ -6,6 +6,7 @@
 #include "Log.h"
 #include "Item.h"
 #include "Attack.h"
+#include "tracy/Tracy.hpp"
 
 EntityManager::EntityManager() : Module()
 {
@@ -114,6 +115,7 @@ void EntityManager::AddEntity(Entity* entity)
 
 bool EntityManager::Update(float dt)
 {
+	ZoneScoped;
 	bool ret = true;
 	if (Engine::GetInstance().scene.get()->pausedGame or Engine::GetInstance().scene.get()->checkpointTeleportView or Engine::GetInstance().scene.get()->levelFinishedScreen) {
 		for (const auto entity : entities)
