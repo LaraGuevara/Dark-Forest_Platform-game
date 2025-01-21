@@ -3,6 +3,7 @@
 #include "Module.h"
 #include "Player.h"
 #include "Enemy.h"
+#include "Boss.h"
 #include "Attack.h"
 #include "Item.h"
 #include "Sensor.h"
@@ -150,6 +151,7 @@ public:
 
 private:
 	//boss triggers
+	Boss* boss;
 	bool ActiveBossFight = false;
 	bool defeatedBoss = false;
 

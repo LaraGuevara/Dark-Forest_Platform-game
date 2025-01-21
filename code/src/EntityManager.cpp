@@ -86,6 +86,9 @@ Entity* EntityManager::CreateEntity(EntityType type)
 	case EntityType::SENSOR:
 		entity = new Sensor();
 		break;
+	case EntityType::BOSS:
+		entity = new Boss();
+		break;
 	default:
 		break;
 	}

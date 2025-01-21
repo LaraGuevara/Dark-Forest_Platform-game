@@ -142,6 +142,10 @@ void Scene::NewGameAwake() {
 			}
 		}
 	}
+	else {
+		boss = (Boss*)Engine::GetInstance().entityManager->CreateEntity(EntityType::BOSS);
+		boss->SetParameters(configParameters.child("entities").child("boss"));
+	}
 }
 
 void Scene::ContinueGameAwake() {
@@ -700,6 +704,11 @@ bool Scene::GameUpdate(float dt)
 			Start();
 			Engine::GetInstance().entityManager->Start();
 		}
+	}
+
+	//check if boss has been killed
+	if (ActiveBossFight) {
+		if (boss->state == BossState::BOSS_DEFEATED and !defeatedBoss) defeatedBoss = true;
 	}
 
 	if (defeatedBoss) {

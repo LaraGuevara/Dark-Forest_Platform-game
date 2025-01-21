@@ -40,10 +40,14 @@ bool Boss::Start() {
 
 	//Load animations
 	idle.LoadAnimations(parameters.child("animations").child("idle"));
-	moving.LoadAnimations(parameters.child("animations").child("moving"));
+	/*moving.LoadAnimations(parameters.child("animations").child("moving"));
 	attack.LoadAnimations(parameters.child("animations").child("attack"));
 	damage.LoadAnimations(parameters.child("animations").child("damage"));
-	death.LoadAnimations(parameters.child("animations").child("death"));
+	death.LoadAnimations(parameters.child("animations").child("death"));*/
+
+	pbody = Engine::GetInstance().physics.get()->CreateCircle((int)position.getX() + texH / 2, (int)position.getY() + texH / 2, texH / 3, bodyType::DYNAMIC);
+	currentAnimation = &idle;
+	AnimState = BossAnimationState::BOSS_IDLE;
 
 	//load damage soundfx
 	Mix_Volume(4, 90);
