@@ -113,31 +113,33 @@ void Scene::NewGameAwake() {
 	player->SetParameters(configParameters.child("entities").child("player"));
 	if (playerPoints != 0) player->SetPoints(playerPoints);
 
-	for (pugi::xml_node enemyNode = configParameters.child("entities").child("enemies").child("enemy"); enemyNode; enemyNode = enemyNode.next_sibling("enemy"))
-	{
-		if (enemyNode.attribute("level").as_int() == level) {
-			Enemy* enemy = (Enemy*)Engine::GetInstance().entityManager->CreateEntity(EntityType::ENEMY);
-			enemy->SetParameters(enemyNode);
-			enemyList.push_back(enemy);
-		}
-	}
-
-	for (pugi::xml_node itemNode = configParameters.child("entities").child("items").child("item"); itemNode; itemNode = itemNode.next_sibling("item")) {
-		if (itemNode.attribute("level").as_int() == level) {
-			Item* item = (Item*)Engine::GetInstance().entityManager->CreateEntity(EntityType::ITEM);
-			item->SetParameters(itemNode);
-			switch (itemNode.attribute("type").as_int()) {
-			case (int)ItemType::ITEM_ABILITY:
-				item->SetType(ItemType::ITEM_ABILITY);
-				break;
-			case (int)ItemType::ITEM_HEALTH:
-				item->SetType(ItemType::ITEM_HEALTH);
-				break;
-			case (int)ItemType::ITEM_POINTS:
-				item->SetType(ItemType::ITEM_POINTS);
-				break;
+	if (!ActiveBossFight) {
+		for (pugi::xml_node enemyNode = configParameters.child("entities").child("enemies").child("enemy"); enemyNode; enemyNode = enemyNode.next_sibling("enemy"))
+		{
+			if (enemyNode.attribute("level").as_int() == level) {
+				Enemy* enemy = (Enemy*)Engine::GetInstance().entityManager->CreateEntity(EntityType::ENEMY);
+				enemy->SetParameters(enemyNode);
+				enemyList.push_back(enemy);
 			}
-			itemList.push_back(item);
+		}
+
+		for (pugi::xml_node itemNode = configParameters.child("entities").child("items").child("item"); itemNode; itemNode = itemNode.next_sibling("item")) {
+			if (itemNode.attribute("level").as_int() == level) {
+				Item* item = (Item*)Engine::GetInstance().entityManager->CreateEntity(EntityType::ITEM);
+				item->SetParameters(itemNode);
+				switch (itemNode.attribute("type").as_int()) {
+				case (int)ItemType::ITEM_ABILITY:
+					item->SetType(ItemType::ITEM_ABILITY);
+					break;
+				case (int)ItemType::ITEM_HEALTH:
+					item->SetType(ItemType::ITEM_HEALTH);
+					break;
+				case (int)ItemType::ITEM_POINTS:
+					item->SetType(ItemType::ITEM_POINTS);
+					break;
+				}
+				itemList.push_back(item);
+			}
 		}
 	}
 }
@@ -229,6 +231,10 @@ void Scene::LoadLevel(int lvl) {
 		state = SceneState::MENU;
 		Start();
 	}
+	else if (ActiveBossFight) {
+		Engine::GetInstance().map.get()->CleanUp();
+		Engine::GetInstance().map->Load("Assets/Maps/", "bossmap.tmx");
+	}
 	else {
 		Engine::GetInstance().map.get()->CleanUp();
 		switch (lvl) {
@@ -271,41 +277,43 @@ bool Scene::Start()
 			gemIcon = Engine::GetInstance().textures.get()->Load("Assets/Textures/gemIcon.png");
 			powerUpIcon = Engine::GetInstance().textures.get()->Load("Assets/Textures/items/abilityItem.png");
 
-			//create checkpoints
-			checkpointList = Engine::GetInstance().map->LoadCheckpoints(level);
-			if (newGame or continueGame) {
-				checkpointTPList.clear();
-				newGame = false;
-			}
-
-			if (continueGame) {
-				pugi::xml_document loadFile;
-				pugi::xml_parse_result result = loadFile.load_file("config.xml");
-
-				//find the proper level to load
-				pugi::xml_node levelSaveNode;
-				for (pugi::xml_node saveNode = loadFile.child("config").child("save").child("levels").child("level"); saveNode; saveNode = saveNode.next_sibling("level")) {
-					for (pugi::xml_node cpNode = saveNode.child("checkpoints").child("checkpoint"); cpNode; cpNode = cpNode.next_sibling("checkpoint")) {
-						Teleport tp;
-						tp.id = cpNode.attribute("id").as_int();
-						tp.level = saveNode.attribute("level").as_int();
-						tp.UI_ID = checkpointTPList.size() + 1 + GUI_ID::ID_TELEPORT;
-						tp.playerPos = { cpNode.attribute("x").as_float(), cpNode.attribute("y").as_float() };
-						checkpointTPList.push_back(tp);
-					}
-
-					if (saveNode.attribute("level").as_int() == level) levelSaveNode = saveNode;
+			if (!ActiveBossFight) {
+				//create checkpoints
+				checkpointList = Engine::GetInstance().map->LoadCheckpoints(level);
+				if (newGame or continueGame) {
+					checkpointTPList.clear();
+					newGame = false;
 				}
 
-				for (int i = 0; i < checkpointList.size(); i++) {
-					int checkpointID = checkpointList[i]->id;
+				if (continueGame) {
+					pugi::xml_document loadFile;
+					pugi::xml_parse_result result = loadFile.load_file("config.xml");
 
-					for (pugi::xml_node cpNode = levelSaveNode.child("checkpoints").child("checkpoint"); cpNode; cpNode = cpNode.next_sibling("checkpoint")) {
-						int saveID = cpNode.attribute("id").as_int();
-						if (saveID == checkpointID) {
-							checkpointList[i]->isActive = true;
-							checkpointList[i]->isAdded = true;
-							checkpointList[i]->playerPos = { cpNode.attribute("x").as_float(), cpNode.attribute("y").as_float() };
+					//find the proper level to load
+					pugi::xml_node levelSaveNode;
+					for (pugi::xml_node saveNode = loadFile.child("config").child("save").child("levels").child("level"); saveNode; saveNode = saveNode.next_sibling("level")) {
+						for (pugi::xml_node cpNode = saveNode.child("checkpoints").child("checkpoint"); cpNode; cpNode = cpNode.next_sibling("checkpoint")) {
+							Teleport tp;
+							tp.id = cpNode.attribute("id").as_int();
+							tp.level = saveNode.attribute("level").as_int();
+							tp.UI_ID = checkpointTPList.size() + 1 + GUI_ID::ID_TELEPORT;
+							tp.playerPos = { cpNode.attribute("x").as_float(), cpNode.attribute("y").as_float() };
+							checkpointTPList.push_back(tp);
+						}
+
+						if (saveNode.attribute("level").as_int() == level) levelSaveNode = saveNode;
+					}
+
+					for (int i = 0; i < checkpointList.size(); i++) {
+						int checkpointID = checkpointList[i]->id;
+
+						for (pugi::xml_node cpNode = levelSaveNode.child("checkpoints").child("checkpoint"); cpNode; cpNode = cpNode.next_sibling("checkpoint")) {
+							int saveID = cpNode.attribute("id").as_int();
+							if (saveID == checkpointID) {
+								checkpointList[i]->isActive = true;
+								checkpointList[i]->isAdded = true;
+								checkpointList[i]->playerPos = { cpNode.attribute("x").as_float(), cpNode.attribute("y").as_float() };
+							}
 						}
 					}
 				}
@@ -318,16 +326,19 @@ bool Scene::Start()
 			loadFX = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/Success 1 (subtle).wav");
 			attackFX = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/Fireball 2.wav");
 
-			switch (level) {
-			case 1:
-				Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/level1.ogg", 0);
-				break;
-			case 2:
-				Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/level2.ogg", 0);
-				break;
+			if (!ActiveBossFight) {
+				switch (level) {
+				case 1:
+					Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/level1.ogg", 0);
+					break;
+				case 2:
+					Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/level2.ogg", 0);
+					break;
+				}
 			}
+			else Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/boss.ogg", 0);
 
-			bestTime = GetBestTime();
+			if (!ActiveBossFight) bestTime = GetBestTime();
 
 			pausedTime = 0.f;
 			timeCount = 0.f;
@@ -495,20 +506,22 @@ bool Scene::GameUpdate(float dt)
 	std::string points = std::to_string(player->GemPoints);
 	Engine::GetInstance().render.get()->DrawText(points.c_str(), 190, 35, 16, 32);
 
-	//write time
-	if (!pausedGame and !levelFinishedScreen and player->state != Player_State::DIE and !FadeInActive) {
-		timeCount = (float)((timer.ReadMSec() - (startTime + pausedTime)) / 1000);
-		timeCount = std::round(timeCount * 100.0f) / 100.0f;
-	}
-	std::snprintf(buffer, sizeof(buffer), "%.2f", timeCount);
-	std::string time = buffer;
-	Engine::GetInstance().render.get()->DrawText(time.c_str(), 1200, 20, 50, 32);
+	if (!ActiveBossFight) {
+		//write time
+		if (!pausedGame and !levelFinishedScreen and player->state != Player_State::DIE and !FadeInActive) {
+			timeCount = (float)((timer.ReadMSec() - (startTime + pausedTime)) / 1000);
+			timeCount = std::round(timeCount * 100.0f) / 100.0f;
+		}
+		std::snprintf(buffer, sizeof(buffer), "%.2f", timeCount);
+		std::string time = buffer;
+		Engine::GetInstance().render.get()->DrawText(time.c_str(), 1200, 20, 50, 32);
 
-	//write best time
-	std::snprintf(buffer, sizeof(buffer), "%.2f", bestTime);
-	std::string BTime = buffer;
-	std::string highScore = "Best Time: " + BTime;
-	Engine::GetInstance().render.get()->DrawText(highScore.c_str(), 1130, 55, 120, 40);
+		//write best time
+		std::snprintf(buffer, sizeof(buffer), "%.2f", bestTime);
+		std::string BTime = buffer;
+		std::string highScore = "Best Time: " + BTime;
+		Engine::GetInstance().render.get()->DrawText(highScore.c_str(), 1130, 55, 120, 40);
+	}
 
 	//draw power-up icon if required
 	if (player->PowerUpActive) {
@@ -662,7 +675,7 @@ bool Scene::GameUpdate(float dt)
 	}
 
 	if (player->finishedLevel or Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_I) == KEY_DOWN) {
-		if (!levelFinishedScreen) {
+		if (!levelFinishedScreen and level != 2) {
 			continueGame = false;
 			finalTime = (float)((timer.ReadMSec() - (startTime + pausedTime)) / 1000);
 			if (finalTime < bestTime or bestTime == 0) bestTime = finalTime;
@@ -673,6 +686,31 @@ bool Scene::GameUpdate(float dt)
 			levelFinishedScreen = true;
 			nextBT->state = GuiControlState::NORMAL;
 		}
+		else if (level == 2) {
+			finalTime = (float)((timer.ReadMSec() - (startTime + pausedTime)) / 1000);
+			playerPoints = player->GemPoints;
+			canLoad = false;
+			SaveState();
+			ActiveBossFight = true;
+			player->finishedLevel = false;
+			CleanUp();
+			Engine::GetInstance().entityManager->CleanUp();
+			Awake();
+			Engine::GetInstance().entityManager->Awake();
+			Start();
+			Engine::GetInstance().entityManager->Start();
+		}
+	}
+
+	if (defeatedBoss) {
+		ActiveBossFight = false;
+		defeatedBoss = false;
+		canLoad = false;
+		Mix_PauseMusic();
+		CleanUp();
+		Engine::GetInstance().entityManager->CleanUp();
+		state = SceneState::MENU;
+		Start();
 	}
 
 	return true;

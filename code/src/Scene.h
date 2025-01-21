@@ -149,6 +149,10 @@ public:
 	float timeCount = 0.f;
 
 private:
+	//boss triggers
+	bool ActiveBossFight = false;
+	bool defeatedBoss = false;
+
 	//save best time
 	float bestTime = 0.f;
 

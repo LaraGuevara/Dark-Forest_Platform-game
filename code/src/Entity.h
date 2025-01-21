@@ -7,6 +7,7 @@ enum class EntityType
 {
 	PLAYER,
 	ENEMY,
+	BOSS,
 	ITEM,
 	ATTACK,
 	SENSOR,
