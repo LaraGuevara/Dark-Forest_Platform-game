@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.0" orientation="orthogonal" renderorder="right-down" width="200" height="20" tilewidth="16" tileheight="16" infinite="0" nextlayerid="17" nextobjectid="67">
+<map version="1.10" tiledversion="1.11.0" orientation="orthogonal" renderorder="right-down" width="200" height="20" tilewidth="16" tileheight="16" infinite="0" nextlayerid="17" nextobjectid="68">
  <properties>
   <property name="Draw" type="bool" value="true"/>
  </properties>
@@ -12047,5 +12047,10 @@
   <object id="62" x="0" y="208" width="222" height="112"/>
   <object id="63" x="351" y="207.5" width="96.5" height="32.5"/>
   <object id="65" x="625" y="209" width="798" height="109"/>
+  <object id="67" x="0" y="311" width="3200" height="7">
+   <properties>
+    <property name="Death" type="bool" value="true"/>
+   </properties>
+  </object>
  </objectgroup>
 </map>

@@ -177,6 +177,7 @@ void Boss::OnCollision(PhysBody* physA, PhysBody* physB) {
 			}
 			break;
 		case ColliderType::DEATH:
+			state = BossState::BOSS_DEFEATED;
 			break;
 		default:
 			break;
