@@ -11,22 +11,22 @@
 struct SDL_Texture;
 
 enum BossState {
-	/*ALIVE,
-	DEAD*/
+	BOSS_ACTIVE,
+	BOSS_DEFEATED
 };
 
 enum BossLook {
-	/*LEFT,
-	RIGHT*/
+	BOSS_LEFT,
+	BOSS_RIGHT
 };
 
 enum BossAnimationState {
-	/*SLEEP,
-	IDLE,
-	ATTACK,
-	MOVING,
-	DAMAGE,
-	JUMPING*/
+	BOSS_IDLE,
+	BOSS_RUN,
+	BOSS_DASH,
+	BOSS_DAMAGE,
+	BOSS_DEATH,
+	BOSS_ATTACK
 };
 
 class Boss : public Entity
@@ -71,7 +71,7 @@ public:
 	void OnCollisionEnd(PhysBody* physA, PhysBody* physB);
 
 public:
-	BossState state;
+	BossState state = BossState::BOSS_ACTIVE;
 	int timerVar = 1;
 	bool playerActivate = false;
 	PhysBody* pbody;
@@ -82,7 +82,7 @@ private:
 	Vector2D startingPos;
 
 	BossAnimationState AnimState;
-	BossLook look;
+	BossLook look = BossLook::BOSS_RIGHT;
 
 	float jumpForce = 2.0f;
 	int idleCount = IDLECOUNT;

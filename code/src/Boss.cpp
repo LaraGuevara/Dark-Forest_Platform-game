@@ -53,7 +53,7 @@ bool Boss::Start() {
 	sensor = Engine::GetInstance().physics.get()->CreateCircleSensor((int)position.getX() + texH / 2, (int)position.getY() + texH / 2, texH * 4, bodyType::KINEMATIC);
 
 	//Assign collider type and damage 
-	pbody->ctype = ColliderType::ENEMY;
+	pbody->ctype = ColliderType::BOSS;
 	sensor->ctype = ColliderType::SENSOR;
 
 	pbody->damageDone = parameters.attribute("damage").as_int();
@@ -84,7 +84,7 @@ bool Boss::Update(float dt)
 	position.setX(METERS_TO_PIXELS(pbodyPos.p.x) - texH / 2);
 	position.setY(METERS_TO_PIXELS(pbodyPos.p.y) - texH / 2);
 
-	if (look == EnemyLook::RIGHT) {
+	if (look == BossLook::BOSS_RIGHT) {
 		flip = SDL_FLIP_NONE;
 		pbody->lookRight = false;
 	}
