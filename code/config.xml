@@ -17,7 +17,7 @@
 	<save load="true">
 		<player x="880" y="191" points="6" level="1" />
 		<levels>
-			<level level="1">
+			<level level="1" time="0">
 				<enemies>
 					<enemy name="walkingEnemy1" x="1356" y="208" />
 					<enemy name="walkingEnemy2" x="2258" y="58" />
@@ -37,7 +37,7 @@
 					<checkpoint id="1" x="872" y="189" />
 				</checkpoints>
 			</level>
-			<level level="2">
+			<level level="2" time="0">
 				<enemies />
 				<items />
 				<checkpoints />

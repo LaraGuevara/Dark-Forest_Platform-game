@@ -37,6 +37,20 @@ bool Scene::CanContinueGame() {
 	else return false;
 }
 
+float Scene::GetBestTime() {
+	pugi::xml_document saveFile;
+	pugi::xml_parse_result result = saveFile.load_file("config.xml");
+
+	if (result == NULL) LOG("Error loading config.xml: %s", result.description());
+
+	pugi::xml_node levelSaveNode;
+	for (pugi::xml_node saveNode = saveFile.child("config").child("save").child("levels").child("level"); saveNode; saveNode = saveNode.next_sibling("level")) {
+		if (saveNode.attribute("level").as_int() == level) levelSaveNode = saveNode;
+	}
+
+	return levelSaveNode.attribute("time").as_float();
+}
+
 // Called before render is available
 bool Scene::Awake()
 {
@@ -312,6 +326,8 @@ bool Scene::Start()
 				break;
 			}
 
+			bestTime = GetBestTime();
+
 			pausedTime = 0.f;
 			timeCount = 0.f;
 			FadeInActive = true;
@@ -484,6 +500,12 @@ bool Scene::GameUpdate(float dt)
 	std::string time = buffer;
 	Engine::GetInstance().render.get()->DrawText(time.c_str(), 1200, 20, 50, 32);
 
+	//write best time
+	std::snprintf(buffer, sizeof(buffer), "%.2f", bestTime);
+	std::string BTime = buffer;
+	std::string highScore = "Best Time: " + BTime;
+	Engine::GetInstance().render.get()->DrawText(highScore.c_str(), 1130, 55, 120, 40);
+
 	//draw power-up icon if required
 	if (player->PowerUpActive) {
 		//disappear and appear for when power up is about to run out
@@ -639,6 +661,7 @@ bool Scene::GameUpdate(float dt)
 		if (!levelFinishedScreen) {
 			continueGame = false;
 			finalTime = (float)((timer.ReadMSec() - (startTime + pausedTime)) / 1000);
+			if (finalTime < bestTime or bestTime == 0) bestTime = finalTime;
 			playerPoints = player->GemPoints;
 			canLoad = false;
 			SaveState();
@@ -847,6 +870,9 @@ void Scene::SaveState() {
 	for (pugi::xml_node saveNode = saveFile.child("config").child("save").child("levels").child("level"); saveNode; saveNode = saveNode.next_sibling("level")) {
 		if (saveNode.attribute("level").as_int() == level) levelSaveNode = saveNode;
 	}
+
+	//save best time
+	levelSaveNode.attribute("time").set_value(bestTime);
 
 	//save alive enemies and their postions
 	pugi::xml_node enemiesNode = levelSaveNode.child("enemies");

@@ -56,6 +56,9 @@ public:
 	//check if game can be loaded
 	bool CanContinueGame();
 
+	//get best time from xml
+	float GetBestTime();
+
 	// Called before render is available
 	bool Awake();
 
@@ -146,6 +149,9 @@ public:
 	float timeCount = 0.f;
 
 private:
+	//save best time
+	float bestTime = 0.f;
+
 	//check if game can be continued
 	bool canLoad = false;
 
