@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.0" orientation="orthogonal" renderorder="right-down" width="200" height="20" tilewidth="16" tileheight="16" infinite="0" nextlayerid="17" nextobjectid="89">
+<map version="1.10" tiledversion="1.11.0" orientation="orthogonal" renderorder="right-down" width="200" height="20" tilewidth="16" tileheight="16" infinite="0" nextlayerid="17" nextobjectid="91">
  <properties>
   <property name="Draw" type="bool" value="true"/>
  </properties>
@@ -24094,6 +24094,7 @@
   <object id="86" x="496" y="224.5" width="112" height="96"/>
   <object id="87" x="-0.5" y="224.5" width="432" height="95"/>
   <object id="88" x="207.5" y="208" width="128.5" height="16.5"/>
+  <object id="89" x="-0.666667" y="-1.33333" width="3200.67" height="6.66667"/>
  </objectgroup>
  <objectgroup id="13" name="Finish Level">
   <properties>
