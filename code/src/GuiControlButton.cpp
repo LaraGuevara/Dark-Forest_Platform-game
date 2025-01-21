@@ -20,6 +20,32 @@ GuiControlButton::~GuiControlButton()
 
 }
 
+GuiControlSlidebox::GuiControlSlidebox(int id, SDL_Rect bounds, const char* text) : GuiControl(GuiControlType::SLIDERBAR, id)
+{
+	this->bounds = bounds;
+	this->text = text;
+}
+
+GuiControlSlidebox::~GuiControlSlidebox()
+{
+
+}
+
+
+GuiControlCheckbox::GuiControlCheckbox(int id, SDL_Rect bounds, const char* text) : GuiControl(GuiControlType::CHECKBOX, id)
+{
+	this->bounds = bounds;
+	this->text = text;
+
+}
+
+	
+
+GuiControlCheckbox::~GuiControlCheckbox()
+{
+
+}
+
 bool GuiControlButton::Update(float dt)
 {
 	if (state != GuiControlState::DISABLED and state != GuiControlState::VISIBLE and state != GuiControlState::UNCLICKABLE)

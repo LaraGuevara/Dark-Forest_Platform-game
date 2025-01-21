@@ -38,10 +38,13 @@ GuiControl* GuiManager::CreateGuiControl(GuiControlType type, int id, const char
 		guiControl = new GuiControlButton(id, bounds, text);
 		break;
 	case GuiControlType::SLIDER:
-		guiControl = new GuiControlButton(id, bounds, text);
+		guiControl = new GuiControlSlidebar(id, bounds, text);
 		break;
 	case GuiControlType::SLIDERBAR:
-		guiControl = new GuiControlButton(id, bounds, text);
+		guiControl = new GuiControlSlidebar(id, bounds, text);
+		break;
+	case GuiControlType::CHECKBOX:
+		guiControl = new GuiControlCheckbox(id, bounds, text);
 		break;
 	}
 	
@@ -92,7 +95,7 @@ bool GuiManager::Update(float dt)
 		Engine::GetInstance().render.get()->DrawText((text + time + sec).c_str(), 615, 335, 100, 32);
 	}
 	else if (Engine::GetInstance().scene.get()->config) {
-		Engine::GetInstance().render.get()->DrawTexture(finishedLevel, 400, 70, NULL, SDL_FLIP_NONE, false);
+		Engine::GetInstance().render.get()->DrawTexture(emptyMenu, 400, 70, NULL, SDL_FLIP_NONE, false);
 	}
 	
 	for (const auto& control : guiControlsList)
