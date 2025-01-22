@@ -75,6 +75,23 @@ bool GuiManager::Update(float dt)
 {	
 	ZoneScoped;
 
+	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_F8) == KEY_DOWN) {
+		if (drawBorders) {
+			drawBorders = false;
+			for (const auto& control : guiControlsList)
+			{
+				control->debugDraw = false;
+			}
+		}
+		else {
+			drawBorders = true;
+			for (const auto& control : guiControlsList)
+			{
+				control->debugDraw = true;
+			}
+		}
+	}
+
 	if (Engine::GetInstance().scene.get()->pausedGame) {
 		Engine::GetInstance().render.get()->DrawTexture(pausedMenu, 400, 50, NULL, SDL_FLIP_NONE, false);
 	}

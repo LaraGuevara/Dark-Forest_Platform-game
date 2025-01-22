@@ -88,4 +88,6 @@ public:
 	SDL_Rect section;       // Texture atlas base section
 
 	Module* observer;        // Observer 
+
+	bool debugDraw = false; //trigger F8 draw button borders
 };

@@ -45,5 +45,7 @@ public:
 
 	//buffer to draw time on screen
 	char buffer[10];
+
+	bool drawBorders = false; 
 };
 

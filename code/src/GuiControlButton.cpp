@@ -82,6 +82,26 @@ bool GuiControlButton::Update(float dt)
 		Engine::GetInstance().render->DrawText(text.c_str(), bounds.x, bounds.y, bounds.w, bounds.h);
 	}
 
+	if (debugDraw and state != GuiControlState::DISABLED) {
+		switch (state) {
+		case GuiControlState::NORMAL:
+			Engine::GetInstance().render->DrawRectangle(bounds, 255, 255, 255, 255, false, false);
+			break;
+		case GuiControlState::FOCUSED:
+			Engine::GetInstance().render->DrawRectangle(bounds, 0, 0, 255, 255, false, false);
+			break;
+		case GuiControlState::PRESSED:
+			Engine::GetInstance().render->DrawRectangle(bounds, 0, 128, 0, 255, false, false);
+			break;
+		case GuiControlState::VISIBLE:
+			Engine::GetInstance().render->DrawRectangle(bounds, 93, 93, 93, 255, false, false);
+			break;
+		case GuiControlState::UNCLICKABLE:
+			Engine::GetInstance().render->DrawRectangle(bounds, 0, 0, 0, 255, false, false);
+			break;
+		}
+	}
+
 	return false;
 }
 
