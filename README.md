@@ -46,7 +46,7 @@ This platform game is themed after a witch world. Explore two levels as a nice w
 [Last release](https://github.com/LaraGuevara/Platform-game/releases/download/v.0.2/PixelPioneers-Platformer-Beta.zip)
 
 
-## GAMEPLAY
+## GAMEPLAY KEYS
 ---
 * A move left
 * D move right
@@ -54,14 +54,14 @@ This platform game is themed after a witch world. Explore two levels as a nice w
 * SPACE jump
 * ESC open settings menu
 
-## GOD MODE:
+## GOD MODE KEYS
 ---
 * W up
 * A left
 * S down
 * D right
 
-### DEBUG FUNCTIONS 
+### DEBUG FUNCTION KEYS
 ---
 * H Shows / hides a help menu showing the keys
 * F1 Set player at the start of level 1
