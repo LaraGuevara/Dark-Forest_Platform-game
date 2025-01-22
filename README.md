@@ -67,6 +67,7 @@ This platform game is themed after a witch world. Explore two levels as a nice w
 * F1 Set player at the start of level 1
 * F2 Set player at the start of level 2
 * F7 Teleport between activated checkpoints
+* F8 View GUI button bound rectangles and state in different colors
 * F9 Visualize the colliders / logic
 * F10 God Mode (fly around, cannot be killed)
 * F11 Enable/Disable FPS cap to 30
