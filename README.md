@@ -41,7 +41,7 @@
 
 ## GAME
 ---
-This second release consist of the first level of the game. It is a simple plataform level based, however it has two types of enemies, a ground and a flying one. You now have the possiblity to attack the enemies, with it's respecting animations. It is themed after a witch world, and it's protagonists is a nice witch. 
+This platform game is themed after a witch world. Explore two levels as a nice witch, collecting different items, like gems and power-ups, and use your attack abilities to defeat enemies- a ground based one and a flying one. Make your way through the levels to defeat a boss to finish the game.
 
 [Last release](https://github.com/LaraGuevara/Platform-game/releases/download/v.0.2/PixelPioneers-Platformer-Beta.zip)
 
@@ -52,6 +52,7 @@ This second release consist of the first level of the game. It is a simple plata
 * D move right
 * Q attack
 * SPACE jump
+* ESC open settings menu
 
 ## GOD MODE:
 ---
@@ -63,11 +64,17 @@ This second release consist of the first level of the game. It is a simple plata
 ### DEBUG FUNCTIONS 
 ---
 * H Shows / hides a help menu showing the keys
+* F1 Set player at the start of level 1
+* F2 Set player at the start of level 2
+* F7 Teleport between activated checkpoints
 * F9 Visualize the colliders / logic
 * F10 God Mode (fly around, cannot be killed)
 * F11 Enable/Disable FPS cap to 30
 * F5 Save game
 * F6 Load game
+* Additional testing keys:
+  * I --> instanly beat current level
+  * O --> automatically cause 1 damage to player
 
 ## FEATURES
 ---
@@ -76,9 +83,35 @@ This second release consist of the first level of the game. It is a simple plata
 * Diverse map
 * Plataforms with dynamic created colliders
 * Checkpoints with automatic save (Based on sensors)
+* Checkpoint teleportation
 * Saving and loading on command
 * Flying enemy with pathfinding
 * Ground enemy with pathfinding
 * Killing enemies with an attack
+* Boss fight
+* Items
+  * Health boost items
+  * Power up items (adds a temporary attack boost with a different animation)
+  * "Points" item (gems)
 * Health and power bar
+* Level time and best time
+* Item counter UI
+  * Gem counter
+  * Icon when active power up
+* UI animations
+* Intro and main menu
+* Settings
+* Death and win screens
 * Audio and fx sounds
+
+## OPTIMIZATIONS
+---
+* Frustum culling
+* Enemy lazy updates
+* Code instrumented with [Tracy](https://github.com/wolfpld/tracy)
+
+## FIXES
+---
+* More game aspects are considered in game save, such as active checkpoints and alive enemy positions
+* List of alive enemies is properly deleted and rewritten in XML file when saving the game, avoiding repeated enemies in the list
+* Added life bar animations to make change more visible for player
