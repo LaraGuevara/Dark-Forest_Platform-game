@@ -43,7 +43,7 @@
 ---
 This platform game is themed after a witch world. Explore two levels as a nice witch, collecting different items, like gems and power-ups, and use your attack abilities to defeat enemies- a ground based one and a flying one. Make your way through the levels to defeat a boss to finish the game.
 
-[Last release](https://github.com/LaraGuevara/Platform-game/releases/download/v.0.2/PixelPioneers-Platformer-Beta.zip)
+[Last release](https://github.com/LaraGuevara/Platform-game/releases/tag/v.1.0)
 
 
 ## GAMEPLAY KEYS
