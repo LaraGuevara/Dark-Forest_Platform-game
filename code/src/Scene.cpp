@@ -71,6 +71,11 @@ bool Scene::Awake()
 		musicSlider= (GuiControlSlidebox*)Engine::GetInstance().guiManager->CreateGuiControl(GuiControlType::SLIDER, GUI_ID::ID_SLIDEM, "Music", { 200, 50, 200,70 }, this);
 		musicSlider->state = GuiControlState::DISABLED;
 
+		/*musicSliderbox = (GuiControlSlidebox*)Engine::GetInstance().guiManager->CreateGuiControl(GuiControlType::SLIDERBAR, GUI_ID::ID_SLIDEM, "Music", { 200, 50, 200,70 }, this);
+		musicSliderbox->state = GuiControlState::DISABLED;*/
+		
+		
+
 		fxSlider= (GuiControlSlidebox*)Engine::GetInstance().guiManager->CreateGuiControl(GuiControlType::SLIDER, GUI_ID::ID_SLIDEF, "Fx", { 200, 150, 200,70 }, this);
 		fxSlider->state = GuiControlState::DISABLED;
 
@@ -279,6 +284,8 @@ bool Scene::Start()
 		break;
 	case SceneState::MENU:
 		menuBackground = Engine::GetInstance().textures.get()->Load("Assets/Textures/screens/mainmenu.png");
+		sliderBackground = Engine::GetInstance().textures.get()->Load("Assets/Textures/sliderBackground.png");
+		slider = Engine::GetInstance().textures.get()->Load("Assets/Textures/slider.png");
 		startBT->state = GuiControlState::NORMAL;
 		if(CanContinueGame()) continueBT->state = GuiControlState::NORMAL;
 		else continueBT->state = GuiControlState::UNCLICKABLE;
@@ -800,6 +807,7 @@ bool Scene::PostUpdate()
 			}
 
 			musicSlider->state = GuiControlState::DISABLED;
+			//musicSliderbox->state = GuiControlState::DISABLED;
 			fxSlider->state = GuiControlState::DISABLED;
 			fullscreenCheckBox->state = GuiControlState::DISABLED;
 

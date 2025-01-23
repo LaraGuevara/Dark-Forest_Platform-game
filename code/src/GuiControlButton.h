@@ -39,15 +39,15 @@ public:
 	}
 
 	void SetTexture(SDL_Texture* background, SDL_Texture* movement) {
-		slidebackground = background;
-		slide = movement;
+		sliderBackground = background;
+		slider = movement;
 	}
 
 	int checkID;
 
 private:
-	SDL_Texture* slidebackground;
-	SDL_Texture* slide;
+	SDL_Texture* sliderBackground;
+	SDL_Texture* slider;
 	int posButton;
 	Vector2D pos;
 	Vector2D posHitbox;

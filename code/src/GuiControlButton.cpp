@@ -26,6 +26,8 @@ GuiControlSlidebox::GuiControlSlidebox(int id, SDL_Rect bounds, const char* text
 	this->text = text;
 	hoverFX = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/UI/Fantasy_UI (3).wav");
 	selectFX = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/UI/Fantasy_UI (18).wav");
+	//sliderBackground = Engine::GetInstance().textures.get()->Load("Assets/Textures/sliderBackground.png");
+	//slider = Engine::GetInstance().textures.get()->Load("Assets/Textures/slider.png");
 }
 
 GuiControlSlidebox::~GuiControlSlidebox()
@@ -155,25 +157,34 @@ bool GuiControlSlidebox::Update(float dt)
 			
 
 		}
+		else {
+			state = GuiControlState::NORMAL;
+		}
 
 		switch (state)
 		{
 		case GuiControlState::DISABLED:
-			Engine::GetInstance().render->DrawRectangle(bounds, 200, 200, 200, 200, true, false);
+			Engine::GetInstance().render->DrawTexture(slider, posButton, bounds.y, &bounds, SDL_FLIP_NONE);
+			Engine::GetInstance().render->DrawTexture(sliderBackground, posButton, bounds.y, &bounds, SDL_FLIP_NONE);
 			break;
 		case GuiControlState::NORMAL:
-			Engine::GetInstance().render->DrawRectangle(bounds, 200, 200, 200, 200, true, false);
+			Engine::GetInstance().render->DrawTexture(slider,posButton, bounds.y,&bounds,SDL_FLIP_NONE);
+			Engine::GetInstance().render->DrawTexture(sliderBackground, posButton, bounds.y, &bounds, SDL_FLIP_NONE);
 			break;
 		case GuiControlState::FOCUSED:
-			Engine::GetInstance().render->DrawRectangle(bounds, 200, 200, 200, 200, true, false);
+			Engine::GetInstance().render->DrawTexture(slider, posButton, bounds.y, &bounds, SDL_FLIP_NONE);
+			Engine::GetInstance().render->DrawTexture(sliderBackground, posButton, bounds.y, &bounds, SDL_FLIP_NONE);
+			
 			break;
 		case GuiControlState::PRESSED:
-			Engine::GetInstance().render->DrawRectangle(bounds, 200, 200, 200, 200, true, false);
+			Engine::GetInstance().render->DrawTexture(slider, posButton, bounds.y, &bounds, SDL_FLIP_NONE);
+			Engine::GetInstance().render->DrawTexture(sliderBackground, posButton, bounds.y, &bounds, SDL_FLIP_NONE);
 			break;
 		}
 
 		Engine::GetInstance().render->DrawText(text.c_str(), bounds.x, bounds.y, bounds.w, bounds.h);
 	}
+	else posButton = -(Engine::GetInstance().render.get()->camera.x / 2) + bounds.x;
 
 	if (state == GuiControlState::VISIBLE) {
 		Engine::GetInstance().render->DrawRectangle(bounds, 246, 238, 227, 200, true, false);

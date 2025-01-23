@@ -197,6 +197,8 @@ private:
 	SDL_Texture* emptymenu;
 	SDL_Texture* gemIcon;
 	SDL_Texture* powerUpIcon;
+	SDL_Texture* sliderBackground;
+	SDL_Texture* slider;
 	SDL_Rect gemRect = { 0,0,16,16 };
 	SDL_Rect healthRect = { 0,0,80,32 };
 
@@ -243,6 +245,7 @@ private:
 
 	//config
 	GuiControlSlidebox* musicSlider;
+	GuiControlSlidebox* musicSliderbox;
 	GuiControlSlidebox* fxSlider;
 	GuiControlCheckbox* fullscreenCheckBox;
 };
