@@ -370,7 +370,17 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 		break;
 	case ColliderType::ENEMY:
 		LOG("Collision ENEMY");
-		if(!godMode and physB->active == false) {
+		if(!godMode) {
+			life = life - physB->damageDone;
+			isDamaged = true;
+		}
+		break;
+	case ColliderType::LEVELEND:
+		Engine::GetInstance().audio->PlayFx(lvlCompleteFX);
+		finishedLevel = true;
+		break;
+	case ColliderType::BOSS:
+		if (!godMode and physB->active == false) {
 			life = life - physB->damageDone;
 			isDamaged = true;
 			physB->active = true;
@@ -378,10 +388,6 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 			else damageRight = false;
 			LOG("PLAYER DAMAGE %d", life);
 		}
-		break;
-	case ColliderType::LEVELEND:
-		Engine::GetInstance().audio->PlayFx(lvlCompleteFX);
-		finishedLevel = true;
 		break;
 	case ColliderType::UNKNOWN:
 		LOG("Collision UNKNOWN");

@@ -27,7 +27,10 @@ enum GUI_ID {
 	ID_PAUSED_EXIT,
 	ID_RESPAWN,
 	ID_NEXT,
-	ID_TELEPORT
+	ID_SLIDEM,
+	ID_SLIDEF,
+	ID_CHECKBOX,
+	ID_TELEPORT,
 };
 
 enum SceneState {
@@ -150,6 +153,7 @@ public:
 	float timeCount = 0.f;
 
 private:
+	bool fullscreen = false;
 	//boss triggers
 	Boss* boss;
 	bool ActiveBossFight = false;
@@ -180,6 +184,8 @@ private:
 	bool iconFade = false;
 	int iconFadeCount = 0;
 
+	bool inMenu = true;
+
 	//textures
 	//intro
 	SDL_Texture* introImg;
@@ -189,8 +195,13 @@ private:
 	SDL_Texture* img;
 	SDL_Texture* helptex;
 	SDL_Texture* healthbar;
+	SDL_Texture* emptymenu;
 	SDL_Texture* gemIcon;
 	SDL_Texture* powerUpIcon;
+	SDL_Texture* sliderBackground;
+	SDL_Texture* slider;
+	SDL_Texture* checkboxOff;
+	SDL_Texture* checkboxOn;
 	SDL_Rect gemRect = { 0,0,16,16 };
 	SDL_Rect healthRect = { 0,0,80,32 };
 
@@ -236,7 +247,7 @@ private:
 	GuiControlButton* nextBT;
 
 	//config
-	GuiControlButton* musicSlider;
-	GuiControlButton* fxSlider;
-	GuiControlButton* fullscreenCheckBox;
+	GuiControlSlidebox* musicSlider;
+	GuiControlSlidebox* fxSlider;
+	GuiControlCheckbox* fullscreenCheckBox;
 };

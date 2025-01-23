@@ -25,6 +25,9 @@ public:
 	// Retrive window size
 	void GetWindowSize(int& width, int& height) const;
 
+	//Set fullscreen
+	void Fullscreen(bool isFullScreen);
+
 	// Retrieve window scale
 	int GetScale() const;
 

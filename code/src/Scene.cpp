@@ -67,6 +67,28 @@ bool Scene::Awake()
 		settingBT = (GuiControlButton*)Engine::GetInstance().guiManager->CreateGuiControl(GuiControlType::BUTTON, GUI_ID::ID_SETTINGS, "Settings", { 40, 390, 200,70 }, this);
 		creditsBT = (GuiControlButton*)Engine::GetInstance().guiManager->CreateGuiControl(GuiControlType::BUTTON, GUI_ID::ID_CREDITS, "Credits", { 40, 470, 200,70 }, this);
 		exitBT = (GuiControlButton*)Engine::GetInstance().guiManager->CreateGuiControl(GuiControlType::BUTTON, GUI_ID::ID_EXIT, "Exit", { 40, 550, 200,70 }, this);
+
+		sliderBackground = Engine::GetInstance().textures.get()->Load("Assets/Textures/sliderBackground.png");
+		slider = Engine::GetInstance().textures.get()->Load("Assets/Textures/sliderMovement.png");
+
+		musicSlider= (GuiControlSlidebox*)Engine::GetInstance().guiManager->CreateGuiControl(GuiControlType::SLIDER, GUI_ID::ID_SLIDEM, "Music", { 200, 50, 200,10 }, this);
+		musicSlider->state = GuiControlState::DISABLED;
+		musicSlider->SetTexture(sliderBackground, slider);
+		musicSlider->checkID = 1;
+		
+
+		fxSlider= (GuiControlSlidebox*)Engine::GetInstance().guiManager->CreateGuiControl(GuiControlType::SLIDER, GUI_ID::ID_SLIDEF, "Fx", { 200, 70, 200,10 }, this);
+		fxSlider->state = GuiControlState::DISABLED;
+		fxSlider->SetTexture(sliderBackground, slider);
+		fxSlider->checkID = 2;
+
+		checkboxOff = Engine::GetInstance().textures.get()->Load("Assets/Textures/sliderBackground.png");
+		checkboxOn = Engine::GetInstance().textures.get()->Load("Assets/Textures/sliderMovement.png");
+		fullscreenCheckBox= (GuiControlCheckbox*)Engine::GetInstance().guiManager->CreateGuiControl(GuiControlType::CHECKBOX, GUI_ID::ID_CHECKBOX, "Fullscreen", { 250, 90, 20,20 }, this);
+		fullscreenCheckBox->state = GuiControlState::DISABLED;
+		fullscreenCheckBox->SetTexture(checkboxOff, checkboxOn);
+
+
 		break;
 	case SceneState::GAME:
 		if (!gameAwake) {
@@ -83,6 +105,7 @@ bool Scene::Awake()
 			respawnBT = (GuiControlButton*)Engine::GetInstance().guiManager->CreateGuiControl(GuiControlType::BUTTON, GUI_ID::ID_RESPAWN, "Respawn", { 540, 525, 200,70 }, this);
 			respawnBT->state = GuiControlState::DISABLED;
 
+
 			nextBT = (GuiControlButton*)Engine::GetInstance().guiManager->CreateGuiControl(GuiControlType::BUTTON, GUI_ID::ID_NEXT, "Next", { 555, 445, 200,70 }, this);
 			nextBT->state = GuiControlState::DISABLED;
 		}
@@ -92,9 +115,11 @@ bool Scene::Awake()
 
 		break;
 	case SceneState::SETTINGS:
-		musicSlider= (GuiControlButton*)Engine::GetInstance().guiManager->CreateGuiControl(GuiControlType::SLIDER, GUI_ID::ID_NEXT, "Next", { 555, 445, 200,70 }, this);
-		fxSlider= (GuiControlButton*)Engine::GetInstance().guiManager->CreateGuiControl(GuiControlType::SLIDER, GUI_ID::ID_NEXT, "Next", { 555, 445, 200,70 }, this);
-		fullscreenCheckBox= (GuiControlButton*)Engine::GetInstance().guiManager->CreateGuiControl(GuiControlType::SLIDER, GUI_ID::ID_NEXT, "Next", { 555, 445, 200,70 }, this);
+		musicSlider->state = GuiControlState::NORMAL;
+		fxSlider->state = GuiControlState::NORMAL;
+		fullscreenCheckBox->state = GuiControlState::NORMAL;
+
+
 		break;
 	case SceneState::CREDITS:
 		break;
@@ -263,6 +288,8 @@ bool Scene::Start()
 		break;
 	case SceneState::MENU:
 		menuBackground = Engine::GetInstance().textures.get()->Load("Assets/Textures/screens/mainmenu.png");
+		sliderBackground = Engine::GetInstance().textures.get()->Load("Assets/Textures/sliderBackground.png");
+		slider = Engine::GetInstance().textures.get()->Load("Assets/Textures/slider.png");
 		startBT->state = GuiControlState::NORMAL;
 		if(CanContinueGame()) continueBT->state = GuiControlState::NORMAL;
 		else continueBT->state = GuiControlState::UNCLICKABLE;
@@ -333,14 +360,14 @@ bool Scene::Start()
 			if (!ActiveBossFight) {
 				switch (level) {
 				case 1:
-					Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/level1.ogg", 0);
+					Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/level1.ogg", 6);
 					break;
 				case 2:
-					Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/level2.ogg", 0);
+					Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/level2.ogg", 6);
 					break;
 				}
 			}
-			else Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/boss.ogg", 0);
+			else Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/boss.ogg", 6);
 
 			if (!ActiveBossFight) bestTime = GetBestTime();
 
@@ -351,6 +378,10 @@ bool Scene::Start()
 
 		break;
 	case SceneState::SETTINGS:
+		
+		//musicSlider->color();
+		
+		
 		break;
 	case SceneState::CREDITS:
 		break;
@@ -399,6 +430,17 @@ bool Scene::PreUpdate()
 bool Scene::Update(float dt) {
 	ZoneScoped;
 
+	if (state != SceneState::INTRO) {
+		if (!fullscreen and fullscreenCheckBox->IsActiveFullScreen()) {
+			Engine::GetInstance().window.get()->Fullscreen(true);
+			fullscreen = true;
+		}
+		else if (fullscreen and !fullscreenCheckBox->IsActiveFullScreen()) {
+			Engine::GetInstance().window.get()->Fullscreen(false);
+			fullscreen = false;
+		}
+	}
+
 	switch (state) {
 	case SceneState::INTRO:
 		introTime++;
@@ -410,12 +452,15 @@ bool Scene::Update(float dt) {
 		} else Engine::GetInstance().render.get()->DrawTexture(introImg, 0, 0, NULL, SDL_FLIP_NONE, false);
 		break;
 	case SceneState::MENU:
+		if (!inMenu) inMenu = true;
 		Engine::GetInstance().render.get()->DrawTexture(menuBackground, 0, 0, NULL, SDL_FLIP_NONE, false);
 		break;
 	case SceneState::GAME:
+		if (inMenu) inMenu = false;
 		GameUpdate(dt);
 		break;
 	case SceneState::SETTINGS:
+		if(inMenu) Engine::GetInstance().render.get()->DrawTexture(menuBackground, 0, 0, NULL, SDL_FLIP_NONE, false);
 		break;
 	case SceneState::CREDITS:
 		Engine::GetInstance().render.get()->DrawTexture(menuBackground, 0, 0, NULL, SDL_FLIP_NONE, false);
@@ -691,6 +736,7 @@ bool Scene::GameUpdate(float dt)
 			nextBT->state = GuiControlState::NORMAL;
 		}
 		else if (level == 2) {
+			//nextBT->state = GuiControlState::DISABLED;
 			finalTime = (float)((timer.ReadMSec() - (startTime + pausedTime)) / 1000);
 			playerPoints = player->GemPoints;
 			canLoad = false;
@@ -757,14 +803,38 @@ bool Scene::PostUpdate()
 			break;
 		case SceneState::CREDITS:
 			startBT->state = GuiControlState::NORMAL;
-			continueBT->state = GuiControlState::NORMAL;
+			if (canLoad) continueBT->state = GuiControlState::NORMAL;
+			else continueBT->state = GuiControlState::UNCLICKABLE;
 			settingBT->state = GuiControlState::NORMAL;
 			creditsBT->state = GuiControlState::NORMAL;
 			exitBT->state = GuiControlState::NORMAL;
 			state = SceneState::MENU;
 			break;
 		case SceneState::SETTINGS:
+			if (!pausedGame) {
+			startBT->state = GuiControlState::NORMAL;
+			if(canLoad) continueBT->state = GuiControlState::NORMAL;
+			else continueBT->state = GuiControlState::UNCLICKABLE;
+			settingBT->state = GuiControlState::NORMAL;
+			creditsBT->state = GuiControlState::NORMAL;
+			exitBT->state = GuiControlState::NORMAL;
 			state = SceneState::MENU;
+			}
+
+			musicSlider->state = GuiControlState::DISABLED;
+			//musicSliderbox->state = GuiControlState::DISABLED;
+			fxSlider->state = GuiControlState::DISABLED;
+			fullscreenCheckBox->state = GuiControlState::DISABLED;
+
+			if (!inMenu) {
+				resumeBT->state = GuiControlState::NORMAL;
+				PAUSEDsettingsBT->state = GuiControlState::NORMAL;
+				titleBT->state = GuiControlState::NORMAL;
+				PAUSEDexitBT->state = GuiControlState::NORMAL;
+			}
+			
+			if (!inMenu) state = SceneState::GAME;
+			else state = SceneState::MENU;
 			break;
 		case SceneState::GAME:
 			if (pausedGame) {
@@ -811,6 +881,11 @@ bool Scene::CleanUp()
 		//checkpointTPList.clear();
 		break;
 	case SceneState::SETTINGS:
+		startBT->state = GuiControlState::DISABLED;
+		continueBT->state = GuiControlState::DISABLED;
+		settingBT->state = GuiControlState::DISABLED;
+		creditsBT->state = GuiControlState::DISABLED;
+		exitBT->state = GuiControlState::DISABLED;
 		break;
 	case SceneState::CREDITS:
 		break;
@@ -1020,8 +1095,33 @@ bool Scene::OnGuiMouseClickEvent(GuiControl* control)
 			exitBT->state = GuiControlState::VISIBLE;
 			state = SceneState::CREDITS;
 			break;
+		case GUI_ID::ID_SETTINGS:
+			startBT->state = GuiControlState::VISIBLE;
+			continueBT->state = GuiControlState::VISIBLE;
+			settingBT->state = GuiControlState::VISIBLE;
+			creditsBT->state = GuiControlState::VISIBLE;
+			exitBT->state = GuiControlState::VISIBLE;
+
+			musicSlider->state = GuiControlState::NORMAL;
+			fxSlider->state = GuiControlState::NORMAL;
+			fullscreenCheckBox->state = GuiControlState::NORMAL;
+
+			state = SceneState::SETTINGS;
+			break;
 		case GUI_ID::ID_PAUSED_EXIT:
 			toExit = true;
+			break;
+		case GUI_ID::ID_PAUSED_SETTINGS:
+			state = SceneState::SETTINGS;
+
+			resumeBT->state = GuiControlState::DISABLED;
+			PAUSEDsettingsBT->state = GuiControlState::DISABLED;
+			titleBT->state = GuiControlState::DISABLED;
+			PAUSEDexitBT->state = GuiControlState::DISABLED;
+
+			musicSlider->state = GuiControlState::NORMAL;
+			fxSlider->state = GuiControlState::NORMAL;
+			fullscreenCheckBox->state = GuiControlState::NORMAL;
 			break;
 		case GUI_ID::ID_RESUME:
 			pausedGame = false;
@@ -1054,6 +1154,15 @@ bool Scene::OnGuiMouseClickEvent(GuiControl* control)
 			Engine::GetInstance().entityManager->Awake();
 			Start();
 			Engine::GetInstance().entityManager->Start();
+			break;
+		case GUI_ID::ID_SLIDEM:
+			
+			break;
+		case GUI_ID::ID_SLIDEF:
+
+			break;
+		case GUI_ID::ID_CHECKBOX:
+			
 			break;
 		}
 	}

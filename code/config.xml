@@ -17,7 +17,7 @@
 	<save load="false">
 		<player x="124" y="207" points="0" level="2" />
 		<levels>
-			<level level="1" time="0.0500000007">
+			<level level="1" time="0.131999999">
 				<enemies>
 					<enemy name="walkingEnemy1" x="1274" y="193" />
 					<enemy name="walkingEnemy2" x="2234" y="34" />
@@ -41,7 +41,7 @@
 				</items>
 				<checkpoints />
 			</level>
-			<level level="2" time="0">
+			<level level="2" time="41.3370018">
 				<enemies>
 					<enemy name="flyingEnemy3" x="935" y="139" />
 					<enemy name="flyingEnemy4" x="2743" y="84" />
@@ -709,7 +709,7 @@
 					</active>
 				</animations>
 			</checkpoint>
-			<boss texture="Assets/Textures/enemies/boss.png" x="1280" y="100" w="32" h="80" life="25" damage="3" gravity="true">
+			<boss texture="Assets/Textures/enemies/boss.png" x="950" y="100" w="32" h="80" life="25" damage="3" gravity="true">
 				<animations>
 					<idle loop="true" speed="0.075">
 						<frame x="0" y="0" w="32" h="80" />
