@@ -67,6 +67,17 @@ bool Scene::Awake()
 		settingBT = (GuiControlButton*)Engine::GetInstance().guiManager->CreateGuiControl(GuiControlType::BUTTON, GUI_ID::ID_SETTINGS, "Settings", { 40, 390, 200,70 }, this);
 		creditsBT = (GuiControlButton*)Engine::GetInstance().guiManager->CreateGuiControl(GuiControlType::BUTTON, GUI_ID::ID_CREDITS, "Credits", { 40, 470, 200,70 }, this);
 		exitBT = (GuiControlButton*)Engine::GetInstance().guiManager->CreateGuiControl(GuiControlType::BUTTON, GUI_ID::ID_EXIT, "Exit", { 40, 550, 200,70 }, this);
+
+		musicSlider= (GuiControlButton*)Engine::GetInstance().guiManager->CreateGuiControl(GuiControlType::SLIDER, GUI_ID::ID_SLIDEM, "Music", { 540, 525, 200,70 }, this);
+		musicSlider->state = GuiControlState::DISABLED;
+
+		fxSlider= (GuiControlButton*)Engine::GetInstance().guiManager->CreateGuiControl(GuiControlType::SLIDER, GUI_ID::ID_SLIDEF, "Fx", { 540, 525, 200,70 }, this);
+		fxSlider->state = GuiControlState::DISABLED;
+
+		fullscreenCheckBox= (GuiControlButton*)Engine::GetInstance().guiManager->CreateGuiControl(GuiControlType::CHECKBOX, GUI_ID::ID_CHECKBOX, "Fullscreen", { 540, 525, 200,70 }, this);
+		fullscreenCheckBox->state = GuiControlState::DISABLED;
+
+
 		break;
 	case SceneState::GAME:
 		if (!gameAwake) {
@@ -83,6 +94,7 @@ bool Scene::Awake()
 			respawnBT = (GuiControlButton*)Engine::GetInstance().guiManager->CreateGuiControl(GuiControlType::BUTTON, GUI_ID::ID_RESPAWN, "Respawn", { 540, 525, 200,70 }, this);
 			respawnBT->state = GuiControlState::DISABLED;
 
+
 			nextBT = (GuiControlButton*)Engine::GetInstance().guiManager->CreateGuiControl(GuiControlType::BUTTON, GUI_ID::ID_NEXT, "Next", { 555, 445, 200,70 }, this);
 			nextBT->state = GuiControlState::DISABLED;
 		}
@@ -92,9 +104,13 @@ bool Scene::Awake()
 
 		break;
 	case SceneState::SETTINGS:
-		musicSlider= (GuiControlButton*)Engine::GetInstance().guiManager->CreateGuiControl(GuiControlType::SLIDER, GUI_ID::ID_NEXT, "Next", { 555, 445, 200,70 }, this);
-		fxSlider= (GuiControlButton*)Engine::GetInstance().guiManager->CreateGuiControl(GuiControlType::SLIDER, GUI_ID::ID_NEXT, "Next", { 555, 445, 200,70 }, this);
-		fullscreenCheckBox= (GuiControlButton*)Engine::GetInstance().guiManager->CreateGuiControl(GuiControlType::SLIDER, GUI_ID::ID_NEXT, "Next", { 555, 445, 200,70 }, this);
+		musicSlider->state = GuiControlState::NORMAL;
+		musicSlider->id = 1;
+		fxSlider->state = GuiControlState::NORMAL;
+		fxSlider->id = 2;
+		fullscreenCheckBox->state = GuiControlState::NORMAL;
+
+
 		break;
 	case SceneState::CREDITS:
 		break;
@@ -351,6 +367,10 @@ bool Scene::Start()
 
 		break;
 	case SceneState::SETTINGS:
+		
+		//musicSlider->color();
+		
+		
 		break;
 	case SceneState::CREDITS:
 		break;
@@ -416,6 +436,7 @@ bool Scene::Update(float dt) {
 		GameUpdate(dt);
 		break;
 	case SceneState::SETTINGS:
+		Engine::GetInstance().render.get()->DrawTexture(menuBackground, 0, 0, NULL, SDL_FLIP_NONE, false);
 		break;
 	case SceneState::CREDITS:
 		Engine::GetInstance().render.get()->DrawTexture(menuBackground, 0, 0, NULL, SDL_FLIP_NONE, false);
@@ -691,6 +712,7 @@ bool Scene::GameUpdate(float dt)
 			nextBT->state = GuiControlState::NORMAL;
 		}
 		else if (level == 2) {
+			//nextBT->state = GuiControlState::DISABLED;
 			finalTime = (float)((timer.ReadMSec() - (startTime + pausedTime)) / 1000);
 			playerPoints = player->GemPoints;
 			canLoad = false;
@@ -764,7 +786,15 @@ bool Scene::PostUpdate()
 			state = SceneState::MENU;
 			break;
 		case SceneState::SETTINGS:
+			if (!pausedGame) {
+			startBT->state = GuiControlState::NORMAL;
+			continueBT->state = GuiControlState::NORMAL;
+			settingBT->state = GuiControlState::NORMAL;
+			creditsBT->state = GuiControlState::NORMAL;
+			exitBT->state = GuiControlState::NORMAL;
 			state = SceneState::MENU;
+			}
+			else { if (KEY_DOWN == SDLK_ESCAPE)state= SceneState::GAME; }
 			break;
 		case SceneState::GAME:
 			if (pausedGame) {
@@ -811,6 +841,11 @@ bool Scene::CleanUp()
 		//checkpointTPList.clear();
 		break;
 	case SceneState::SETTINGS:
+		startBT->state = GuiControlState::DISABLED;
+		continueBT->state = GuiControlState::DISABLED;
+		settingBT->state = GuiControlState::DISABLED;
+		creditsBT->state = GuiControlState::DISABLED;
+		exitBT->state = GuiControlState::DISABLED;
 		break;
 	case SceneState::CREDITS:
 		break;
@@ -1020,8 +1055,19 @@ bool Scene::OnGuiMouseClickEvent(GuiControl* control)
 			exitBT->state = GuiControlState::VISIBLE;
 			state = SceneState::CREDITS;
 			break;
+		case GUI_ID::ID_SETTINGS:
+			startBT->state = GuiControlState::VISIBLE;
+			continueBT->state = GuiControlState::VISIBLE;
+			settingBT->state = GuiControlState::VISIBLE;
+			creditsBT->state = GuiControlState::VISIBLE;
+			exitBT->state = GuiControlState::VISIBLE;
+			state = SceneState::SETTINGS;
+			break;
 		case GUI_ID::ID_PAUSED_EXIT:
 			toExit = true;
+			break;
+		case GUI_ID::ID_PAUSED_SETTINGS:
+			state = SceneState::SETTINGS;
 			break;
 		case GUI_ID::ID_RESUME:
 			pausedGame = false;
@@ -1054,6 +1100,15 @@ bool Scene::OnGuiMouseClickEvent(GuiControl* control)
 			Engine::GetInstance().entityManager->Awake();
 			Start();
 			Engine::GetInstance().entityManager->Start();
+			break;
+		case GUI_ID::ID_SLIDEM:
+			
+			break;
+		case GUI_ID::ID_SLIDEF:
+
+			break;
+		case GUI_ID::ID_CHECKBOX:
+			
 			break;
 		}
 	}

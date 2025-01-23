@@ -45,6 +45,7 @@ private:
 	Vector2D posHitbox;
 	Vector2D posTexture;
 	bool drawBasic = false;
+	int selectFX, hoverFX;
 };
 
 
@@ -57,7 +58,7 @@ public:
 	virtual ~GuiControlCheckbox();
 
 	// Called each loop iteration
-	bool Update(float dt);
+	//bool Update(float dt);
 
 	void SetTexture(SDL_Texture* off, SDL_Texture* on) {
 		checkboxOff = off;
@@ -79,6 +80,7 @@ private:
 	Vector2D posTexture;
 	bool drawBasic = false;
 	bool activated;
+	int selectFX, hoverFX;
 };
 
 #pragma once

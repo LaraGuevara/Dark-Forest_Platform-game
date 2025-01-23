@@ -15,6 +15,10 @@ enum BossState {
 	BOSS_DEFEATED
 };
 
+enum class DirectionEnemy {
+	LEFT, RIGHT
+};
+
 enum BossLook {
 	BOSS_LEFT,
 	BOSS_RIGHT
@@ -56,6 +60,10 @@ public:
 		startPathfinding = true;
 	}
 
+	DirectionEnemy GetDirection() {
+		return de;
+	}
+
 	void SetParameters(pugi::xml_node parameters) {
 		this->parameters = parameters;
 	}
@@ -69,6 +77,7 @@ public:
 	void OnCollision(PhysBody* physA, PhysBody* physB);
 
 	void OnCollisionEnd(PhysBody* physA, PhysBody* physB);
+	void BossPattern(float dt);
 
 public:
 	BossState state = BossState::BOSS_ACTIVE;
@@ -80,6 +89,7 @@ public:
 private:
 	bool isStartingPos = false;
 	Vector2D startingPos;
+	DirectionEnemy de;
 
 	BossAnimationState AnimState;
 	BossLook look = BossLook::BOSS_RIGHT;
@@ -87,6 +97,7 @@ private:
 	float jumpForce = 2.0f;
 	int idleCount = IDLECOUNT;
 	bool idleMove = true;
+	b2Vec2 velocity;
 
 	SDL_Texture* texture;
 	const char* texturePath;
@@ -119,4 +130,16 @@ private:
 
 	int AttackFX;
 	int DamageFX;
+
+	
+	int bossCooldown = 120;
+	int lifes;
+	bool isJumping = false;
+	bool showing = true;
+	int randomAttack = 0;
+	bool audioDie = false;
+	bool directionLeft;
+	float speed;
+	
+
 };

@@ -27,7 +27,10 @@ enum GUI_ID {
 	ID_PAUSED_EXIT,
 	ID_RESPAWN,
 	ID_NEXT,
-	ID_TELEPORT
+	ID_TELEPORT,
+	ID_SLIDEM,
+	ID_SLIDEF,
+	ID_CHECKBOX
 };
 
 enum SceneState {
@@ -189,6 +192,7 @@ private:
 	SDL_Texture* img;
 	SDL_Texture* helptex;
 	SDL_Texture* healthbar;
+	SDL_Texture* emptymenu;
 	SDL_Texture* gemIcon;
 	SDL_Texture* powerUpIcon;
 	SDL_Rect gemRect = { 0,0,16,16 };

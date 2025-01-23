@@ -35,15 +35,15 @@ bool Boss::Start() {
 		position.setX(parameters.attribute("x").as_int());
 		position.setY(parameters.attribute("y").as_int());
 	}
-	texW = parameters.attribute("w").as_int();
 	texH = parameters.attribute("h").as_int();
+	texW = parameters.attribute("w").as_int();
 
 	//Load animations
 	idle.LoadAnimations(parameters.child("animations").child("idle"));
-	/*moving.LoadAnimations(parameters.child("animations").child("moving"));
+	moving.LoadAnimations(parameters.child("animations").child("moving"));
 	attack.LoadAnimations(parameters.child("animations").child("attack"));
 	damage.LoadAnimations(parameters.child("animations").child("damage"));
-	death.LoadAnimations(parameters.child("animations").child("death"));*/
+	death.LoadAnimations(parameters.child("animations").child("death"));
 
 	pbody = Engine::GetInstance().physics.get()->CreateCircle((int)position.getX() + texH / 2, (int)position.getY() + texH / 2, texH / 3, bodyType::DYNAMIC);
 	currentAnimation = &idle;
@@ -208,34 +208,35 @@ void Boss::OnCollisionEnd(PhysBody* physA, PhysBody* physB)
 
 //boss data
 
-void Enemy::BossPattern(float dt) {
+void Boss::BossPattern(float dt) {
 	velocity = b2Vec2(0, -GRAVITY_Y);
 
-	if (currentAnimation == &crouch) texW = 48;
-	else if (currentAnimation == &attack) texW = 80;
-	else if (currentAnimation == &die) texW = 64;
+	
+	 if (currentAnimation == &attack) texW = 80;
+	else if (currentAnimation == &death) texW = 64;
 	else texW = parameters.attribute("w").as_int();
 
-	if ((currentAnimation == &attack || currentAnimation == &dmg) && currentAnimation->HasFinished()) currentAnimation = &idle;
+	if ((currentAnimation == &attack || currentAnimation == &damage) && currentAnimation->HasFinished()) currentAnimation = &idle;
 
-	if (bossActive && !Engine::GetInstance().scene.get()->IsPause()) {
+	if (!isSleeping && !Engine::GetInstance().scene.get()->pausedGame) {
+		
 
 		if (bossCooldown >= 0)
 			bossCooldown--;
 
 		if (randomAttack == 2 && currentAnimation == &attack && bossCooldown == 100) {
-			fireball = true;
-			Engine::GetInstance().audio.get()->PlayFx(bossSword);
+			
+			Engine::GetInstance().audio.get()->PlayFx(AttackFX);
 		}
 		if (randomAttack == 3 && currentAnimation == &attack && (bossCooldown == 100 || bossCooldown == 80)) {
-			fireball = true;
-			Engine::GetInstance().audio.get()->PlayFx(bossSword);
+			
+			Engine::GetInstance().audio.get()->PlayFx(AttackFX);
 		}
 
 
 		if (bossCooldown <= 0) {
 
-			if (currentAnimation == &walk) {
+			if (currentAnimation == &moving) {
 				currentAnimation = &idle;
 				bossCooldown = 60;
 			}
@@ -256,26 +257,26 @@ void Enemy::BossPattern(float dt) {
 					bossCooldown = 120;
 					break;
 				default:
-					currentAnimation = &walk;
+					currentAnimation = &moving;
 					bossCooldown = 160;
 					de = directionLeft ? DirectionEnemy::LEFT : DirectionEnemy::RIGHT;
 					break;
 				}
 			}
 		}
-		else if (bossCooldown <= 1 && currentAnimation == &walk) {
+		else if (bossCooldown <= 1 && currentAnimation == &moving) {
 			directionLeft = !directionLeft;
 			de = directionLeft ? DirectionEnemy::LEFT : DirectionEnemy::RIGHT;
 		}
 
-		if (currentAnimation == &walk) {
+		if (currentAnimation == &moving) {
 			if (directionLeft) {
 				velocity.x = -speed * 2;
-				flipType = SDL_FLIP_HORIZONTAL;
+				flip = SDL_FLIP_HORIZONTAL;
 			}
 			else {
 				velocity.x = +speed * 2;
-				flipType = SDL_FLIP_NONE;
+				flip = SDL_FLIP_NONE;
 			}
 		}
 
@@ -289,21 +290,18 @@ void Enemy::BossPattern(float dt) {
 	position.setY(METERS_TO_PIXELS(pbodyPos.p.y) - texH / 2);
 
 	if (currentAnimation != &attack)
-		Engine::GetInstance().render.get()->DrawTexture(texture, flipType, (int)position.getX() + texW / 3, (int)position.getY() - texH / 4, &currentAnimation->GetCurrentFrame());
+		Engine::GetInstance().render.get()->DrawTexture(texture, flip, (int)position.getX() + texW / 3, (int)position.getY() - texH / 4, &currentAnimation->GetCurrentFrame());
 	else
-		Engine::GetInstance().render.get()->DrawTexture(texture, flipType, (int)position.getX() - 4, (int)position.getY() - texH / 4, &currentAnimation->GetCurrentFrame());
+		Engine::GetInstance().render.get()->DrawTexture(texture, flip, (int)position.getX() - 4, (int)position.getY() - texH / 4, &currentAnimation->GetCurrentFrame());
 
 	currentAnimation->Update();
 
 	b2Vec2 enemyPos = pbody->body->GetPosition();
 	sensor->body->SetTransform({ enemyPos.x, enemyPos.y }, 0);
 
-	if (currentAnimation == &die) {
-		if (!audioDie) {
-			Engine::GetInstance().audio.get()->PlayFx(bossDie);
-			audioDie = true;
-		}
-		if (currentAnimation->HasFinished())dead = true;
+	if (currentAnimation == &death) {
+		
+		if (currentAnimation->HasFinished())isDead = true;
 	}
 
 }
@@ -312,8 +310,5 @@ void Enemy::BossPattern(float dt) {
 //-----------
 
 
-if (type == EnemyType::BOSS) flipType = SDL_FLIP_HORIZONTAL;
 
-// Initialize pathfinding
-pathfinding = new Pathfinding();
-ResetPath();
+
