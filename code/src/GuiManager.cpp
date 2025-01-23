@@ -95,10 +95,10 @@ bool GuiManager::Update(float dt)
 		Engine::GetInstance().render.get()->DrawText((text + time + sec).c_str(), 615, 335, 100, 32);
 	}
 	else if (Engine::GetInstance().scene.get()->config) {
-		Engine::GetInstance().render.get()->DrawTexture(emptyMenu, 400, 70, NULL, SDL_FLIP_NONE, false);
+		//Engine::GetInstance().render.get()->DrawTexture(emptyMenu, 200, 70, NULL, SDL_FLIP_NONE, false);
 	} 
 	
-	if (Engine::GetInstance().scene.get()->state == SceneState::SETTINGS) Engine::GetInstance().render.get()->DrawTexture(emptyMenu, 450, 50, NULL, SDL_FLIP_NONE, false);
+	if (Engine::GetInstance().scene.get()->state == SceneState::SETTINGS) Engine::GetInstance().render.get()->DrawTexture(emptyMenu, 250, 50, NULL, SDL_FLIP_NONE, false);
 	
 	for (const auto& control : guiControlsList)
 	{

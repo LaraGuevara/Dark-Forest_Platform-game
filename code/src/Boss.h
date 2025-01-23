@@ -55,11 +55,6 @@ public:
 
 	bool CleanUp();
 
-	void SetWake() {
-		isSleeping = false;
-		startPathfinding = true;
-	}
-
 	DirectionEnemy GetDirection() {
 		return de;
 	}
@@ -72,19 +67,16 @@ public:
 
 	Vector2D GetPosition();
 
-	void ResetPath();
-
 	void OnCollision(PhysBody* physA, PhysBody* physB);
 
 	void OnCollisionEnd(PhysBody* physA, PhysBody* physB);
-	void BossPattern(float dt);
+	void BossPattern();
 
 public:
 	BossState state = BossState::BOSS_ACTIVE;
 	int timerVar = 1;
 	bool playerActivate = false;
 	PhysBody* pbody;
-	PhysBody* sensor;
 
 private:
 	bool isStartingPos = false;
@@ -94,7 +86,6 @@ private:
 	BossAnimationState AnimState;
 	BossLook look = BossLook::BOSS_RIGHT;
 
-	float jumpForce = 2.0f;
 	int idleCount = IDLECOUNT;
 	bool idleMove = true;
 	b2Vec2 velocity;
@@ -108,28 +99,27 @@ private:
 	Animation sleep;
 	Animation wake;
 	Animation idle;
+	Animation dash;
 	Animation moving;
 	Animation attack;
 	Animation damage;
 	Animation death;
 
-	bool isSleeping = true;
+	bool isSleeping = false;
 	bool startPathfinding = false;
 	bool isDying = false;
 	bool isDead = false;
-	bool isJumping = false;
-	bool isFalling = true;
 	bool isDamaged = false;
 	bool isAttacking = false;
 	bool resetDirection = false;
 
-	Pathfinding* pathfinding;
 	bool playerFound = false;
 
 	SDL_RendererFlip flip;
 
 	int AttackFX;
 	int DamageFX;
+	int SuccessFX;
 
 	
 	int bossCooldown = 120;
@@ -138,7 +128,7 @@ private:
 	int randomAttack = 0;
 	bool audioDie = false;
 	bool directionLeft;
-	float speed;
+	float speed = 1.2;
 	
 
 };

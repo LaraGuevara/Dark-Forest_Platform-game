@@ -16,7 +16,6 @@ Boss::Boss() : Entity(EntityType::BOSS)
 }
 
 Boss::~Boss() {
-	delete pathfinding;
 }
 
 bool Boss::Awake() {
@@ -40,7 +39,8 @@ bool Boss::Start() {
 
 	//Load animations
 	idle.LoadAnimations(parameters.child("animations").child("idle"));
-	moving.LoadAnimations(parameters.child("animations").child("moving"));
+	moving.LoadAnimations(parameters.child("animations").child("walking"));
+	dash.LoadAnimations(parameters.child("animations").child("dash"));
 	attack.LoadAnimations(parameters.child("animations").child("attack"));
 	damage.LoadAnimations(parameters.child("animations").child("damage"));
 	death.LoadAnimations(parameters.child("animations").child("death"));
@@ -50,20 +50,16 @@ bool Boss::Start() {
 	AnimState = BossAnimationState::BOSS_IDLE;
 
 	//load damage soundfx
-	Mix_Volume(4, 90);
 	DamageFX = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/Spell Impact 1.wav");
-
-	//create sensor for radious around enemy (to activate pathfinding)
-	sensor = Engine::GetInstance().physics.get()->CreateCircleSensor((int)position.getX() + texH / 2, (int)position.getY() + texH / 2, texH * 4, bodyType::KINEMATIC);
+	AttackFX = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/Sword Attack 1.wav");
+	SuccessFX = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/Success 3.wav");
 
 	//Assign collider type and damage 
 	pbody->ctype = ColliderType::BOSS;
-	sensor->ctype = ColliderType::SENSOR;
 
 	pbody->damageDone = parameters.attribute("damage").as_int();
 
 	pbody->listener = this;
-	sensor->listener = this;
 	
 	// Set name and life values
 	name = parameters.attribute("name").as_string();
@@ -71,10 +67,6 @@ bool Boss::Start() {
 
 	// Set the gravity of the body
 	if (!parameters.attribute("gravity").as_bool()) pbody->body->SetGravityScale(0);
-
-	// Initialize pathfinding
-	pathfinding = new Pathfinding();
-	ResetPath();
 
 	return true;
 }
@@ -85,24 +77,10 @@ bool Boss::Update(float dt)
 
 	b2Transform pbodyPos = pbody->body->GetTransform();
 
+	BossPattern();
+
 	position.setX(METERS_TO_PIXELS(pbodyPos.p.x) - texH / 2);
 	position.setY(METERS_TO_PIXELS(pbodyPos.p.y) - texH / 2);
-
-	if (look == BossLook::BOSS_RIGHT) {
-		flip = SDL_FLIP_NONE;
-		pbody->lookRight = false;
-	}
-	else {
-		flip = SDL_FLIP_HORIZONTAL;
-		pbody->lookRight = true;
-	}
-
-	currentAnimation->Update();
-
-	Engine::GetInstance().render.get()->DrawTexture(texture, (int)position.getX() + texW / 10, (int)position.getY() - texH / 6, &currentAnimation->GetCurrentFrame(), flip);
-
-	b2Vec2 enemyPos = pbody->body->GetPosition();
-	sensor->body->SetTransform({ enemyPos.x, enemyPos.y }, 0);
 
 	return true;
 }
@@ -133,20 +111,11 @@ Vector2D Boss::GetPosition() {
 	return pos;
 }
 
-void Boss::ResetPath() {
-	Vector2D pos = GetPosition();
-	Vector2D tilePos = Engine::GetInstance().map.get()->WorldToMap(pos.getX(), pos.getY());
-	pathfinding->ResetPath(tilePos);
-}
-
 void Boss::OnCollision(PhysBody* physA, PhysBody* physB) {
 	
 		switch (physB->ctype)
 		{
 		case ColliderType::PLATFORM:
-			if (isJumping) {
-				isJumping = false;
-			}
 			break;
 		case ColliderType::PLAYER:
 			if (!isDead) {
@@ -164,16 +133,10 @@ void Boss::OnCollision(PhysBody* physA, PhysBody* physB) {
 			break;
 		case ColliderType::ATTACK:
 			if (!isDead) {
-				if (physA->ctype == ColliderType::ENEMY) {
-					Engine::GetInstance().audio->PlayFx(DamageFX, 4);
-					life = life - physB->damageDone;
-					isDamaged = true;
-					if (isSleeping) {
-						isSleeping = false;
-						startPathfinding = true;
-					}
-					LOG("DAMAGE %d", life);
-				}
+				Engine::GetInstance().audio->PlayFx(DamageFX, 4);
+				life = life - physB->damageDone;
+				isDamaged = true;
+				LOG("DAMAGE %d", life);
 			}
 			break;
 		case ColliderType::DEATH:
@@ -208,17 +171,18 @@ void Boss::OnCollisionEnd(PhysBody* physA, PhysBody* physB)
 
 //boss data
 
-void Boss::BossPattern(float dt) {
+void Boss::BossPattern() {
 	velocity = b2Vec2(0, -GRAVITY_Y);
 
 	
-	 if (currentAnimation == &attack) texW = 80;
-	else if (currentAnimation == &death) texW = 64;
-	else texW = parameters.attribute("w").as_int();
+	if (life <= 0) {
+		isDying = true;
+		currentAnimation = &death;
+	}
 
 	if ((currentAnimation == &attack || currentAnimation == &damage) && currentAnimation->HasFinished()) currentAnimation = &idle;
 
-	if (!isSleeping && !Engine::GetInstance().scene.get()->pausedGame) {
+	if (!isSleeping and !isDying) {
 		
 
 		if (bossCooldown >= 0)
@@ -237,6 +201,7 @@ void Boss::BossPattern(float dt) {
 		if (bossCooldown <= 0) {
 
 			if (currentAnimation == &moving) {
+				AnimState = BossAnimationState::BOSS_IDLE;
 				currentAnimation = &idle;
 				bossCooldown = 60;
 			}
@@ -246,18 +211,23 @@ void Boss::BossPattern(float dt) {
 				switch (randomAttack) {
 				case 2:
 					currentAnimation = &attack;
+					AnimState = BossAnimationState::BOSS_ATTACK;
+					flip = SDL_FLIP_HORIZONTAL;
 
 					currentAnimation->Reset();
 					bossCooldown = 120;
 					break;
 				case 3:
 					currentAnimation = &attack;
+					AnimState = BossAnimationState::BOSS_ATTACK;
+					flip = SDL_FLIP_HORIZONTAL;
 
 					currentAnimation->Reset();
 					bossCooldown = 120;
 					break;
 				default:
 					currentAnimation = &moving;
+					AnimState = BossAnimationState::BOSS_RUN;
 					bossCooldown = 160;
 					de = directionLeft ? DirectionEnemy::LEFT : DirectionEnemy::RIGHT;
 					break;
@@ -265,13 +235,17 @@ void Boss::BossPattern(float dt) {
 			}
 		}
 		else if (bossCooldown <= 1 && currentAnimation == &moving) {
+			AnimState = BossAnimationState::BOSS_RUN;
 			directionLeft = !directionLeft;
 			de = directionLeft ? DirectionEnemy::LEFT : DirectionEnemy::RIGHT;
 		}
 
-		if (currentAnimation == &moving) {
+		if (currentAnimation == &moving or currentAnimation == &dash) {
+			AnimState = BossAnimationState::BOSS_RUN;
 			if (directionLeft) {
-				velocity.x = -speed * 2;
+				AnimState = BossAnimationState::BOSS_DASH;
+				currentAnimation = &dash;
+				velocity.x = -speed * 3;
 				flip = SDL_FLIP_HORIZONTAL;
 			}
 			else {
@@ -282,26 +256,43 @@ void Boss::BossPattern(float dt) {
 
 	}
 
-	if (isJumping)velocity = pbody->body->GetLinearVelocity();
 	pbody->body->SetLinearVelocity(velocity);
 
 	b2Transform pbodyPos = pbody->body->GetTransform();
 	position.setX(METERS_TO_PIXELS(pbodyPos.p.x) - texH / 2);
 	position.setY(METERS_TO_PIXELS(pbodyPos.p.y) - texH / 2);
 
-	if (currentAnimation != &attack)
-		Engine::GetInstance().render.get()->DrawTexture(texture, (int)position.getX() + texW / 3, (int)position.getY() - texH / 4, &currentAnimation->GetCurrentFrame(), flip);
-	else
-		Engine::GetInstance().render.get()->DrawTexture(texture, (int)position.getX() - 4, (int)position.getY() - texH / 4, &currentAnimation->GetCurrentFrame(), flip);
+	switch (AnimState) {
+	case BossAnimationState::BOSS_ATTACK:
+		Engine::GetInstance().render.get()->DrawTexture(texture, (int)position.getX() - texW/2, (int)position.getY() - 30, &currentAnimation->GetCurrentFrame(), flip);
+		break;
+	case BossAnimationState::BOSS_DAMAGE:
+		Engine::GetInstance().render.get()->DrawTexture(texture, (int)position.getX() + texW / 2, (int)position.getY() - texH / 6, &currentAnimation->GetCurrentFrame(), flip);
+		break;
+	case BossAnimationState::BOSS_DASH:
+		Engine::GetInstance().render.get()->DrawTexture(texture, (int)position.getX() + texW / 10, (int)position.getY() - texW/3, &currentAnimation->GetCurrentFrame(), flip);
+		break;
+	case BossAnimationState::BOSS_DEATH:
+		Engine::GetInstance().render.get()->DrawTexture(texture, (int)position.getX() + texW / 10, (int)position.getY(), &currentAnimation->GetCurrentFrame(), flip);
+		break;
+	case BossAnimationState::BOSS_IDLE:
+		Engine::GetInstance().render.get()->DrawTexture(texture, (int)position.getX() + texW / 2, (int)position.getY() - texH/6, &currentAnimation->GetCurrentFrame(), flip);
+		break;
+	case BossAnimationState::BOSS_RUN:
+		Engine::GetInstance().render.get()->DrawTexture(texture, (int)position.getX() + texW / 10, (int)position.getY() - texW/3, &currentAnimation->GetCurrentFrame(), flip);
+		break;
+	}
 
 	currentAnimation->Update();
 
-	b2Vec2 enemyPos = pbody->body->GetPosition();
-	sensor->body->SetTransform({ enemyPos.x, enemyPos.y }, 0);
-
 	if (currentAnimation == &death) {
 		
-		if (currentAnimation->HasFinished())isDead = true;
+		if (currentAnimation->HasFinished()) {
+			isDead = true;
+			Engine::GetInstance().audio->PlayFx(SuccessFX, 4);
+			state = BossState::BOSS_DEFEATED;
+		}
+
 	}
 
 }

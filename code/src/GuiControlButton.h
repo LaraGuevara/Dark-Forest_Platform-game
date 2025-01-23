@@ -3,6 +3,8 @@
 #include "GuiControl.h"
 #include "Vector2D.h"
 
+class Window;
+
 class GuiControlButton : public GuiControl
 {
 
@@ -33,11 +35,6 @@ public:
 	// Called each loop iteration
 	bool Update(float dt);
 
-	void setPosition(Vector2D p) {
-		bounds.x = p.getX();
-		bounds.y = p.getY();
-	}
-
 	void SetTexture(SDL_Texture* background, SDL_Texture* movement) {
 		sliderBackground = background;
 		slider = movement;
@@ -46,8 +43,8 @@ public:
 	int checkID;
 
 private:
-	SDL_Texture* sliderBackground;
-	SDL_Texture* slider;
+	SDL_Texture* sliderBackground = nullptr;
+	SDL_Texture* slider = nullptr;
 	int posButton;
 	Vector2D pos;
 	Vector2D posHitbox;
@@ -66,20 +63,21 @@ public:
 	virtual ~GuiControlCheckbox();
 
 	// Called each loop iteration
-	//bool Update(float dt);
+	bool Update(float dt);
 
 	void SetTexture(SDL_Texture* off, SDL_Texture* on) {
 		checkboxOff = off;
 		checkboxOn = on;
 		Check = checkboxOff;
-		activated = false;
 	}
 
 	bool IsActiveFullScreen() {
-		return activated;
+		return fullScreen;
 	}
 
 private:
+
+	bool fullScreen = false;
 
 	SDL_Texture* checkboxOff;
 	SDL_Texture* checkboxOn;

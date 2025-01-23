@@ -172,6 +172,6 @@ bool Audio::PlayFx(int id, int channel, int repeat)
 }
 
 void Audio::ChangeVolume(int volume, int channel) {
-	if (channel == 2) Mix_VolumeMusic(volume);
+	if (channel == 6) Mix_VolumeMusic(volume);
 	else Mix_Volume(channel, volume);
 }

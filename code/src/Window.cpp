@@ -55,6 +55,13 @@ bool Window::Awake()
 	return ret;
 }
 
+void Window::Fullscreen(bool isFullScreen) {
+	Uint32 flags = SDL_WINDOW_SHOWN;
+	if (isFullScreen) flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
+
+	SDL_SetWindowFullscreen(window, flags);
+}
+
 // Called before quitting
 bool Window::CleanUp()
 {

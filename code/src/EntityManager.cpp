@@ -131,9 +131,11 @@ bool EntityManager::Update(float dt)
 		int cameraX = Engine::GetInstance().render.get()->camera.x;
 		for (const auto entity : entities)
 		{
-			if (entity->type != EntityType::PLAYER and entity->type != EntityType::ENEMY) {
-				if (entity->active == false) continue;
-				ret = entity->Update(dt);
+			if (entity->position.getX() >= -cameraX / 2 - 50 and entity->position.getX() <= -cameraX / 2 + 650) {
+				if (entity->type != EntityType::PLAYER and entity->type != EntityType::ENEMY) {
+					if (entity->active == false) continue;
+					ret = entity->Update(dt);
+				}
 			}
 		}
 		for (const auto entity : entities)

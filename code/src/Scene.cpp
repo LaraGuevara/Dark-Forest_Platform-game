@@ -68,19 +68,25 @@ bool Scene::Awake()
 		creditsBT = (GuiControlButton*)Engine::GetInstance().guiManager->CreateGuiControl(GuiControlType::BUTTON, GUI_ID::ID_CREDITS, "Credits", { 40, 470, 200,70 }, this);
 		exitBT = (GuiControlButton*)Engine::GetInstance().guiManager->CreateGuiControl(GuiControlType::BUTTON, GUI_ID::ID_EXIT, "Exit", { 40, 550, 200,70 }, this);
 
-		musicSlider= (GuiControlSlidebox*)Engine::GetInstance().guiManager->CreateGuiControl(GuiControlType::SLIDER, GUI_ID::ID_SLIDEM, "Music", { 200, 50, 200,70 }, this);
+		sliderBackground = Engine::GetInstance().textures.get()->Load("Assets/Textures/sliderBackground.png");
+		slider = Engine::GetInstance().textures.get()->Load("Assets/Textures/sliderMovement.png");
+
+		musicSlider= (GuiControlSlidebox*)Engine::GetInstance().guiManager->CreateGuiControl(GuiControlType::SLIDER, GUI_ID::ID_SLIDEM, "Music", { 200, 50, 200,10 }, this);
 		musicSlider->state = GuiControlState::DISABLED;
-
-		/*musicSliderbox = (GuiControlSlidebox*)Engine::GetInstance().guiManager->CreateGuiControl(GuiControlType::SLIDERBAR, GUI_ID::ID_SLIDEM, "Music", { 200, 50, 200,70 }, this);
-		musicSliderbox->state = GuiControlState::DISABLED;*/
-		
+		musicSlider->SetTexture(sliderBackground, slider);
+		musicSlider->checkID = 1;
 		
 
-		fxSlider= (GuiControlSlidebox*)Engine::GetInstance().guiManager->CreateGuiControl(GuiControlType::SLIDER, GUI_ID::ID_SLIDEF, "Fx", { 200, 150, 200,70 }, this);
+		fxSlider= (GuiControlSlidebox*)Engine::GetInstance().guiManager->CreateGuiControl(GuiControlType::SLIDER, GUI_ID::ID_SLIDEF, "Fx", { 200, 70, 200,10 }, this);
 		fxSlider->state = GuiControlState::DISABLED;
+		fxSlider->SetTexture(sliderBackground, slider);
+		fxSlider->checkID = 2;
 
-		fullscreenCheckBox= (GuiControlCheckbox*)Engine::GetInstance().guiManager->CreateGuiControl(GuiControlType::CHECKBOX, GUI_ID::ID_CHECKBOX, "Fullscreen", { 540, 525, 200,70 }, this);
+		checkboxOff = Engine::GetInstance().textures.get()->Load("Assets/Textures/sliderBackground.png");
+		checkboxOn = Engine::GetInstance().textures.get()->Load("Assets/Textures/sliderMovement.png");
+		fullscreenCheckBox= (GuiControlCheckbox*)Engine::GetInstance().guiManager->CreateGuiControl(GuiControlType::CHECKBOX, GUI_ID::ID_CHECKBOX, "Fullscreen", { 250, 90, 20,20 }, this);
 		fullscreenCheckBox->state = GuiControlState::DISABLED;
+		fullscreenCheckBox->SetTexture(checkboxOff, checkboxOn);
 
 
 		break;
@@ -110,9 +116,7 @@ bool Scene::Awake()
 		break;
 	case SceneState::SETTINGS:
 		musicSlider->state = GuiControlState::NORMAL;
-		musicSlider->checkID = 1;
 		fxSlider->state = GuiControlState::NORMAL;
-		fxSlider->checkID = 2;
 		fullscreenCheckBox->state = GuiControlState::NORMAL;
 
 
@@ -356,14 +360,14 @@ bool Scene::Start()
 			if (!ActiveBossFight) {
 				switch (level) {
 				case 1:
-					Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/level1.ogg", 0);
+					Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/level1.ogg", 6);
 					break;
 				case 2:
-					Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/level2.ogg", 0);
+					Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/level2.ogg", 6);
 					break;
 				}
 			}
-			else Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/boss.ogg", 0);
+			else Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/boss.ogg", 6);
 
 			if (!ActiveBossFight) bestTime = GetBestTime();
 
@@ -425,6 +429,17 @@ bool Scene::PreUpdate()
 
 bool Scene::Update(float dt) {
 	ZoneScoped;
+
+	if (state != SceneState::INTRO) {
+		if (!fullscreen and fullscreenCheckBox->IsActiveFullScreen()) {
+			Engine::GetInstance().window.get()->Fullscreen(true);
+			fullscreen = true;
+		}
+		else if (fullscreen and !fullscreenCheckBox->IsActiveFullScreen()) {
+			Engine::GetInstance().window.get()->Fullscreen(false);
+			fullscreen = false;
+		}
+	}
 
 	switch (state) {
 	case SceneState::INTRO:
