@@ -134,7 +134,6 @@ private:
 	
 	int bossCooldown = 120;
 	int lifes;
-	bool isJumping = false;
 	bool showing = true;
 	int randomAttack = 0;
 	bool audioDie = false;

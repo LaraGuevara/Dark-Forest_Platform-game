@@ -21,6 +21,7 @@ private:
 	int selectFX, hoverFX;
 	bool focused = false;
 };
+
 class GuiControlSlidebox : public GuiControl
 {
 
@@ -32,16 +33,23 @@ public:
 	// Called each loop iteration
 	bool Update(float dt);
 
+	void setPosition(Vector2D p) {
+		bounds.x = p.getX();
+		bounds.y = p.getY();
+	}
+
 	void SetTexture(SDL_Texture* background, SDL_Texture* movement) {
 		slidebackground = background;
 		slide = movement;
 	}
 
-private:
+	int checkID;
 
+private:
 	SDL_Texture* slidebackground;
 	SDL_Texture* slide;
 	int posButton;
+	Vector2D pos;
 	Vector2D posHitbox;
 	Vector2D posTexture;
 	bool drawBasic = false;

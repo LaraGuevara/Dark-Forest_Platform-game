@@ -27,10 +27,10 @@ enum GUI_ID {
 	ID_PAUSED_EXIT,
 	ID_RESPAWN,
 	ID_NEXT,
-	ID_TELEPORT,
 	ID_SLIDEM,
 	ID_SLIDEF,
-	ID_CHECKBOX
+	ID_CHECKBOX,
+	ID_TELEPORT,
 };
 
 enum SceneState {
@@ -183,6 +183,8 @@ private:
 	bool iconFade = false;
 	int iconFadeCount = 0;
 
+	bool inMenu = true;
+
 	//textures
 	//intro
 	SDL_Texture* introImg;
@@ -240,7 +242,7 @@ private:
 	GuiControlButton* nextBT;
 
 	//config
-	GuiControlButton* musicSlider;
-	GuiControlButton* fxSlider;
-	GuiControlButton* fullscreenCheckBox;
+	GuiControlSlidebox* musicSlider;
+	GuiControlSlidebox* fxSlider;
+	GuiControlCheckbox* fullscreenCheckBox;
 };

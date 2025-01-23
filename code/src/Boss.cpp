@@ -290,9 +290,9 @@ void Boss::BossPattern(float dt) {
 	position.setY(METERS_TO_PIXELS(pbodyPos.p.y) - texH / 2);
 
 	if (currentAnimation != &attack)
-		Engine::GetInstance().render.get()->DrawTexture(texture, flip, (int)position.getX() + texW / 3, (int)position.getY() - texH / 4, &currentAnimation->GetCurrentFrame());
+		Engine::GetInstance().render.get()->DrawTexture(texture, (int)position.getX() + texW / 3, (int)position.getY() - texH / 4, &currentAnimation->GetCurrentFrame(), flip);
 	else
-		Engine::GetInstance().render.get()->DrawTexture(texture, flip, (int)position.getX() - 4, (int)position.getY() - texH / 4, &currentAnimation->GetCurrentFrame());
+		Engine::GetInstance().render.get()->DrawTexture(texture, (int)position.getX() - 4, (int)position.getY() - texH / 4, &currentAnimation->GetCurrentFrame(), flip);
 
 	currentAnimation->Update();
 

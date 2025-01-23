@@ -96,7 +96,9 @@ bool GuiManager::Update(float dt)
 	}
 	else if (Engine::GetInstance().scene.get()->config) {
 		Engine::GetInstance().render.get()->DrawTexture(emptyMenu, 400, 70, NULL, SDL_FLIP_NONE, false);
-	}
+	} 
+	
+	if (Engine::GetInstance().scene.get()->state == SceneState::SETTINGS) Engine::GetInstance().render.get()->DrawTexture(emptyMenu, 450, 50, NULL, SDL_FLIP_NONE, false);
 	
 	for (const auto& control : guiControlsList)
 	{
@@ -105,7 +107,6 @@ bool GuiManager::Update(float dt)
 
 	if (Engine::GetInstance().scene.get()->state == SceneState::CREDITS) Engine::GetInstance().render.get()->DrawTexture(credits, 90, 50, NULL, SDL_FLIP_NONE, false);
 	if (Engine::GetInstance().scene.get()->help) Engine::GetInstance().render.get()->DrawTexture(helptex, 750, 0, NULL, SDL_FLIP_NONE, false);
-	if (Engine::GetInstance().scene.get()->state == SceneState::SETTINGS) Engine::GetInstance().render.get()->DrawTexture(emptyMenu, 450, 50, NULL, SDL_FLIP_NONE, false);
 
 	return true;
 }

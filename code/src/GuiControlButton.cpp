@@ -133,7 +133,7 @@ bool GuiControlSlidebox::Update(float dt)
 			if (Engine::GetInstance().input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KEY_REPEAT) {
 				state = GuiControlState::PRESSED;
 				posButton = -(Engine::GetInstance().render.get()->camera.x / 2) + mousePos.getX() - 8;
-				if (id == 1)/*MUSIC*/
+				if (checkID == 1)/*MUSIC*/
 					Engine::GetInstance().audio.get()->ChangeVolume(((posButton - 255) * 2) + Engine::GetInstance().render.get()->camera.x, 2);
 				else
 					Engine::GetInstance().audio.get()->ChangeVolume(((posButton - 255) * 2) + Engine::GetInstance().render.get()->camera.x, 3);
@@ -149,43 +149,43 @@ bool GuiControlSlidebox::Update(float dt)
 
 
 
-
-				// Draw the button according the GuiControl State
-				switch (state)
-				{
-				case GuiControlState::DISABLED:
-					Engine::GetInstance().render->DrawRectangle(bounds, 200, 200, 200, 200, true, false);
-					break;
-				case GuiControlState::NORMAL:
-					Engine::GetInstance().render->DrawRectangle(bounds, 200, 200, 200, 200, true, false);
-					break;
-				case GuiControlState::FOCUSED:
-					Engine::GetInstance().render->DrawRectangle(bounds, 200, 200, 200, 200, true, false);
-					break;
-				case GuiControlState::PRESSED:
-					Engine::GetInstance().render->DrawRectangle(bounds, 200 ,200, 200, 200, true, false);
-					break;
-				}
-
-				Engine::GetInstance().render->DrawText(text.c_str(), bounds.x, bounds.y, bounds.w, bounds.h);
-
 			}
 
-			if (state == GuiControlState::VISIBLE) {
-				Engine::GetInstance().render->DrawRectangle(bounds, 246, 238, 227, 200, true, false);
-				Engine::GetInstance().render->DrawText(text.c_str(), bounds.x, bounds.y, bounds.w, bounds.h);
-			}
-
-			if (state == GuiControlState::UNCLICKABLE) {
-				Engine::GetInstance().render->DrawRectangle(bounds, 93, 93, 93, 200, true, false);
-				Engine::GetInstance().render->DrawText(text.c_str(), bounds.x, bounds.y, bounds.w, bounds.h);
-			}
-
-			return false;
+			// Draw the button according the GuiControl State
+			
 
 		}
 
+		switch (state)
+		{
+		case GuiControlState::DISABLED:
+			Engine::GetInstance().render->DrawRectangle(bounds, 200, 200, 200, 200, true, false);
+			break;
+		case GuiControlState::NORMAL:
+			Engine::GetInstance().render->DrawRectangle(bounds, 200, 200, 200, 200, true, false);
+			break;
+		case GuiControlState::FOCUSED:
+			Engine::GetInstance().render->DrawRectangle(bounds, 200, 200, 200, 200, true, false);
+			break;
+		case GuiControlState::PRESSED:
+			Engine::GetInstance().render->DrawRectangle(bounds, 200, 200, 200, 200, true, false);
+			break;
+		}
+
+		Engine::GetInstance().render->DrawText(text.c_str(), bounds.x, bounds.y, bounds.w, bounds.h);
 	}
+
+	if (state == GuiControlState::VISIBLE) {
+		Engine::GetInstance().render->DrawRectangle(bounds, 246, 238, 227, 200, true, false);
+		Engine::GetInstance().render->DrawText(text.c_str(), bounds.x, bounds.y, bounds.w, bounds.h);
+	}
+
+	if (state == GuiControlState::UNCLICKABLE) {
+		Engine::GetInstance().render->DrawRectangle(bounds, 93, 93, 93, 200, true, false);
+		Engine::GetInstance().render->DrawText(text.c_str(), bounds.x, bounds.y, bounds.w, bounds.h);
+	}
+
+	return false;
 }
 /*
 bool GuiControlCheckbox::Update(float dt)
